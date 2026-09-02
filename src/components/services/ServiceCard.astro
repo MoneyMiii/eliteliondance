@@ -1,17 +1,27 @@
 ---
 interface Props {
   icon?: string;
+  photo?: string;
   title: string;
   description: string;
 }
 
-const { icon, title, description } = Astro.props;
+const { icon, photo, title, description } = Astro.props;
+const onPhoto = Boolean(photo);
 ---
 
-<article class="flex min-w-0 flex-col overflow-hidden rounded-[1.75rem] border border-brand/15 bg-forest p-7">
-  <span class="inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-brand/20 bg-paper text-brand">
+<article class="relative flex min-h-[18rem] min-w-0 flex-col overflow-hidden rounded-[1.75rem] border border-brand/15 bg-forest p-7">
+  {onPhoto && (
+    <>
+      <img src={photo} alt="" class="absolute inset-0 h-full w-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-b from-ink via-ink/45 to-ink/55" />
+    </>
+  )}
+  <span class="relative inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-brand/20 bg-paper text-brand">
     {icon && <img src={icon} alt="" class="h-10 w-10 object-contain" />}
   </span>
-  <h3 class="mt-6 break-words font-display text-3xl uppercase leading-none text-ink">{title}</h3>
-  <p class="mt-3 text-sm leading-relaxed text-mist">{description}</p>
+  <h3 class:list={['relative mt-6 break-words font-display text-3xl uppercase leading-none', onPhoto ? 'text-paper' : 'text-ink']}>
+    {title}
+  </h3>
+  <p class:list={['relative mt-3 text-sm leading-relaxed', onPhoto ? 'text-paper/80' : 'text-mist']}>{description}</p>
 </article>

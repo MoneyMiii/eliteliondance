@@ -1260,6 +1260,28 @@
       },
       {
         "hidden": false,
+        "id": "f_photo_svc1",
+        "maxSelect": 1,
+        "maxSize": 20971520,
+        "mimeTypes": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/avif",
+          "image/gif"
+        ],
+        "name": "photo",
+        "presentable": false,
+        "protected": false,
+        "required": false,
+        "system": false,
+        "thumbs": [
+          "1200x800"
+        ],
+        "type": "file"
+      },
+      {
+        "hidden": false,
         "id": "f_displayOrder_060",
         "max": null,
         "min": 0,

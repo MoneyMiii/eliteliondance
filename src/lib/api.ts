@@ -111,6 +111,7 @@ async function toService(record: ServiceRecord, locale: Locale): Promise<Service
     title: stripHtml(getLocalizedValue(record, 'title', locale)),
     description: stripHtml(getLocalizedValue(record, 'description', locale)),
     icon: await getPocketBaseFileIconUrl(record, record.icon),
+    photo: getPocketBaseFileUrl(record, record.photo, '1200x800'),
   };
 }
 

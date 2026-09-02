@@ -27,7 +27,7 @@ const { content, services } = Astro.props;
     services.length > 0 && (
       <div class="grid gap-5 sm:grid-cols-2">
         {services.map((service) => (
-          <ServiceCard icon={service.icon} title={service.title} description={service.description} />
+          <ServiceCard icon={service.icon} photo={service.photo} title={service.title} description={service.description} />
         ))}
       </div>
     )

@@ -84,7 +84,7 @@ Les URLs internes restent dans le code (`/contact`, `/a-propos`). Instagram : `s
 
 ### `services`
 
-`title_*` · `description_*` · `icon` (`wedding` / `seminar` / `restaurant` / `other`) · `displayOrder` · `isActive`
+`title_*` · `description_*` · `icon` · `photo` (fond de carte) · `displayOrder` · `isActive`
 
 ### `team_members`
 

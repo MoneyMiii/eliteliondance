@@ -64,6 +64,7 @@ export interface ServiceRecord extends PocketBaseRecord {
   description_fr?: string;
   description_zh?: string;
   icon?: string;
+  photo?: string;
   displayOrder: number;
   isActive: boolean;
 }
@@ -175,6 +176,7 @@ export interface ServiceItem {
   title: string;
   description: string;
   icon?: string;
+  photo?: string;
 }
 
 export interface Partner {

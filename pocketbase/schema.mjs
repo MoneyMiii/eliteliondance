@@ -292,6 +292,7 @@ const collections = [
       ...localizedTitle(),
       ...localizedOptional('description'),
       file('icon', { mimeTypes: ICON_TYPES, maxSize: 2 * 1024 * 1024 }),
+      file('photo', { thumbs: ['1200x800'] }),
       number('displayOrder', { required: true, min: 0 }),
       bool('isActive'),
     ],

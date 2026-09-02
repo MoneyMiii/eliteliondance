@@ -44,9 +44,10 @@ export function createTtlCache<T>(ttlMs: number) {
   };
 }
 
-function readTtl(name: string, fallback: number): number {
-  const raw = import.meta.env[name] || (typeof process !== 'undefined' ? process.env[name] : undefined);
-  const value = Number(raw);
+function readTtl(name: 'CMS_CACHE_TTL_MS' | 'CMS_FILE_CACHE_TTL_MS', fallback: number): number {
+  const fromImport = import.meta.env[name];
+  const fromProcess = typeof process !== 'undefined' ? process.env[name] : undefined;
+  const value = Number(fromImport || fromProcess);
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { loadPocketBaseFile } from '../../../lib/media';
+import { loadPocketBaseFile } from '../../../../../lib/media';
 
 export const prerender = false;
 
@@ -20,7 +20,7 @@ export const GET: APIRoute = async ({ params, url }) => {
   const file = await loadPocketBaseFile(collection, id, filename, thumb);
   if (!file) return new Response('Not found', { status: 404 });
 
-  return new Response(file.body, {
+  return new Response(Buffer.from(file.body), {
     headers: {
       'Content-Type': file.contentType,
       'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',

@@ -1,0 +1,45 @@
+---
+import type { Locale } from '../../lib/locale';
+import { createT } from '../../lib/i18n';
+import type { EditorialBlock } from '../../lib/types';
+import { sanitizeHtml } from '../../lib/localize';
+import PageHeading from '../common/PageHeading.astro';
+
+interface Props {
+  locale: Locale;
+  hero?: EditorialBlock;
+  blocks: EditorialBlock[];
+}
+
+const { hero, blocks } = Astro.props;
+const t = createT(Astro.locals.labels, Astro.locals.locale);
+---
+
+<section class="container-page page-y">
+  {(hero?.title || hero?.subtitle) && (
+    <PageHeading kicker={hero?.subtitle} title={hero?.title || ''} />
+  )}
+  {hero?.content && <div class="prose-eld mt-(--space-block) max-w-3xl text-lg" set:html={sanitizeHtml(hero.content)} />}
+
+  {hero?.image && (
+    <figure class="media-frame mt-(--space-block) aspect-[16/9] lg:aspect-[2/1]">
+      <img src={hero.image} alt={t('brand.logoAlt')} class="h-full w-full object-cover" />
+    </figure>
+  )}
+
+  <div class="stack-y mt-(--space-section)">
+    {blocks.map((block, index) => (
+      <article class:list={['grid gap-8 lg:grid-cols-2 lg:items-center', index % 2 === 1 && 'lg:[&>div:first-child]:order-2']}>
+        <div>
+          {block.title && <h2 class="section-title">{block.title}</h2>}
+          {block.content && <div class="prose-eld mt-5" set:html={sanitizeHtml(block.content)} />}
+        </div>
+        {block.image && (
+          <div class="media-frame min-h-[18rem]">
+            <img src={block.image} alt="" class="h-full w-full object-cover" loading="lazy" />
+          </div>
+        )}
+      </article>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,144 @@
+---
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import CustomCursor from '../components/common/CustomCursor';
+import CmsErrorDialog from '../components/common/CmsErrorDialog.astro';
+import { htmlLang, type Locale } from '../lib/locale';
+import { createT } from '../lib/i18n';
+import { cmsErrorCopy } from '../lib/cms-error';
+import { buildSeo, organizationJsonLd } from '../lib/seo';
+import '../styles/global.css';
+import type { Partner } from '../lib/types';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+  path: string;
+  instagramUrl?: string;
+  partners?: Partner[];
+  image?: string;
+}
+
+const {
+  locale,
+  title,
+  description,
+  path,
+  instagramUrl = '',
+  partners = [],
+  image,
+} = Astro.props;
+const cmsAvailable = Astro.locals.cmsAvailable;
+const labels = Astro.locals.labels ?? {};
+const settings = Astro.locals.settings;
+const t = createT(labels, locale);
+const errorCopy = cmsErrorCopy(locale);
+const brandName = t('brand.name') || settings?.brandName || '';
+const seo = buildSeo({
+  locale,
+  title: cmsAvailable ? title : errorCopy.title,
+  description: cmsAvailable ? description : errorCopy.body,
+  path,
+  image: image || settings?.logoMark,
+  siteUrl: settings?.siteUrl,
+  defaultTitle: t('seo.defaultTitle'),
+  defaultDescription: t('seo.defaultDescription'),
+  brandName,
+  titlePattern: t('seo.titlePattern'),
+});
+const jsonLd = organizationJsonLd({
+  name: brandName,
+  url: settings?.siteUrl,
+  areaServed: t('footer.zone'),
+  instagramUrl,
+  logo: settings?.logoMark || settings?.logo,
+});
+---
+
+<!doctype html>
+<html lang={htmlLang(locale)}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{cmsAvailable ? brandName : errorCopy.title}</title>
+    <meta name="description" content={seo.description} />
+    <link rel="canonical" href={seo.url} />
+    {settings?.logoMark && <link rel="icon" type="image/png" href={settings.logoMark} />}
+    {settings?.logoMark && <link rel="apple-touch-icon" href={settings.logoMark} />}
+    <link rel="alternate" hreflang="fr" href={seo.url} />
+    <link rel="alternate" hreflang="zh" href={seo.url} />
+    <link rel="alternate" hreflang="x-default" href={seo.url} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:url" content={seo.url} />
+    {seo.image && <meta property="og:image" content={seo.image} />}
+    <meta property="og:locale" content={seo.locale} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    {settings?.themeColor && <meta name="theme-color" content={settings.themeColor} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Oswald:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    {cmsAvailable && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <script is:inline>
+      (() => {
+        const KEY = 'eld:home-scroll';
+        const path = location.pathname.replace(/\/+$/, '') || '/';
+        if (path !== '/') return;
+
+        const params = new URLSearchParams(location.search);
+        const restore = params.get('retour') === '1';
+        let canSave = !restore;
+
+        const save = () => {
+          if (!canSave) return;
+          sessionStorage.setItem(KEY, String(window.scrollY || document.documentElement.scrollTop || 0));
+        };
+
+        if (restore) {
+          const y = Number(sessionStorage.getItem(KEY) || '0');
+          if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+          document.documentElement.style.scrollBehavior = 'auto';
+          params.delete('retour');
+          const next = params.toString();
+          history.replaceState(null, '', next ? `/?${next}` : '/');
+          const apply = () => window.scrollTo(0, Number.isFinite(y) ? y : 0);
+          apply();
+          requestAnimationFrame(apply);
+          window.addEventListener('load', apply, { once: true });
+          window.setTimeout(() => {
+            apply();
+            canSave = true;
+            document.documentElement.style.scrollBehavior = '';
+          }, 250);
+        }
+
+        window.addEventListener('scroll', save, { passive: true });
+        window.addEventListener('pagehide', save);
+      })();
+    </script>
+  </head>
+  <body>
+    {cmsAvailable ? (
+      <>
+        <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[120] focus:rounded-full focus:bg-brand focus:px-4 focus:py-2 focus:text-paper">
+          {t('nav.skip')}
+        </a>
+        <Header locale={locale} instagramUrl={instagramUrl} currentPath={path} logo={settings?.logo} logoMark={settings?.logoMark} />
+        <main id="main" class="overflow-x-hidden">
+          <slot />
+        </main>
+        <Footer locale={locale} instagramUrl={instagramUrl} partners={partners} logoMark={settings?.logoMark} />
+        <CustomCursor labels={labels} client:only="react" />
+      </>
+    ) : (
+      <CmsErrorDialog locale={locale} />
+    )}
+  </body>
+</html>

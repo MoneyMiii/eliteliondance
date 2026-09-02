@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AboutContent from '../components/about/AboutContent.astro';
+import { getAboutBlocks, getLayoutData, getPage } from '../lib/api';
+import { stripHtml } from '../lib/localize';
+import { getRequestLocale } from '../lib/request-locale';
+import type { EditorialBlock, Partner } from '../lib/types';
+
+const locale = getRequestLocale(Astro.cookies);
+let hero: EditorialBlock | undefined;
+let blocks: EditorialBlock[] = [];
+let partners: Partner[] = [];
+let instagramUrl = '';
+if (Astro.locals.cmsAvailable) {
+  const [heroResult, blocksResult, layout] = await Promise.all([
+    getPage('about', locale),
+    getAboutBlocks(locale),
+    getLayoutData(locale),
+  ]);
+  if (!heroResult.ok || !blocksResult.ok || !layout.ok) {
+    Astro.locals.cmsAvailable = false;
+  } else {
+    hero = heroResult.data;
+    blocks = blocksResult.data;
+    partners = layout.data.partners;
+    instagramUrl = layout.data.settings.instagramUrl;
+  }
+}
+---
+
+<BaseLayout
+  locale={locale}
+  path="/a-propos"
+  title={hero?.title}
+  description={stripHtml(hero?.content || hero?.subtitle || '')}
+  instagramUrl={instagramUrl}
+  partners={partners}
+>
+  <AboutContent locale={locale} hero={hero} blocks={blocks} />
+</BaseLayout>

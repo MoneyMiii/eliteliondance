@@ -1,0 +1,113 @@
+key,title_fr,title_zh,isActive
+brand.name,Elite Lion Dance,Elite Lion Dance,true
+brand.logoAlt,Elite Lion Dance,Elite Lion Dance,true
+nav.home,Accueil,首页,true
+nav.services,Prestations,演出项目,true
+nav.events,Événements,活动,true
+nav.gallery,Galerie,图库,true
+nav.team,Équipe,团队,true
+nav.about,À propos,关于我们,true
+nav.contact,Contact,联系我们,true
+nav.main,Navigation principale,主导航,true
+nav.openMenu,Ouvrir le menu,打开菜单,true
+nav.closeMenu,Fermer le menu,关闭菜单,true
+nav.skip,Aller au contenu,跳到正文,true
+nav.backHome,Retour à l’accueil,返回首页,true
+cta.book,Réserver un spectacle,预订舞狮表演,true
+cta.demos,Voir les démos,观看演示,true
+cta.instagram,Suivre sur Instagram,关注 Instagram,true
+lang.fr,FR,FR,true
+lang.zh,中文,中文,true
+lang.switch,Changer de langue,切换语言,true
+hero.kicker,Elite Lion Dance,Elite Lion Dance,true
+hero.title,Puissance & tradition,力量与传统,true
+intro.kicker,L’équipe,舞狮团,true
+intro.title,"Danse du lion, Île-de-France",法兰西岛的舞狮艺术,true
+intro.body,"Elite Lion Dance est une équipe de danse traditionnelle chinoise du lion, basée en Île-de-France. Nous faisons entrer le lion partout où la fête, la chance et le spectacle ont leur place : mariages, inaugurations, Nouvel An et événements d’entreprise.",Elite Lion Dance 是一支扎根法兰西岛的传统中国舞狮团。无论是婚礼、开业、春节还是企业活动，我们都以舞狮带来吉祥、热闹与现场的能量。,true
+services.kicker,Prestations,演出项目,true
+services.title,Des spectacles pour chaque événement,为每一场活动打造的演出,true
+services.hire,Vous voulez faire appel à nous ?,想邀请我们演出,true
+services.wedding.title,Mariage,婚礼,true
+services.wedding.body,"Le lion célèbre votre union et apporte chance, fête et un moment inoubliable à la cérémonie.",舞狮为婚礼添彩，带来吉祥、热闹与难忘的仪式时刻。,true
+services.seminar.title,Séminaire d’entreprise,企业活动,true
+services.seminar.body,"Une apparition spectaculaire pour marquer un séminaire, une convention ou un événement d’entreprise.",为企业研讨会、年会或商务活动带来震撼登场。,true
+services.restaurant.title,Inauguration de restaurant,餐厅开业,true
+services.restaurant.body,"Le lion ouvre les portes, attire la chance et inaugure votre restaurant.",舞狮开业，招来好运，为餐厅揭幕。,true
+services.other.title,Autres,其他,true
+services.other.body,"Nouvel An, fêtes, défilés ou tout autre événement : racontez-nous votre projet.",春节、节日、巡游或其他活动：告诉我们您的需求。,true
+events.kicker,Agenda,日程,true
+events.title,Nos prochains événements,我们的近期活动,true
+events.allTitle,Tous les événements,全部活动,true
+events.filterAll,Tous,全部,true
+events.filterUpcoming,À venir,即将举行,true
+events.filterPast,Passés,往期活动,true
+events.empty,Aucun événement à afficher pour le moment.,暂无活动。,true
+events.noneUpcoming,Aucun événement n’est planifié pour le moment.,目前没有已安排的活动。,true
+events.flip,Voir les détails,查看详情,true
+events.unflip,Revenir à la carte,返回卡片正面,true
+events.seePastAndFuture,Voir les événements passés et futurs,查看往期与即将举行的活动,true
+events.moreUpcoming,Voir plus d’événements à venir,查看更多即将举行的活动,true
+gallery.kicker,Galerie,图库,true
+gallery.title,L’énergie du spectacle,现场的能量,true
+gallery.empty,Les photos seront bientôt disponibles.,照片即将上线。,true
+gallery.seeAll,Tout voir,查看全部,true
+gallery.carousel,Carrousel photos,照片轮播,true
+gallery.prev,Photo précédente,上一张,true
+gallery.next,Photo suivante,下一张,true
+gallery.close,Fermer,关闭,true
+gallery.open,Agrandir {title},放大 {title},true
+gallery.goTo,Aller à la photo {index},查看第 {index} 张,true
+gallery.counter,{current} / {total},{current} / {total},true
+carousel.prev,Précédent,上一张,true
+carousel.next,Suivant,下一张,true
+carousel.goTo,Aller à l’élément {index},查看第 {index} 项,true
+carousel.dots,Navigation du carrousel,轮播导航,true
+about.kicker,À propos,关于我们,true
+about.title,"Transmission, puissance, authenticité",传承、力量、本真,true
+about.pageTitle,À propos d’Elite Lion Dance,关于 Elite Lion Dance,true
+about.body,"Nous transmettons un art vivant : la puissance du lion, le rythme des tambours et le respect des codes traditionnels, adaptés aux scènes d’aujourd’hui en Île-de-France.",我们传承的是活着的艺术：狮的力量、鼓的节奏，以及对传统礼仪的尊重，并让它适应法兰西岛当下的舞台。,true
+about.seeMore,Découvrir l’équipe,了解舞狮团,true
+about.teamPhotoAlt,L’équipe Elite Lion Dance,Elite Lion Dance 舞狮团合影,true
+team.kicker,Équipe,团队,true
+team.title,Les visages de l’équipe,舞狮团成员,true
+team.role.responsable,Responsable,负责人,true
+team.role.musique,Musique,音乐,true
+team.role.danse,Danse,舞狮,true
+team.role.communication,Communication,传播,true
+team.carousel,Carrousel équipe,团队轮播,true
+team.join,Vous voulez nous rejoindre ?,想加入我们吗？,true
+instagram.title,Suivez-nous,关注我们,true
+instagram.subtitle,"Coulisses, répétitions et spectacles sur Instagram.",在 Instagram 上看幕后、排练与演出。,true
+partners.title,Partenaires,合作伙伴,true
+footer.menu,Menu,菜单,true
+footer.social,Réseaux,社交,true
+footer.rights,Tous droits réservés.,版权所有。,true
+footer.zone,Île-de-France,法兰西岛,true
+footer.blurb,"Elite Lion Dance, Île-de-France",Elite Lion Dance，法兰西岛,true
+footer.domain,eliteliondance.fr,eliteliondance.fr,true
+footer.navAria,Pied de page,页脚,true
+footer.copyright,© {year} {name}. {rights},© {year} {name}。{rights},true
+contact.kicker,Contact,联系,true
+contact.title,Nous joindre,联系我们,true
+contact.intro,"Vous voulez nous rejoindre, ou faire appel à nous pour un spectacle, un mariage, une inauguration ou tout autre événement ? Contactez-nous : racontez-nous votre projet, nous vous répondons par email. Aucun compte n’est nécessaire.",想加入我们的舞狮团，或邀请我们为演出、婚礼、开业或其他活动助阵？请联系我们：描述您的需求，我们将通过电子邮件回复，无需注册。,true
+form.lastName,Nom,姓,true
+form.firstName,Prénom,名,true
+form.email,Email,邮箱,true
+form.phone,Téléphone,电话,true
+form.message,Message,留言,true
+form.submit,Envoyer la demande,发送请求,true
+form.success,Votre demande a bien été envoyée. Nous vous recontacterons rapidement.,您的请求已发送。我们会尽快与您联系。,true
+form.error,Impossible d’envoyer la demande pour le moment. Réessayez dans quelques instants.,暂时无法发送请求，请稍后再试。,true
+form.invalid,"Merci de renseigner le nom, l’email, le téléphone et le message.",请填写姓氏、邮箱、电话和留言。,true
+form.sending,Envoi…,发送中…,true
+form.honeypot,Société,公司,true
+form.emptyValue,-,-,true
+form.emailSubject,Contact : {name},联系：{name},true
+empty.team,L’équipe sera bientôt présentée.,团队介绍即将上线。,true
+cursor.drag,Glisser,拖动,true
+notFound.code,404,404,true
+notFound.title,Page introuvable,页面未找到,true
+notFound.back,Retour à l’accueil,回到首页,true
+seo.defaultTitle,"Elite Lion Dance, danse du lion en Île-de-France",Elite Lion Dance，法兰西岛舞狮,true
+seo.defaultDescription,"Elite Lion Dance, équipe de danse traditionnelle chinoise du lion en Île-de-France. Spectacles pour mariages, inaugurations et événements.",Elite Lion Dance，法兰西岛传统中国舞狮团。婚礼、开业、节日与企业活动演出。,true
+seo.titlePattern,{title} | {brand},{title} | {brand},true

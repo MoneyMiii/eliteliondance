@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeading from '../components/common/PageHeading.astro';
+import EventsList from '../components/events/EventsList';
+import { getEvents, getLayoutData } from '../lib/api';
+import { parseEventFilter } from '../lib/events';
+import { createT } from '../lib/i18n';
+import { getRequestLocale } from '../lib/request-locale';
+import type { EventItem, Partner } from '../lib/types';
+
+const locale = getRequestLocale(Astro.cookies);
+const t = createT(Astro.locals.labels, locale);
+const labels = Astro.locals.labels ?? {};
+const initialFilter = parseEventFilter(Astro.url.searchParams.get('filtre'));
+let events: EventItem[] = [];
+let partners: Partner[] = [];
+let instagramUrl = '';
+let logoMark: string | undefined;
+if (Astro.locals.cmsAvailable) {
+  const [eventsResult, layout] = await Promise.all([getEvents(locale), getLayoutData(locale)]);
+  if (!eventsResult.ok || !layout.ok) {
+    Astro.locals.cmsAvailable = false;
+  } else {
+    events = eventsResult.data;
+    partners = layout.data.partners;
+    instagramUrl = layout.data.settings.instagramUrl;
+    logoMark = layout.data.settings.logoMark;
+  }
+}
+---
+
+<BaseLayout
+  locale={locale}
+  path="/evenements"
+  title={t('nav.events')}
+  description={t('events.allTitle')}
+  instagramUrl={instagramUrl}
+  partners={partners}
+>
+  <section class="container-page page-y">
+    <PageHeading kicker={t('events.kicker')} title={t('events.allTitle')} />
+    <div class="mt-(--space-block)">
+      <EventsList locale={locale} labels={labels} events={events} initialFilter={initialFilter} logoMark={logoMark} client:load />
+    </div>
+  </section>
+</BaseLayout>

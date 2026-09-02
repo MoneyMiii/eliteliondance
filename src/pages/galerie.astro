@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeading from '../components/common/PageHeading.astro';
+import GallerySection from '../components/gallery/GallerySection.astro';
+import { getGallery, getLayoutData } from '../lib/api';
+import { createT } from '../lib/i18n';
+import { getRequestLocale } from '../lib/request-locale';
+import type { GalleryItem, Partner } from '../lib/types';
+
+const locale = getRequestLocale(Astro.cookies);
+const t = createT(Astro.locals.labels, locale);
+let items: GalleryItem[] = [];
+let partners: Partner[] = [];
+let instagramUrl = '';
+if (Astro.locals.cmsAvailable) {
+  const [gallery, layout] = await Promise.all([getGallery(), getLayoutData(locale)]);
+  if (!gallery.ok || !layout.ok) {
+    Astro.locals.cmsAvailable = false;
+  } else {
+    items = gallery.data;
+    partners = layout.data.partners;
+    instagramUrl = layout.data.settings.instagramUrl;
+  }
+}
+---
+
+<BaseLayout
+  locale={locale}
+  path="/galerie"
+  title={t('nav.gallery')}
+  description={t('gallery.title')}
+  instagramUrl={instagramUrl}
+  partners={partners}
+>
+  <div class="page-y">
+    <div class="container-page block-gap">
+      <PageHeading kicker={t('gallery.kicker')} title={t('gallery.title')} />
+    </div>
+    <GallerySection locale={locale} items={items} heading={false} />
+  </div>
+</BaseLayout>

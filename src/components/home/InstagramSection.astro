@@ -1,0 +1,30 @@
+---
+import type { Locale } from '../../lib/locale';
+import { createT } from '../../lib/i18n';
+import type { EditorialBlock } from '../../lib/types';
+import InstagramButton from '../common/InstagramButton.astro';
+import { distinctText } from '../../lib/format';
+
+interface Props {
+  locale: Locale;
+  content?: EditorialBlock;
+  instagramUrl: string;
+}
+
+const { content, instagramUrl } = Astro.props;
+const t = createT(Astro.locals.labels, Astro.locals.locale);
+const title = content?.title || '';
+const lede = distinctText(content?.subtitle, title);
+---
+
+<section class="container-page section-y">
+  <div class="overflow-hidden rounded-[2rem] border border-brand/15 bg-forest px-8 py-(--space-section) text-center">
+    {title && <h2 class="section-title">{title}</h2>}
+    {lede && <p class="mx-auto mt-5 max-w-xl text-mist">{lede}</p>}
+    {instagramUrl && (
+      <div class="mt-8 flex justify-center">
+        <InstagramButton href={instagramUrl} label={t('cta.instagram')} class="h-8 w-8" />
+      </div>
+    )}
+  </div>
+</section>

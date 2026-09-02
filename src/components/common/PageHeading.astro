@@ -1,0 +1,20 @@
+---
+import { distinctText } from '../../lib/format';
+
+interface Props {
+  kicker?: string;
+  title: string;
+  lede?: string;
+  class?: string;
+}
+
+const { kicker, title, lede, class: className = '' } = Astro.props;
+const shownKicker = distinctText(kicker, title);
+const shownLede = distinctText(lede, title, shownKicker);
+---
+
+<header class={className}>
+  {shownKicker && <p class="eyebrow">{shownKicker}</p>}
+  <h1 class:list={['display-title max-w-5xl', shownKicker && 'mt-4']}>{title}</h1>
+  {shownLede && <p class="mt-6 max-w-2xl text-lg text-mist">{shownLede}</p>}
+</header>

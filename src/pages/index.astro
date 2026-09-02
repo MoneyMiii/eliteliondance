@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HomeSections from '../components/home/HomeSections.astro';
+import { getHomeData, type HomeData } from '../lib/api';
+import { getRequestLocale } from '../lib/request-locale';
+import { stripHtml } from '../lib/localize';
+
+const locale = getRequestLocale(Astro.cookies);
+let home: HomeData | null = null;
+if (Astro.locals.cmsAvailable) {
+  const result = await getHomeData(locale);
+  if (!result.ok) Astro.locals.cmsAvailable = false;
+  else home = result.data;
+}
+const hero = home?.content['home.hero'];
+---
+
+<BaseLayout
+  locale={locale}
+  path="/"
+  title={hero?.title}
+  description={stripHtml(hero?.subtitle || hero?.content || '')}
+  instagramUrl={home?.instagramUrl}
+  partners={home?.partners}
+  image={hero?.image}
+>
+  {home && <HomeSections locale={locale} home={home} />}
+</BaseLayout>

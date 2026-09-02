@@ -1,0 +1,36 @@
+---
+import type { Locale } from '../../lib/locale';
+import { cmsErrorCopy } from '../../lib/cms-error';
+
+interface Props {
+  locale: Locale;
+}
+
+const copy = cmsErrorCopy(Astro.props.locale);
+---
+
+<div
+  class="fixed inset-0 z-[200] flex items-center justify-center bg-ink/70 px-6"
+  role="alertdialog"
+  aria-modal="true"
+  aria-labelledby="cms-error-title"
+  aria-describedby="cms-error-body"
+>
+  <div class="w-full max-w-md rounded-[1.75rem] border border-brand/20 bg-paper p-8 text-center shadow-2xl">
+    <p id="cms-error-title" class="font-display text-3xl uppercase text-ink">{copy.title}</p>
+    <p id="cms-error-body" class="mt-4 text-mist">{copy.body}</p>
+    <button
+      type="button"
+      class="mt-8 inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold tracking-wide text-paper transition-colors hover:bg-ink"
+      data-cms-retry
+    >
+      {copy.retry}
+    </button>
+  </div>
+</div>
+
+<script>
+  document.querySelector('[data-cms-retry]')?.addEventListener('click', () => {
+    window.location.reload();
+  });
+</script>

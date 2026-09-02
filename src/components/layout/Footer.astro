@@ -1,0 +1,71 @@
+---
+import type { Locale } from '../../lib/locale';
+import { createT } from '../../lib/i18n';
+import type { Partner } from '../../lib/types';
+import InstagramButton from '../common/InstagramButton.astro';
+
+interface Props {
+  locale: Locale;
+  instagramUrl: string;
+  partners: Partner[];
+  logoMark?: string;
+}
+
+const { instagramUrl, partners, logoMark } = Astro.props;
+const t = createT(Astro.locals.labels, Astro.locals.locale);
+const navLinks = Astro.locals.navLinks ?? [];
+const year = new Date().getFullYear();
+const brandName = t('brand.name') || Astro.locals.settings?.brandName || '';
+---
+
+<footer class="relative overflow-hidden border-t border-brand/10 bg-paper">
+  <div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand/10 blur-3xl"></div>
+  <div class="container-page flex flex-col gap-6 py-8">
+    <div class="grid w-full grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-8">
+      {navLinks.length > 0 && (
+        <nav class="min-w-0" aria-label={t('footer.navAria')}>
+          {t('footer.menu') && <p class="eyebrow mb-2">{t('footer.menu')}</p>}
+          <ul class="flex flex-col gap-1.5 text-ink/90">
+            {navLinks.map((link) => (
+              <li class="min-w-0">
+                <a href={link.href} class="hover:text-brand">{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+      {partners.length > 0 && (
+        <div class="min-w-0">
+          {t('partners.title') && <p class="eyebrow mb-2">{t('partners.title')}</p>}
+          <ul class="flex flex-col gap-1.5">
+            {partners.map((partner) => (
+              <li class="grid grid-cols-[0.375rem_minmax(0,1fr)] items-start gap-x-2.5">
+                <span class="mt-[0.55em] h-1.5 w-1.5 rounded-full bg-brand" aria-hidden="true"></span>
+                <span class="min-w-0">{partner.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {instagramUrl && (
+        <div class="min-w-0">
+          {t('footer.social') && <p class="eyebrow mb-2">{t('footer.social')}</p>}
+          <InstagramButton href={instagramUrl} label={t('cta.instagram')} padded={false} />
+        </div>
+      )}
+    </div>
+    {logoMark && (
+      <div class="flex justify-end">
+        <img
+          src={logoMark}
+          alt={t('brand.logoAlt') || brandName}
+          class="h-16 w-16 rounded-full object-contain sm:h-20 sm:w-20"
+        />
+      </div>
+    )}
+  </div>
+  <div class="container-page flex flex-col gap-1 border-t border-brand/10 py-4 text-sm text-mist sm:flex-row sm:items-center sm:justify-between">
+    <p>{t('footer.copyright', { year, name: brandName, rights: t('footer.rights') })}</p>
+    {t('footer.domain') && <p>{t('footer.domain')}</p>}
+  </div>
+</footer>

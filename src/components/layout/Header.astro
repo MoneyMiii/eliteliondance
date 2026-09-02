@@ -1,0 +1,120 @@
+---
+import LanguageSwitcher from '../common/LanguageSwitcher';
+import SiteMenu from './SiteMenu';
+import type { Locale } from '../../lib/locale';
+import { createT } from '../../lib/i18n';
+
+interface Props {
+  locale: Locale;
+  instagramUrl: string;
+  currentPath: string;
+  logo?: string;
+  logoMark?: string;
+}
+
+const { locale, instagramUrl, currentPath, logo, logoMark } = Astro.props;
+const labels = Astro.locals.labels ?? {};
+const navLinks = Astro.locals.navLinks ?? [];
+const t = createT(labels, locale);
+const brandName = t('brand.name') || Astro.locals.settings?.brandName || '';
+const homeHref = navLinks.find((link) => link.href === '/')?.href || navLinks[0]?.href || '/';
+const isHome = currentPath === '/' || currentPath === homeHref;
+---
+
+<header
+  id="site-header"
+  class="fixed inset-x-0 top-0 z-50 border-b border-brand/10 bg-paper/95 backdrop-blur-md"
+>
+  <div class="container-page flex h-[4.6rem] items-center justify-between gap-4">
+    <div class="flex min-w-0 items-center gap-2 sm:gap-3">
+      {!isHome && (
+        <a
+          href={`${homeHref}${homeHref.includes('?') ? '&' : '?'}retour=1`}
+          class="icon-btn"
+          aria-label={t('nav.backHome')}
+        >
+          <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none stroke-current stroke-[2.4]" aria-hidden="true">
+            <path d="M19 12H6.5" stroke-linecap="round"></path>
+            <path d="M11.5 6.5 5.5 12l6 5.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </a>
+      )}
+      <a href={homeHref} class="flex shrink-0 items-center" aria-label={brandName}>
+        {logo ? (
+          <img
+            src={logo}
+            alt={t('brand.logoAlt') || brandName}
+            class="h-12 w-auto sm:h-14"
+            width="240"
+            height="80"
+          />
+        ) : (
+          <span class="font-display text-lg uppercase tracking-wide">{brandName}</span>
+        )}
+      </a>
+    </div>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <LanguageSwitcher locale={locale} labels={labels} client:load />
+      <SiteMenu labels={labels} navLinks={navLinks} currentPath={currentPath} instagramUrl={instagramUrl} logoMark={logoMark} client:load />
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  (() => {
+    const header = document.getElementById('site-header');
+    if (!header) return;
+
+    let lastY = window.scrollY || document.documentElement.scrollTop;
+    let hidden = false;
+    let ticking = false;
+
+    const yPos = () => window.scrollY || document.documentElement.scrollTop || 0;
+
+    const apply = (nextHidden) => {
+      if (hidden === nextHidden) return;
+      hidden = nextHidden;
+      header.toggleAttribute('data-hidden', hidden);
+    };
+
+    const updateFromY = (y) => {
+      if (document.getElementById('site-nav')) {
+        apply(false);
+        lastY = y;
+        return;
+      }
+
+      if (y < 80) {
+        apply(false);
+        lastY = y;
+        return;
+      }
+
+      const diff = y - lastY;
+      if (diff > 4) apply(true);
+      else if (diff < -4) apply(false);
+      lastY = y;
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        updateFromY(yPos());
+      });
+    };
+
+    const onWheel = (event) => {
+      if (document.getElementById('site-nav')) return;
+      if (event.deltaY > 2 && yPos() > 80) apply(true);
+      else if (event.deltaY < -2) apply(false);
+    };
+
+    header.addEventListener('focusin', () => apply(false));
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('touchmove', onScroll, { passive: true });
+  })();
+</script>

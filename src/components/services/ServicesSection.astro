@@ -1,0 +1,40 @@
+---
+import type { Locale } from '../../lib/locale';
+import type { EditorialBlock, ServiceItem } from '../../lib/types';
+import SectionTitle from '../common/SectionTitle.astro';
+import ServiceCard from './ServiceCard.astro';
+import Button from '../common/Button.astro';
+
+interface Props {
+  locale: Locale;
+  content?: EditorialBlock;
+  services: ServiceItem[];
+}
+
+const { content, services } = Astro.props;
+---
+
+<section id={content?.anchor} class:list={['container-page section-y', content?.anchor && 'anchor-offset']}>
+  {(content?.title || content?.subtitle) && (
+    <div class="block-gap">
+      <SectionTitle
+        eyebrow={content?.subtitle}
+        title={content?.title || ''}
+      />
+    </div>
+  )}
+  {
+    services.length > 0 && (
+      <div class="grid gap-5 sm:grid-cols-2">
+        {services.map((service) => (
+          <ServiceCard icon={service.icon} title={service.title} description={service.description} />
+        ))}
+      </div>
+    )
+  }
+  {content?.ctaLabel && content?.ctaUrl && (
+    <div class="mt-10 flex justify-center">
+      <Button href={content.ctaUrl}>{content.ctaLabel}</Button>
+    </div>
+  )}
+</section>

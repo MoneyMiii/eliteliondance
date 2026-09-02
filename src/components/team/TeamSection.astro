@@ -1,0 +1,47 @@
+---
+import type { Locale } from '../../lib/locale';
+import { createT } from '../../lib/i18n';
+import type { EditorialBlock, TeamMember } from '../../lib/types';
+import SectionTitle from '../common/SectionTitle.astro';
+import TeamCarousel from './TeamCarousel';
+import EmptyState from '../common/EmptyState.astro';
+import Button from '../common/Button.astro';
+
+interface Props {
+  locale: Locale;
+  members: TeamMember[];
+  content?: EditorialBlock;
+  logoMark?: string;
+}
+
+const { members, content, logoMark } = Astro.props;
+const t = createT(Astro.locals.labels, Astro.locals.locale);
+const labels = Astro.locals.labels ?? {};
+---
+
+<section id={content?.anchor} class:list={['section-y', content?.anchor && 'anchor-offset']}>
+  {(content?.title || content?.subtitle) && (
+    <div class="container-page block-gap">
+      <SectionTitle
+        eyebrow={content?.subtitle}
+        title={content?.title || ''}
+      />
+    </div>
+  )}
+  {members.length ? (
+    <div class="container-page">
+      <TeamCarousel labels={labels} members={members} logoMark={logoMark} client:load />
+    </div>
+  ) : (
+    t('empty.team') && (
+      <div class="container-page">
+        <EmptyState message={t('empty.team')} />
+      </div>
+    )
+  )}
+  {content?.ctaLabel && content?.ctaUrl && (
+    <div class="container-page mt-10 flex justify-center">
+      <Button href={content.ctaUrl}>{content.ctaLabel}</Button>
+    </div>
+  )}
+</section>

@@ -1,0 +1,20 @@
+---
+import { distinctText } from '../../lib/format';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  align?: 'left' | 'center';
+}
+
+const { eyebrow, title, subtitle, align = 'left' } = Astro.props;
+const shownEyebrow = distinctText(eyebrow, title);
+const shownSubtitle = distinctText(subtitle, title, shownEyebrow);
+---
+
+<header class:list={['max-w-4xl', align === 'center' && 'mx-auto text-center']}>
+  {shownEyebrow && <p class="eyebrow mb-4">{shownEyebrow}</p>}
+  <h2 class="section-title">{title}</h2>
+  {shownSubtitle && <p class="mt-5 max-w-2xl text-lg text-mist">{shownSubtitle}</p>}
+</header>

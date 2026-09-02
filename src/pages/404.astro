@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/common/Button.astro';
+import PageHeading from '../components/common/PageHeading.astro';
+import { getLayoutData } from '../lib/api';
+import { createT } from '../lib/i18n';
+import { getRequestLocale } from '../lib/request-locale';
+import type { Partner } from '../lib/types';
+
+const locale = getRequestLocale(Astro.cookies);
+const t = createT(Astro.locals.labels, locale);
+const homeHref = Astro.locals.navLinks.find((link) => link.href === '/')?.href || Astro.locals.navLinks[0]?.href || '/';
+let partners: Partner[] = [];
+let instagramUrl = '';
+if (Astro.locals.cmsAvailable) {
+  const layout = await getLayoutData(locale);
+  if (!layout.ok) {
+    Astro.locals.cmsAvailable = false;
+  } else {
+    partners = layout.data.partners;
+    instagramUrl = layout.data.settings.instagramUrl;
+  }
+}
+---
+
+<BaseLayout locale={locale} path="/404" title={t('notFound.code')} instagramUrl={instagramUrl} partners={partners}>
+  <section class="container-page page-y flex min-h-[70vh] flex-col items-start justify-center">
+    <PageHeading kicker={t('notFound.code')} title={t('notFound.title')} />
+    <div class="mt-(--space-block)">
+      <Button href={homeHref}>{t('notFound.back')}</Button>
+    </div>
+  </section>
+</BaseLayout>

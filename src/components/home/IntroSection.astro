@@ -1,0 +1,27 @@
+---
+import type { EditorialBlock } from '../../lib/types';
+import type { Locale } from '../../lib/locale';
+import { sanitizeHtml } from '../../lib/localize';
+import { distinctText } from '../../lib/format';
+
+interface Props {
+  locale: Locale;
+  content?: EditorialBlock;
+}
+
+const { content } = Astro.props;
+const title = content?.title || '';
+const kicker = distinctText(content?.subtitle, title);
+---
+
+<section class="container-page section-y grid items-center gap-10 lg:grid-cols-2">
+  <div>
+    {kicker && <p class="eyebrow">{kicker}</p>}
+    {title && <h2 class:list={['section-title', kicker && 'mt-4']}>{title}</h2>}
+  </div>
+  {content?.content && (
+    <div class="prose-eld text-lg">
+      <div set:html={sanitizeHtml(content.content)} />
+    </div>
+  )}
+</section>

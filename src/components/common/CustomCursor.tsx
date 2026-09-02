@@ -94,7 +94,7 @@ export default function CustomCursor({ labels }: Props) {
 
   return (
     <div
-      className="pointer-events-none fixed top-0 left-0 z-[9999] touch:hidden"
+      className="pointer-events-none fixed top-0 left-0 z-[9999]"
       style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
       aria-hidden="true"
     >

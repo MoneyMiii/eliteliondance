@@ -10,18 +10,21 @@ import {
   useRef,
   useState,
   type KeyboardEvent,
-  type PointerEvent as ReactPointerEvent,
   type ReactElement,
   type ReactNode,
   type TransitionEvent,
 } from 'react';
-import { t, type Labels } from '../../lib/i18n';
+import { carouselTrack } from '../../lib/carousel-track';
+import { useIsComputer } from '../../lib/pointer';
+import { useHorizontalPager } from '../../lib/use-horizontal-pager';
+import ArrowIcon from './ArrowIcon';
+import CarouselDots from './CarouselDots';
+import type { Labels } from '../../lib/i18n';
 
 const GAP_PX = 20;
 const AUTOPLAY_MS = 3000;
-const SWIPE_PX = 48;
-const WHEEL_PX = 36;
-const WHEEL_IDLE_MS = 280;
+const TRANSITION_MS = 650;
+const DESKTOP_MQ = '(min-width: 1024px)';
 
 interface Props {
   labels: Labels;
@@ -31,19 +34,14 @@ interface Props {
   prevLabel: string;
   nextLabel: string;
   goToLabel?: string;
-  showCounter?: boolean;
   paused?: boolean;
   align?: 'stretch' | 'start';
   children: ReactNode;
 }
 
-const DESKTOP_MQ = '(min-width: 1024px)';
-
 function visibleForViewport(desktopCount: number, mobileCount = 1) {
-  const desktop = Math.max(1, desktopCount);
-  const mobile = Math.max(1, mobileCount);
-  if (typeof window === 'undefined') return mobile;
-  return window.matchMedia(DESKTOP_MQ).matches ? desktop : mobile;
+  if (typeof window === 'undefined') return Math.max(1, mobileCount);
+  return window.matchMedia(DESKTOP_MQ).matches ? Math.max(1, desktopCount) : Math.max(1, mobileCount);
 }
 
 function toSlides(children: ReactNode): ReactElement[] {
@@ -57,8 +55,7 @@ export default function Carousel({
   ariaLabel,
   prevLabel,
   nextLabel,
-  goToLabel,
-  showCounter = false,
+  goToLabel = 'carousel.goTo',
   paused = false,
   align = 'stretch',
   children,
@@ -67,168 +64,169 @@ export default function Carousel({
   const count = slides.length;
   const labelId = useId();
   const viewportRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
   const animatingRef = useRef(false);
-  const pointerIdRef = useRef<number | null>(null);
-  const pointerStartXRef = useRef(0);
-  const wheelAccRef = useRef(0);
-  const wheelIdleRef = useRef(0);
+  const hoveredRef = useRef(false);
+  const wrapTimerRef = useRef(0);
 
+  const isComputer = useIsComputer();
   const [visible, setVisible] = useState(() => visibleForViewport(visibleCount, mobileCount));
   const [offset, setOffset] = useState(0);
   const [animate, setAnimate] = useState(false);
-  const [hovered, setHovered] = useState(false);
 
-  const looping = count > 1;
-  const centerOffset = Math.floor(visible / 2);
-  const cloneCount = looping ? visible : 0;
-  const baseOffset = looping ? cloneCount - centerOffset : 0;
+  const track = useMemo(() => carouselTrack(count, visible), [count, visible]);
+  const { looping, cloneCount, centerOffset, baseOffset, trackLength, maxOffset, slideAt, realIndex, wrapOffset, shortestDelta } =
+    track;
+  const index = realIndex(offset);
   const edgePad = visible > 1 ? GAP_PX / 2 : 0;
-  const centerTrack = offset + centerOffset;
-  const realIndex = looping ? (((centerTrack - cloneCount) % count) + count) % count : 0;
-  const trackLength = looping ? count + cloneCount * 2 : Math.max(count, 1);
-  const controls = looping;
+  offsetRef.current = offset;
+  const wrapOffsetRef = useRef(wrapOffset);
+  wrapOffsetRef.current = wrapOffset;
 
   useLayoutEffect(() => {
-    const syncVisible = () => {
-      const nextVisible = visibleForViewport(visibleCount, mobileCount);
-      setVisible((current) => (current === nextVisible ? current : nextVisible));
+    const sync = () => {
+      const next = visibleForViewport(visibleCount, mobileCount);
+      setVisible((current) => (current === next ? current : next));
     };
-
-    syncVisible();
+    sync();
     const desktop = window.matchMedia(DESKTOP_MQ);
-    desktop.addEventListener('change', syncVisible);
-    return () => desktop.removeEventListener('change', syncVisible);
+    desktop.addEventListener('change', sync);
+    return () => desktop.removeEventListener('change', sync);
   }, [mobileCount, visibleCount]);
 
   useLayoutEffect(() => {
     animatingRef.current = false;
     setAnimate(false);
-    setOffset(looping ? cloneCount - Math.floor(visible / 2) : 0);
+    const start = looping ? cloneCount - Math.floor(visible / 2) : 0;
+    offsetRef.current = start;
+    setOffset(start);
   }, [cloneCount, looping, visible]);
 
-  useEffect(() => {
-    if (animate) return;
-    const frame = requestAnimationFrame(() => setAnimate(true));
-    return () => cancelAnimationFrame(frame);
-  }, [animate, offset]);
+  const snapTo = (next: number) => {
+    window.clearTimeout(wrapTimerRef.current);
+    animatingRef.current = false;
+    setAnimate(false);
+    offsetRef.current = next;
+    setOffset(next);
+  };
 
-  const goTo = useCallback(
-    (next: number) => {
-      if (!looping || animatingRef.current) return;
-      animatingRef.current = true;
-      setAnimate(true);
-      setOffset(next);
-    },
-    [looping],
-  );
-
-  const goPrev = useCallback(() => goTo(offset - 1), [goTo, offset]);
-  const goNext = useCallback(() => goTo(offset + 1), [goTo, offset]);
-  const goToSlide = useCallback(
-    (index: number) => {
-      if (!looping) return;
-      const target = ((index % count) + count) % count;
-      if (target === realIndex) return;
+  const wrapIfNeeded = () => {
+    const wrapped = wrapOffsetRef.current(offsetRef.current);
+    if (wrapped === offsetRef.current) {
       animatingRef.current = false;
-      setAnimate(false);
-      setOffset(baseOffset + target);
-    },
-    [baseOffset, count, looping, realIndex],
-  );
-  const goPrevRef = useRef(goPrev);
-  const goNextRef = useRef(goNext);
-  goPrevRef.current = goPrev;
-  goNextRef.current = goNext;
+      return;
+    }
+    snapTo(wrapped);
+  };
 
-  useEffect(() => {
-    if (!looping || hovered || paused) return;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced) return;
+  const animateTo = (next: number) => {
+    animatingRef.current = true;
+    setAnimate(true);
+    offsetRef.current = next;
+    setOffset(next);
+    window.clearTimeout(wrapTimerRef.current);
+    wrapTimerRef.current = window.setTimeout(wrapIfNeeded, TRANSITION_MS);
+  };
 
-    const id = window.setInterval(() => {
-      if (animatingRef.current) return;
-      goNextRef.current();
-    }, AUTOPLAY_MS);
+  const afterSnap = (run: () => void) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
+  };
 
-    return () => window.clearInterval(id);
-  }, [hovered, looping, paused]);
-
-  useEffect(() => {
-    const root = viewportRef.current;
-    if (!root || !looping) return;
-
-    const onWheel = (event: WheelEvent) => {
-      const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerWidth : 1;
-      const dx = event.deltaX * scale;
-      const dy = event.deltaY * scale;
-      if (Math.abs(dx) < 4 || Math.abs(dx) < Math.abs(dy)) {
-        wheelAccRef.current = 0;
+  const step = useCallback(
+    (delta: number) => {
+      if (!looping || !delta) return;
+      const current = offsetRef.current;
+      const from = wrapOffset(current);
+      const go = () => animateTo(from + delta);
+      if (from !== current) {
+        snapTo(from);
+        afterSnap(go);
         return;
       }
+      go();
+    },
+    [looping, wrapOffset],
+  );
 
-      event.preventDefault();
-      if (animatingRef.current) return;
+  const goToIndex = useCallback(
+    (slideIndex: number) => {
+      if (!looping) return;
+      const target = ((slideIndex % count) + count) % count;
+      const current = offsetRef.current;
+      const from = wrapOffset(current);
+      const delta = shortestDelta(realIndex(from), target);
+      if (!delta) {
+        if (from !== current) snapTo(from);
+        return;
+      }
+      const dest = from + delta;
+      const go = () => {
+        if (dest < 0 || dest > maxOffset) {
+          snapTo(baseOffset + target);
+          return;
+        }
+        animateTo(dest);
+      };
+      if (from !== current) {
+        snapTo(from);
+        afterSnap(go);
+        return;
+      }
+      go();
+    },
+    [baseOffset, count, looping, maxOffset, realIndex, shortestDelta, wrapOffset],
+  );
 
-      wheelAccRef.current += dx;
-      window.clearTimeout(wheelIdleRef.current);
-      wheelIdleRef.current = window.setTimeout(() => {
-        wheelAccRef.current = 0;
-      }, WHEEL_IDLE_MS);
+  useHorizontalPager(viewportRef, step, { enabled: looping });
 
-      if (Math.abs(wheelAccRef.current) < WHEEL_PX) return;
-      const goForward = wheelAccRef.current > 0;
-      wheelAccRef.current = 0;
-      if (goForward) goNextRef.current();
-      else goPrevRef.current();
+  useEffect(() => () => window.clearTimeout(wrapTimerRef.current), []);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const enter = () => {
+      hoveredRef.current = true;
+    };
+    const leave = () => {
+      hoveredRef.current = false;
     };
 
-    root.addEventListener('wheel', onWheel, { passive: false });
+    hoveredRef.current = root.matches(':hover');
+    root.addEventListener('pointerenter', enter);
+    root.addEventListener('pointerleave', leave);
     return () => {
-      root.removeEventListener('wheel', onWheel);
-      window.clearTimeout(wheelIdleRef.current);
+      root.removeEventListener('pointerenter', enter);
+      root.removeEventListener('pointerleave', leave);
     };
-  }, [looping]);
+  }, []);
 
-  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!looping || event.button !== 0) return;
-    pointerIdRef.current = event.pointerId;
-    pointerStartXRef.current = event.clientX;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setHovered(true);
-  };
-
-  const onPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (pointerIdRef.current !== event.pointerId) return;
-    pointerIdRef.current = null;
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-    const dx = event.clientX - pointerStartXRef.current;
-    if (Math.abs(dx) < SWIPE_PX) return;
-    if (dx < 0) goNext();
-    else goPrev();
-  };
+  useEffect(() => {
+    if (!looping || paused || !isComputer) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const id = window.setInterval(() => {
+      if (hoveredRef.current || animatingRef.current) return;
+      step(1);
+    }, AUTOPLAY_MS);
+    return () => window.clearInterval(id);
+  }, [isComputer, looping, paused, step]);
 
   const onTrackTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
-    animatingRef.current = false;
-    if (!looping) return;
-    if (offset >= baseOffset + count) {
-      setAnimate(false);
-      setOffset(offset - count);
-    } else if (offset < baseOffset) {
-      setAnimate(false);
-      setOffset(offset + count);
-    }
+    window.clearTimeout(wrapTimerRef.current);
+    wrapIfNeeded();
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'ArrowRight') {
       event.preventDefault();
-      goNext();
+      step(1);
     } else if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      goPrev();
+      step(-1);
     }
   };
 
@@ -236,10 +234,9 @@ export default function Carousel({
 
   return (
     <div
+      ref={rootRef}
       className="relative w-full min-w-0 max-w-full overflow-hidden isolate"
       aria-labelledby={labelId}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       <p id={labelId} className="sr-only">
         {ariaLabel}
@@ -248,12 +245,9 @@ export default function Carousel({
       <div
         ref={viewportRef}
         className="w-full min-w-0 touch-pan-y overflow-hidden outline-none"
-        data-cursor="drag"
-        tabIndex={controls ? 0 : undefined}
+        data-carousel=""
+        tabIndex={looping ? 0 : undefined}
         onKeyDown={onKeyDown}
-        onPointerDown={onPointerDown}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
       >
         <div
           className={`flex w-full min-w-0 ${align === 'start' ? 'items-start' : 'items-stretch'}`}
@@ -263,14 +257,14 @@ export default function Carousel({
           }}
           onTransitionEnd={onTrackTransitionEnd}
         >
-          {Array.from({ length: trackLength }, (_, index) => {
-            const slideIndex = looping ? (((index - cloneCount) % count) + count) % count : index;
+          {Array.from({ length: trackLength }, (_, trackIndex) => {
+            const slideIndex = slideAt(trackIndex);
             const slide = slides[slideIndex];
-            const isCenter = index === offset + centerOffset;
-            const offscreen = index < offset || index >= offset + visible;
+            const isCenter = trackIndex === offset + centerOffset;
+            const offscreen = trackIndex < offset || trackIndex >= offset + visible;
             return (
               <div
-                key={`${index}-${slideIndex}`}
+                key={`${trackIndex}-${slideIndex}`}
                 className={`box-border min-w-0 shrink-0 grow-0 overflow-hidden transition-opacity duration-500 ${
                   visible > 1 && !isCenter ? 'opacity-55' : 'opacity-100'
                 }`}
@@ -283,73 +277,28 @@ export default function Carousel({
                 }}
                 aria-hidden={offscreen || undefined}
                 data-active={isCenter || undefined}
+                data-carousel-slide=""
+                data-cursor={visible > 1 && !offscreen ? 'drag' : undefined}
               >
-                {cloneElement(slide, { key: `${index}-${slideIndex}` })}
+                {cloneElement(slide, { key: `${trackIndex}-${slideIndex}` })}
               </div>
             );
           })}
         </div>
       </div>
 
-      {controls && (
+      {looping && (
         <>
-          <button
-            type="button"
-            className="icon-btn absolute left-2 top-1/2 z-10 -translate-y-1/2 sm:left-3"
-            aria-label={prevLabel}
-            onClick={goPrev}
-          >
+          <button type="button" className="icon-btn absolute left-2 top-1/2 z-10 -translate-y-1/2 sm:left-3" aria-label={prevLabel} onClick={() => step(-1)}>
             <ArrowIcon className="rotate-180" />
           </button>
-          <button
-            type="button"
-            className="icon-btn absolute right-2 top-1/2 z-10 -translate-y-1/2 sm:right-3"
-            aria-label={nextLabel}
-            onClick={goNext}
-          >
+          <button type="button" className="icon-btn absolute right-2 top-1/2 z-10 -translate-y-1/2 sm:right-3" aria-label={nextLabel} onClick={() => step(1)}>
             <ArrowIcon />
           </button>
         </>
       )}
 
-      {count > 1 && (
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-1.5" role="tablist" aria-label={t(labels, 'carousel.dots')}>
-          {slides.map((slide, index) => {
-            const selected = realIndex === index;
-            return (
-              <button
-                key={slide.key ?? index}
-                type="button"
-                role="tab"
-                aria-selected={selected}
-                aria-label={t(labels, goToLabel || 'carousel.goTo', { index: index + 1 })}
-                className="group inline-flex h-8 w-8 items-center justify-center"
-                onClick={() => goToSlide(index)}
-              >
-                <span
-                  className={`block h-1.5 rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                    selected ? 'w-7 bg-brand' : 'w-1.5 bg-brand/25 group-hover:bg-brand/50'
-                  }`}
-                />
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {showCounter && count > 1 && (
-        <p className="mt-4 text-sm tracking-wide text-mist" aria-live="polite">
-          {t(labels, 'gallery.counter', { current: realIndex + 1, total: count })}
-        </p>
-      )}
+      <CarouselDots labels={labels} count={count} selected={index} goToLabel={goToLabel} onSelect={goToIndex} />
     </div>
-  );
-}
-
-function ArrowIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={`h-4 w-4 fill-none stroke-current stroke-[2.4] ${className}`} aria-hidden="true">
-      <path d="M9 5.5 15.5 12 9 18.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }

@@ -64,10 +64,11 @@ function TeamCard({
             src={member.photo}
             alt=""
             draggable={false}
+            data-cursor="drag"
             className="h-full w-full object-cover"
           />
         ) : logoMark ? (
-          <img src={logoMark} alt="" draggable={false} className="h-full w-full object-contain p-6" />
+          <img src={logoMark} alt="" draggable={false} data-cursor="drag" className="h-full w-full object-contain p-6" />
         ) : null}
       </div>
       <div className="flex min-w-0 flex-col p-3 sm:p-4">

@@ -12,8 +12,8 @@ function modeFromElement(target: Element | null): 'default' | 'hover' | 'drag' |
   const node = target as HTMLElement | null;
   if (!node) return 'default';
   if (node.closest(NATIVE_CURSOR)) return 'native';
-  if (node.closest('[data-cursor="drag"]')) return 'drag';
   if (node.closest('a, button, [role="button"], label, summary')) return 'hover';
+  if (node.closest('[data-cursor="drag"]')) return 'drag';
   return 'default';
 }
 
@@ -24,15 +24,30 @@ export default function CustomCursor({ labels }: Props) {
   const [mode, setMode] = useState<'default' | 'hover' | 'drag' | 'native'>('default');
 
   useEffect(() => {
-    const computer = window.matchMedia(COMPUTER_MQ).matches;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!computer || reduced) return;
+    const computer = window.matchMedia(COMPUTER_MQ);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    setEnabled(true);
+    const disable = () => {
+      setEnabled(false);
+      setVisible(false);
+      document.documentElement.classList.remove('has-custom-cursor', 'has-native-cursor');
+    };
+
+    const allowed = () => computer.matches && !reduced.matches;
+
+    const sync = () => {
+      if (allowed()) setEnabled(true);
+      else disable();
+    };
+
+    sync();
+    computer.addEventListener('change', sync);
+    reduced.addEventListener('change', sync);
 
     const point = { x: 0, y: 0, ready: false };
 
     const apply = (x: number, y: number) => {
+      if (!allowed()) return;
       const next = modeFromElement(document.elementFromPoint(x, y));
       const native = next === 'native';
       document.documentElement.classList.toggle('has-native-cursor', native);
@@ -41,6 +56,7 @@ export default function CustomCursor({ labels }: Props) {
     };
 
     const onMove = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse' || !allowed()) return;
       point.x = event.clientX;
       point.y = event.clientY;
       point.ready = true;
@@ -64,7 +80,9 @@ export default function CustomCursor({ labels }: Props) {
     window.addEventListener('wheel', onStay, { passive: true, capture: true });
     document.documentElement.addEventListener('mouseleave', onLeave);
     return () => {
-      document.documentElement.classList.remove('has-custom-cursor', 'has-native-cursor');
+      disable();
+      computer.removeEventListener('change', sync);
+      reduced.removeEventListener('change', sync);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('scroll', onStay, true);
       window.removeEventListener('wheel', onStay, true);
@@ -76,7 +94,7 @@ export default function CustomCursor({ labels }: Props) {
 
   return (
     <div
-      className="pointer-events-none fixed top-0 left-0 z-[9999]"
+      className="pointer-events-none fixed top-0 left-0 z-[9999] touch:hidden"
       style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
       aria-hidden="true"
     >

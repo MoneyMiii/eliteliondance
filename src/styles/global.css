@@ -65,6 +65,13 @@
     cursor: text !important;
   }
 
+  @media (pointer: coarse), (hover: none) {
+    html.has-custom-cursor,
+    html.has-custom-cursor * {
+      cursor: auto !important;
+    }
+  }
+
   body {
     @apply bg-paper text-ink font-body antialiased;
     background-image:

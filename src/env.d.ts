@@ -3,6 +3,8 @@
 interface ImportMetaEnv {
   readonly PUBLIC_POCKETBASE_URL?: string;
   readonly RESEND_API_KEY?: string;
+  readonly CONTACT_FROM_EMAIL?: string;
+  readonly CONTACT_TO_EMAIL?: string;
   readonly CONTACT_RATE_LIMIT_WINDOW_MS?: string;
   readonly CONTACT_RATE_LIMIT_MAX?: string;
   readonly CMS_TIMEOUT_MS?: string;

@@ -24,8 +24,8 @@ On n’envoie **pas** « depuis l’adresse du visiteur » : les anti-spam refus
 
 | Champ mail | Valeur | Source |
 |---|---|---|
-| Expéditeur (`from`) | ex. `noreply@eliteliondance.fr` | `.env` → `CONTACT_FROM_EMAIL` |
-| Destinataire (`to`) | boîte réelle de l’équipe | PocketBase → `settings.contactEmail` |
+| Expéditeur (`from`) | `onboarding@resend.dev` tant que le domaine n’est pas vérifié | `.env` → `CONTACT_FROM_EMAIL` |
+| Destinataire (`to`) | `min.sun@efrei.net` | `.env` → `CONTACT_TO_EMAIL`, sinon PocketBase `settings.contactEmail` |
 | Répondre à (`reply_to`) | e-mail saisi dans le formulaire | le visiteur |
 | Sujet | `Contact : {nom}` | libellé `form.emailSubject` |
 | Corps | nom, prénom, e-mail, téléphone, message | le formulaire |
@@ -41,10 +41,13 @@ Un clic sur **Répondre** dans la messagerie ouvre un brouillon vers le visiteur
 
 ```env
 RESEND_API_KEY=re_xxxxxxxx
-CONTACT_FROM_EMAIL=noreply@eliteliondance.fr
+CONTACT_FROM_EMAIL=Elite Lion Dance <onboarding@resend.dev>
+CONTACT_TO_EMAIL=min.sun@efrei.net
 ```
 
-`CONTACT_FROM_EMAIL` doit être une adresse **du domaine vérifié**. `noreply@…` convient. Ce n’est pas forcément la boîte que l’équipe consulte au quotidien.
+Sur **Render**, les mêmes variables vont dans **Environment**. Sans `RESEND_API_KEY`, le formulaire en production échoue.
+
+Sans domaine acheté, laisse `CONTACT_FROM_EMAIL` sur `onboarding@resend.dev`. Resend n’accepte alors que **l’e-mail du compte Resend** (`min.sun@efrei.net`). Une fois `eliteliondance.fr` vérifié, passe `CONTACT_FROM_EMAIL` à `noreply@eliteliondance.fr`.
 
 ## 2. Adresse de l’équipe dans PocketBase
 
@@ -52,7 +55,7 @@ Collection `settings`, **une** ligne :
 
 | Champ | Valeur |
 |---|---|
-| `contactEmail` | l’adresse qui doit **recevoir** les demandes |
+| `contactEmail` | **ta** boîte mail (celle du compte Resend, tant qu’il n’y a pas de domaine) |
 
 Cette valeur n’apparaît nulle part sur le site. Seul le serveur Astro la lit.
 
@@ -60,12 +63,10 @@ Cette valeur n’apparaît nulle part sur le site. Seul le serveur Astro la lit.
 
 | Situation | Résultat |
 |---|---|
-| Resend + destinataire OK | Mail envoyé, le visiteur voit le message de succès |
-| Local, pas de clé Resend | La demande est **journalisée** dans les logs du serveur, succès affiché quand même (pour développer sans compte mail) |
-| Production, pas de destinataire PocketBase | Erreur `503` (`unconfigured`) |
+| Resend + destinataire OK | Mail envoyé vers `min.sun@efrei.net`, succès affiché |
+| Local, pas de clé Resend | Demande journalisée, succès affiché (pour coder sans clé) |
+| Production, pas de `RESEND_API_KEY` | Erreur `503` (`unconfigured`) |
 | Resend refuse l’envoi | Erreur `502` (`email_failed`) |
-
-Sans DNS Resend valides, même une clé API produira un échec d’envoi.
 
 ## 4. Protections déjà dans le code
 
@@ -76,11 +77,10 @@ Sans DNS Resend valides, même une clé API produira un échec d’envoi.
 ## 5. Checklist
 
 ```text
-[ ] Domaine vérifié chez Resend
-[ ] RESEND_API_KEY dans le .env du serveur Astro
-[ ] CONTACT_FROM_EMAIL = une adresse @eliteliondance.fr
-[ ] settings.contactEmail renseigné
-[ ] Test réel : envoyer le formulaire, ouvrir la boîte équipe, cliquer Répondre
+[ ] RESEND_API_KEY sur Render (et en local si tu testes l’envoi)
+[ ] CONTACT_FROM_EMAIL = Elite Lion Dance <onboarding@resend.dev>
+[ ] CONTACT_TO_EMAIL = min.sun@efrei.net
+[ ] Test réel : formulaire → boîte Efrei (et spams) → Répondre = le visiteur
 ```
 
 Le détail de l’implémentation est dans `src/pages/api/contact.ts`.

@@ -5,6 +5,9 @@ interface ImportMetaEnv {
   readonly RESEND_API_KEY?: string;
   readonly CONTACT_RATE_LIMIT_WINDOW_MS?: string;
   readonly CONTACT_RATE_LIMIT_MAX?: string;
+  readonly CMS_TIMEOUT_MS?: string;
+  readonly CMS_CACHE_TTL_MS?: string;
+  readonly CMS_FILE_CACHE_TTL_MS?: string;
 }
 
 interface ImportMeta {

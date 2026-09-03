@@ -21,7 +21,13 @@ const { locale, home } = Astro.props;
 {home.sections.map((section) => {
   switch (section.key) {
     case 'hero':
-      return <HeroVideo locale={locale} content={home.content['home.hero']} />;
+      return (
+        <HeroVideo
+          locale={locale}
+          content={home.content['home.hero']}
+          intro={home.content['home.intro']}
+        />
+      );
     case 'intro':
       return <IntroSection locale={locale} content={home.content['home.intro']} />;
     case 'services':

@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeading from '../components/common/PageHeading.astro';
 import ContactForm from '../components/contact/ContactForm';
-import { getLayoutData, getPage, getServices } from '../lib/api';
+import { getContactServices, getLayoutData, getPage } from '../lib/api';
 import { createT } from '../lib/i18n';
 import { getRequestLocale } from '../lib/request-locale';
 import type { EditorialBlock, Partner } from '../lib/types';
@@ -17,7 +17,7 @@ let services: { id: string; title: string }[] = [];
 const [layout, heroResult, servicesResult] = await Promise.all([
   getLayoutData(locale),
   getPage('contact', locale),
-  getServices(locale),
+  getContactServices(locale),
 ]);
 if (layout.ok && heroResult.ok) {
   partners = layout.data.partners;

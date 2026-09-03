@@ -1,9 +1,21 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { t, type Labels } from '../../lib/i18n';
 import type { NavLink } from '../../lib/types';
 
 const MENU_CLOSE_MS = 520;
+const NAV_SCROLL_MS = 900;
+
+function samePageHash(href: string): string | null {
+  try {
+    const url = new URL(href, window.location.href);
+    if (url.pathname !== window.location.pathname) return null;
+    const id = decodeURIComponent(url.hash.replace(/^#/, ''));
+    return id || null;
+  } catch {
+    return href.startsWith('#') ? decodeURIComponent(href.slice(1)) || null : null;
+  }
+}
 
 interface Props {
   labels: Labels;
@@ -19,6 +31,7 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
   const [shown, setShown] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLButtonElement>(null);
+  const pendingHashRef = useRef<string | null>(null);
   const titleId = useId();
 
   useEffect(() => {
@@ -42,7 +55,7 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
   }, [open, rendered]);
 
   useEffect(() => {
-    if (!rendered) return;
+    if (!open) return;
 
     const previous = document.activeElement as HTMLElement | null;
     const header = document.getElementById('site-header');
@@ -72,7 +85,36 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
       if (header instanceof HTMLElement) header.style.paddingRight = '';
       (previous || openerRef.current)?.focus();
     };
-  }, [rendered]);
+  }, [open]);
+
+  useEffect(() => {
+    if (open) return;
+    const id = pendingHashRef.current;
+    if (!id) return;
+    pendingHashRef.current = null;
+
+    const html = document.documentElement;
+    html.setAttribute('data-nav-scrolling', '');
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', `#${id}`);
+    });
+    const timeout = window.setTimeout(() => html.removeAttribute('data-nav-scrolling'), NAV_SCROLL_MS);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timeout);
+      html.removeAttribute('data-nav-scrolling');
+    };
+  }, [open]);
+
+  function onNavClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
+    const id = samePageHash(href);
+    if (id && document.getElementById(id)) {
+      event.preventDefault();
+      pendingHashRef.current = id;
+    }
+    setOpen(false);
+  }
 
   return (
     <>
@@ -138,7 +180,7 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
                     href={link.href}
                     className={`menu-link ${currentPath === link.href ? 'text-brand' : 'text-ink hover:text-brand'}`}
                     aria-current={currentPath === link.href ? 'page' : undefined}
-                    onClick={() => setOpen(false)}
+                    onClick={(event) => onNavClick(event, link.href)}
                   >
                     {link.label}
                   </a>

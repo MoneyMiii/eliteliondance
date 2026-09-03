@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getServices, getSettings, getUiLabels } from '../../lib/api';
+import { getContactServices, getSettings, getUiLabels } from '../../lib/api';
 import { contactFieldErrors } from '../../lib/contact-validation';
 import { getRequestLocale } from '../../lib/request-locale';
 import { t } from '../../lib/i18n';
@@ -78,7 +78,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const [labelsResult, settingsResult, servicesResult] = await Promise.all([
     getUiLabels(locale),
     getSettings(),
-    getServices(locale),
+    getContactServices(locale),
   ]);
   const labels = labelsResult.ok ? labelsResult.data : {};
   const settings = settingsResult.ok ? settingsResult.data : undefined;

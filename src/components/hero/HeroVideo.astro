@@ -3,12 +3,15 @@ import Button from '../common/Button.astro';
 import type { EditorialBlock } from '../../lib/types';
 import type { Locale } from '../../lib/locale';
 import { distinctText } from '../../lib/format';
+import { sanitizeHtml } from '../../lib/localize';
+
 interface Props {
   locale: Locale;
   content?: EditorialBlock;
+  intro?: EditorialBlock;
 }
 
-const { content } = Astro.props;
+const { content, intro } = Astro.props;
 const title = content?.subtitle || content?.title || '';
 const kicker = distinctText(content?.title, title);
 const primaryCta = content?.ctaLabel;
@@ -19,6 +22,7 @@ const video = content?.video;
 const poster = content?.image;
 const hasMedia = Boolean(video || poster);
 const videoType = video?.includes('.webm') ? 'video/webm' : 'video/mp4';
+const introHtml = intro?.content?.trim();
 ---
 
 <section class="relative isolate flex min-h-[80svh] items-end overflow-hidden bg-paper">
@@ -41,7 +45,18 @@ const videoType = video?.includes('.webm') ? 'video/webm' : 'video/mp4';
   {hasMedia && <div class="overlay-scrim absolute inset-0"></div>}
   <div class="container-page relative z-10 pt-36 pb-(--space-section)">
     {kicker && <p class:list={['eyebrow reveal', hasMedia && 'on-media']}>{kicker}</p>}
-    {title && <h1 class:list={['display-title max-w-5xl reveal', kicker && 'mt-5', hasMedia && 'on-media']} style="animation-delay: 120ms">{title}</h1>}
+    {title && (
+      <h1 class:list={['display-title max-w-5xl reveal', kicker && 'mt-5', hasMedia && 'on-media']} style="animation-delay: 120ms">
+        {title}
+      </h1>
+    )}
+    {introHtml && (
+      <div
+        class:list={['prose-eld mt-6 max-w-2xl text-lg reveal', hasMedia && 'on-media']}
+        style="animation-delay: 180ms"
+        set:html={sanitizeHtml(introHtml)}
+      />
+    )}
     {(primaryCta && primaryUrl) || (secondaryCta && secondaryUrl) ? (
       <div class="mt-10 flex flex-wrap gap-3 reveal" style="animation-delay: 220ms">
         {primaryCta && primaryUrl && <Button href={primaryUrl}>{primaryCta}</Button>}

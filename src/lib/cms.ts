@@ -16,21 +16,25 @@ function logCmsError(context: string, error: unknown) {
 
 export async function fetchRecords<T>(
   collection: string,
-  options: { filter?: string; sort?: string; expand?: string } = {},
+  options: { filter?: string; sort?: string; expand?: string; skipCache?: boolean } = {},
 ): Promise<CmsList<T>> {
   const pb = getPocketBase();
   if (!pb) return { ok: false };
 
-  const key = `${collection}|${options.filter ?? ''}|${options.sort ?? ''}|${options.expand ?? ''}`;
+  const load = () =>
+    pb.collection(collection).getFullList<T>({
+      filter: options.filter,
+      sort: options.sort,
+      expand: options.expand,
+    });
 
   try {
-    const data = await recordsCache.getOrLoad(key, async () => (
-      pb.collection(collection).getFullList<T>({
-        filter: options.filter,
-        sort: options.sort,
-        expand: options.expand,
-      })
-    ));
+    if (options.skipCache) {
+      return { ok: true, data: await load() };
+    }
+
+    const key = `${collection}|${options.filter ?? ''}|${options.sort ?? ''}|${options.expand ?? ''}`;
+    const data = await recordsCache.getOrLoad(key, load);
     return { ok: true, data: data as T[] };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

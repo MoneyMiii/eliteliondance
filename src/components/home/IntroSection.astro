@@ -14,14 +14,14 @@ const title = content?.title || '';
 const kicker = distinctText(content?.subtitle, title);
 ---
 
-<section class="container-page section-y grid items-center gap-10 lg:grid-cols-2">
-  <div>
+<section class="container-page section-y">
+  <div class="max-w-3xl">
     {kicker && <p class="eyebrow">{kicker}</p>}
     {title && <h2 class:list={['section-title', kicker && 'mt-4']}>{title}</h2>}
+    {content?.content && (
+      <div class="prose-eld mt-6 text-lg">
+        <div set:html={sanitizeHtml(content.content)} />
+      </div>
+    )}
   </div>
-  {content?.content && (
-    <div class="prose-eld text-lg">
-      <div set:html={sanitizeHtml(content.content)} />
-    </div>
-  )}
 </section>

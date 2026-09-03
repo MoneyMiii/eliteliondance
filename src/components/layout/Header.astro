@@ -79,6 +79,12 @@ const isHome = currentPath === '/' || currentPath === homeHref;
     };
 
     const updateFromY = (y) => {
+      if (document.documentElement.hasAttribute('data-nav-scrolling')) {
+        apply(false);
+        lastY = y;
+        return;
+      }
+
       if (document.getElementById('site-nav')) {
         apply(false);
         lastY = y;
@@ -92,6 +98,10 @@ const isHome = currentPath === '/' || currentPath === homeHref;
       }
 
       const diff = y - lastY;
+      if (Math.abs(diff) > 80) {
+        lastY = y;
+        return;
+      }
       if (diff > 4) apply(true);
       else if (diff < -4) apply(false);
       lastY = y;

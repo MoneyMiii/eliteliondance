@@ -39,7 +39,7 @@ export type CmsData<T> = { ok: true; data: T } | { ok: false };
 
 async function loadList<T>(
   collection: string,
-  options: { filter?: string; sort?: string; expand?: string } = {},
+  options: { filter?: string; sort?: string; expand?: string; skipCache?: boolean } = {},
 ): Promise<T[] | null> {
   const records = await fetchRecords<T>(collection, options);
   return records.ok ? records.data : null;
@@ -175,10 +175,21 @@ export async function getPartners(): Promise<CmsData<Partner[]>> {
 export async function getServices(locale: Locale): Promise<CmsData<ServiceItem[]>> {
   const records = await loadList<ServiceRecord>(COLLECTIONS.services, {
     filter: 'isActive=true',
-    sort: 'displayOrder',
+    sort: 'displayOrder,title_fr',
   });
   if (!records) return { ok: false };
-  return { ok: true, data: await Promise.all(records.map((record) => toService(record, locale))) };
+  const items = await Promise.all(records.map((record) => toService(record, locale)));
+  return { ok: true, data: items.filter((item) => item.title) };
+}
+
+export async function getContactServices(locale: Locale): Promise<CmsData<ServiceItem[]>> {
+  const records = await loadList<ServiceRecord>(COLLECTIONS.services, {
+    sort: 'displayOrder,title_fr',
+    skipCache: true,
+  });
+  if (!records) return { ok: false };
+  const items = await Promise.all(records.map((record) => toService(record, locale)));
+  return { ok: true, data: items.filter((item) => item.title) };
 }
 
 export async function getPage(slug: PageSlug, locale: Locale): Promise<CmsData<EditorialBlock | undefined>> {

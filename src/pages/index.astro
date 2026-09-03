@@ -6,9 +6,10 @@ import { getRequestLocale } from '../lib/request-locale';
 import { stripHtml } from '../lib/localize';
 
 const locale = getRequestLocale(Astro.cookies);
+const settings = Astro.locals.settings;
 let home: HomeData | null = null;
-if (Astro.locals.cmsAvailable) {
-  const result = await getHomeData(locale);
+if (Astro.locals.cmsAvailable && settings) {
+  const result = await getHomeData(locale, settings);
   if (!result.ok) Astro.locals.cmsAvailable = false;
   else home = result.data;
 }
@@ -24,5 +25,5 @@ const hero = home?.content['home.hero'];
   partners={home?.partners}
   image={hero?.image}
 >
-  {home && <HomeSections locale={locale} home={home} />}
+  {home && <HomeSections home={home} />}
 </BaseLayout>

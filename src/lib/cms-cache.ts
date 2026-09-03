@@ -1,6 +1,6 @@
 type CacheEntry<T> = { expires: number; value: T };
 
-export function createTtlCache<T>(ttlMs: number) {
+function createTtlCache<T>(ttlMs: number) {
   const store = new Map<string, CacheEntry<T>>();
   const inflight = new Map<string, Promise<T>>();
 

@@ -1,11 +1,9 @@
 ---
 import type { EditorialBlock } from '../../lib/types';
-import type { Locale } from '../../lib/locale';
 import { sanitizeHtml } from '../../lib/localize';
 import { distinctText } from '../../lib/format';
 
 interface Props {
-  locale: Locale;
   content?: EditorialBlock;
 }
 

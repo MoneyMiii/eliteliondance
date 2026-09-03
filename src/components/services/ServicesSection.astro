@@ -1,12 +1,10 @@
 ---
-import type { Locale } from '../../lib/locale';
 import type { EditorialBlock, ServiceItem } from '../../lib/types';
 import SectionTitle from '../common/SectionTitle.astro';
 import ServiceCard from './ServiceCard.astro';
 import Button from '../common/Button.astro';
 
 interface Props {
-  locale: Locale;
   content?: EditorialBlock;
   services: ServiceItem[];
 }

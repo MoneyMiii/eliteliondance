@@ -17,10 +17,6 @@ export function getPocketBaseUrl(): string | undefined {
     .replace(/\/api$/i, '');
 }
 
-export function isCmsConfigured(): boolean {
-  return Boolean(getPocketBaseUrl());
-}
-
 let client: PocketBase | null | undefined;
 
 export function getPocketBase(): PocketBase | null {
@@ -28,24 +24,19 @@ export function getPocketBase(): PocketBase | null {
 
   const url = getPocketBaseUrl();
   if (!url) {
-    console.error('[cms] PUBLIC_POCKETBASE_URL manquante');
     client = null;
     return null;
   }
 
   const pb = new PocketBase(url);
   pb.autoCancellation(false);
-  pb.beforeSend = (requestUrl, options) => {
-    const headers = new Headers(options.headers);
-    return {
-      url: requestUrl,
-      options: {
-        ...options,
-        headers,
-        signal: options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      },
-    };
-  };
+  pb.beforeSend = (requestUrl, options) => ({
+    url: requestUrl,
+    options: {
+      ...options,
+      signal: options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    },
+  });
   client = pb;
   return pb;
 }

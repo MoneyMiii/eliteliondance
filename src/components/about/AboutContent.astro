@@ -1,18 +1,16 @@
 ---
-import type { Locale } from '../../lib/locale';
 import { createT } from '../../lib/i18n';
 import type { EditorialBlock } from '../../lib/types';
 import { sanitizeHtml } from '../../lib/localize';
 import PageHeading from '../common/PageHeading.astro';
 
 interface Props {
-  locale: Locale;
   hero?: EditorialBlock;
   blocks: EditorialBlock[];
 }
 
 const { hero, blocks } = Astro.props;
-const t = createT(Astro.locals.labels, Astro.locals.locale);
+const t = createT(Astro.locals.labels);
 ---
 
 <section class="container-page page-y">

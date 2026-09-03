@@ -1,12 +1,7 @@
 ---
-import type { Locale } from '../../lib/locale';
 import { cmsErrorCopy } from '../../lib/cms-error';
 
-interface Props {
-  locale: Locale;
-}
-
-const copy = cmsErrorCopy(Astro.props.locale);
+const copy = cmsErrorCopy(Astro.locals.locale);
 ---
 
 <div

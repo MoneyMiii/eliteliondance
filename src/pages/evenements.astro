@@ -2,29 +2,27 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeading from '../components/common/PageHeading.astro';
 import EventsList from '../components/events/EventsList';
-import { getEvents, getLayoutData } from '../lib/api';
+import { getEvents, getPartners } from '../lib/api';
 import { parseEventFilter } from '../lib/events';
 import { createT } from '../lib/i18n';
 import { getRequestLocale } from '../lib/request-locale';
 import type { EventItem, Partner } from '../lib/types';
 
 const locale = getRequestLocale(Astro.cookies);
-const t = createT(Astro.locals.labels, locale);
+const t = createT(Astro.locals.labels);
 const labels = Astro.locals.labels ?? {};
 const initialFilter = parseEventFilter(Astro.url.searchParams.get('filtre'));
 let events: EventItem[] = [];
 let partners: Partner[] = [];
-let instagramUrl = '';
-let logoMark: string | undefined;
+const instagramUrl = Astro.locals.settings?.instagramUrl ?? '';
+const logoMark = Astro.locals.settings?.logoMark;
 if (Astro.locals.cmsAvailable) {
-  const [eventsResult, layout] = await Promise.all([getEvents(locale), getLayoutData(locale)]);
-  if (!eventsResult.ok || !layout.ok) {
+  const [eventsResult, partnersResult] = await Promise.all([getEvents(locale), getPartners()]);
+  if (!eventsResult.ok || !partnersResult.ok) {
     Astro.locals.cmsAvailable = false;
   } else {
     events = eventsResult.data;
-    partners = layout.data.partners;
-    instagramUrl = layout.data.settings.instagramUrl;
-    logoMark = layout.data.settings.logoMark;
+    partners = partnersResult.data;
   }
 }
 ---

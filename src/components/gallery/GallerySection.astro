@@ -1,5 +1,4 @@
 ---
-import type { Locale } from '../../lib/locale';
 import { createT } from '../../lib/i18n';
 import type { EditorialBlock, GalleryItem } from '../../lib/types';
 import SectionTitle from '../common/SectionTitle.astro';
@@ -9,7 +8,6 @@ import EmptyState from '../common/EmptyState.astro';
 import Button from '../common/Button.astro';
 
 interface Props {
-  locale: Locale;
   items: GalleryItem[];
   content?: EditorialBlock;
   preview?: boolean;
@@ -18,7 +16,7 @@ interface Props {
 
 const { items, content, preview = false, heading = true } = Astro.props;
 const labels = Astro.locals.labels ?? {};
-const t = createT(labels, Astro.locals.locale);
+const t = createT(labels);
 const photos = preview ? items.slice(0, 8) : items;
 ---
 

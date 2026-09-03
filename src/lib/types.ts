@@ -1,9 +1,7 @@
 export interface PocketBaseRecord {
   id: string;
-  collectionId: string;
-  collectionName: string;
-  created: string;
-  updated: string;
+  collectionId?: string;
+  collectionName?: string;
 }
 
 export interface LocalizedFields {
@@ -83,7 +81,6 @@ export interface SettingsRecord extends PocketBaseRecord {
   logoMark?: string;
   siteUrl?: string;
   brandName?: string;
-  fromEmail?: string;
   themeColor?: string;
 }
 
@@ -120,8 +117,6 @@ export interface PageRecord extends EditorialRecord {
   slug: PageSlug | string;
 }
 
-export interface AboutSectionRecord extends EditorialRecord {}
-
 export const HOMEPAGE_SECTION_KEYS = [
   'hero',
   'intro',
@@ -140,10 +135,6 @@ export type PageSlug = (typeof PAGE_SLUGS)[number];
 
 export function isHomepageSectionKey(value: string): value is HomepageSectionKey {
   return (HOMEPAGE_SECTION_KEYS as readonly string[]).includes(value);
-}
-
-export function isPageSlug(value: string): value is PageSlug {
-  return (PAGE_SLUGS as readonly string[]).includes(value);
 }
 
 export interface EventItem {
@@ -218,6 +209,5 @@ export interface SiteSettings {
   logoMark?: string;
   siteUrl: string;
   brandName: string;
-  fromEmail?: string;
   themeColor?: string;
 }

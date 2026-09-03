@@ -1,5 +1,3 @@
-import type { Locale } from './locale';
-
 export type Labels = Record<string, string>;
 export type TVars = Record<string, string | number>;
 
@@ -12,7 +10,7 @@ export function t(labels: Labels | undefined, key: string, vars?: TVars): string
   return fill(labels?.[key] ?? '', vars);
 }
 
-export function createT(labels?: Labels, _locale?: Locale) {
+export function createT(labels?: Labels) {
   const dict = labels ?? {};
   return (key: string, vars?: TVars) => fill(dict[key] ?? '', vars);
 }

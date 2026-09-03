@@ -1,5 +1,4 @@
 ---
-import type { Locale } from '../../lib/locale';
 import { createT } from '../../lib/i18n';
 import type { EditorialBlock, EventItem } from '../../lib/types';
 import SectionTitle from '../common/SectionTitle.astro';
@@ -8,16 +7,16 @@ import EmptyState from '../common/EmptyState.astro';
 import Button from '../common/Button.astro';
 
 interface Props {
-  locale: Locale;
   events: EventItem[];
   hasMoreUpcoming?: boolean;
   content?: EditorialBlock;
   logoMark?: string;
 }
 
-const { locale, events, hasMoreUpcoming = false, content, logoMark } = Astro.props;
-const t = createT(Astro.locals.labels, Astro.locals.locale);
+const { events, hasMoreUpcoming = false, content, logoMark } = Astro.props;
+const t = createT(Astro.locals.labels);
 const labels = Astro.locals.labels ?? {};
+const locale = Astro.locals.locale;
 const moreHref = content?.ctaUrl
   ? `${content.ctaUrl}${content.ctaUrl.includes('?') ? '&' : '?'}filtre=avenir`
   : undefined;

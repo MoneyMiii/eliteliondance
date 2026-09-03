@@ -4,11 +4,6 @@ import { useLayoutEffect, useState } from 'react';
 export const COMPUTER_MQ =
   '(hover: hover) and (pointer: fine) and (not (pointer: coarse))';
 
-export function isComputer() {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia(COMPUTER_MQ).matches;
-}
-
 export function useIsComputer() {
   const [computer, setComputer] = useState(false);
 

@@ -8,28 +8,25 @@ import AboutPreview from './AboutPreview.astro';
 import TeamSection from '../team/TeamSection.astro';
 import InstagramSection from './InstagramSection.astro';
 import type { HomeData } from '../../lib/api';
-import type { Locale } from '../../lib/locale';
 
 interface Props {
-  locale: Locale;
   home: HomeData;
 }
 
-const { locale, home } = Astro.props;
+const { home } = Astro.props;
 ---
 
 {home.sections.map((section) => {
   switch (section.key) {
     case 'hero':
-      return <HeroVideo locale={locale} content={home.content['home.hero']} />;
+      return <HeroVideo content={home.content['home.hero']} />;
     case 'intro':
-      return <IntroSection locale={locale} content={home.content['home.intro']} />;
+      return <IntroSection content={home.content['home.intro']} />;
     case 'services':
-      return <ServicesSection locale={locale} content={home.content['home.services']} services={home.services} />;
+      return <ServicesSection content={home.content['home.services']} services={home.services} />;
     case 'events':
       return (
         <UpcomingEventsSection
-          locale={locale}
           events={home.upcomingEvents}
           hasMoreUpcoming={home.hasMoreUpcoming}
           content={home.content['home.events']}
@@ -37,14 +34,14 @@ const { locale, home } = Astro.props;
         />
       );
     case 'gallery':
-      return <GallerySection locale={locale} items={home.gallery} content={home.content['home.gallery']} preview />;
+      return <GallerySection items={home.gallery} content={home.content['home.gallery']} preview />;
     case 'about':
-      return <AboutPreview locale={locale} content={home.content['home.about']} />;
+      return <AboutPreview content={home.content['home.about']} />;
     case 'team':
-      return <TeamSection locale={locale} members={home.team} content={home.content['home.team']} logoMark={home.logoMark} />;
+      return <TeamSection members={home.team} content={home.content['home.team']} logoMark={home.logoMark} />;
     case 'instagram':
       return (
-        <InstagramSection locale={locale} content={home.content['home.instagram']} instagramUrl={home.instagramUrl} />
+        <InstagramSection content={home.content['home.instagram']} instagramUrl={home.instagramUrl} />
       );
     default:
       return null;

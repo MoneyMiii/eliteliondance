@@ -1,5 +1,4 @@
 ---
-import type { Locale } from '../../lib/locale';
 import { createT } from '../../lib/i18n';
 import type { EditorialBlock } from '../../lib/types';
 import Button from '../common/Button.astro';
@@ -7,12 +6,11 @@ import { sanitizeHtml } from '../../lib/localize';
 import { distinctText } from '../../lib/format';
 
 interface Props {
-  locale: Locale;
   content?: EditorialBlock;
 }
 
 const { content } = Astro.props;
-const t = createT(Astro.locals.labels, Astro.locals.locale);
+const t = createT(Astro.locals.labels);
 const title = content?.title || '';
 const kicker = distinctText(content?.subtitle, title);
 ---

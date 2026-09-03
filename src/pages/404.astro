@@ -2,23 +2,22 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/common/Button.astro';
 import PageHeading from '../components/common/PageHeading.astro';
-import { getLayoutData } from '../lib/api';
+import { getPartners } from '../lib/api';
 import { createT } from '../lib/i18n';
 import { getRequestLocale } from '../lib/request-locale';
 import type { Partner } from '../lib/types';
 
 const locale = getRequestLocale(Astro.cookies);
-const t = createT(Astro.locals.labels, locale);
+const t = createT(Astro.locals.labels);
 const homeHref = Astro.locals.navLinks.find((link) => link.href === '/')?.href || Astro.locals.navLinks[0]?.href || '/';
 let partners: Partner[] = [];
-let instagramUrl = '';
+const instagramUrl = Astro.locals.settings?.instagramUrl ?? '';
 if (Astro.locals.cmsAvailable) {
-  const layout = await getLayoutData(locale);
-  if (!layout.ok) {
+  const partnersResult = await getPartners();
+  if (!partnersResult.ok) {
     Astro.locals.cmsAvailable = false;
   } else {
-    partners = layout.data.partners;
-    instagramUrl = layout.data.settings.instagramUrl;
+    partners = partnersResult.data;
   }
 }
 ---

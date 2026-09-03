@@ -15,7 +15,7 @@ interface Props {
 const { locale, instagramUrl, currentPath, logo, logoMark } = Astro.props;
 const labels = Astro.locals.labels ?? {};
 const navLinks = Astro.locals.navLinks ?? [];
-const t = createT(labels, locale);
+const t = createT(labels);
 const brandName = t('brand.name') || Astro.locals.settings?.brandName || '';
 const homeHref = navLinks.find((link) => link.href === '/')?.href || navLinks[0]?.href || '/';
 const isHome = currentPath === '/' || currentPath === homeHref;

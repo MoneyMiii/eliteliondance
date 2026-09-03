@@ -8,7 +8,6 @@ import { getPocketBaseFileUrl } from './media';
 import { sortPriorityMembersFirst } from './team';
 import {
   isHomepageSectionKey,
-  type AboutSectionRecord,
   type EditorialBlock,
   type EditorialRecord,
   type EventItem,
@@ -34,10 +33,10 @@ import {
 } from './types';
 
 const DEFAULT_UPCOMING_LIMIT = 3;
-export const HOME_GALLERY_LIMIT = 8;
+const HOME_GALLERY_LIMIT = 8;
 
 const META = 'id,collectionId,collectionName';
-const SETTINGS_FIELDS = `${META},contactEmail,instagramUrl,upcomingEventsLimit,logo,logoMark,siteUrl,brandName,fromEmail,themeColor`;
+const SETTINGS_FIELDS = `${META},contactEmail,instagramUrl,upcomingEventsLimit,logo,logoMark,siteUrl,brandName,themeColor`;
 const UI_LABEL_FIELDS = `${META},key,title_fr,title_zh`;
 const NAV_FIELDS = `${META},title_fr,title_zh,href,displayOrder`;
 const PARTNER_FIELDS = `${META},name,displayOrder`;
@@ -140,7 +139,6 @@ function normalizeSettings(record?: SettingsRecord): SiteSettings {
     logoMark: record ? getPocketBaseFileUrl(record, record.logoMark) : undefined,
     siteUrl: record?.siteUrl?.trim() || '',
     brandName: record?.brandName?.trim() || '',
-    fromEmail: record?.fromEmail?.trim() || undefined,
     themeColor: record?.themeColor?.trim() || undefined,
   };
 }
@@ -200,7 +198,7 @@ export async function getGallery(
   return { ok: true, data: records.map((record) => toGallery(record, thumb)).filter((item) => item.image) };
 }
 
-export async function getTeamMembers(locale: Locale): Promise<CmsData<TeamMember[]>> {
+async function getTeamMembers(locale: Locale): Promise<CmsData<TeamMember[]>> {
   const records = await loadList<TeamMemberRecord>(COLLECTIONS.teamMembers, {
     filter: 'isActive=true',
     sort: 'lastName,firstName',
@@ -221,7 +219,7 @@ export async function getPartners(): Promise<CmsData<Partner[]>> {
   return { ok: true, data: records.map((record) => ({ id: record.id, name: record.name })) };
 }
 
-export async function getServices(locale: Locale): Promise<CmsData<ServiceItem[]>> {
+async function getServices(locale: Locale): Promise<CmsData<ServiceItem[]>> {
   const records = await loadList<ServiceRecord>(COLLECTIONS.services, {
     filter: 'isActive=true',
     sort: 'displayOrder,title_fr',
@@ -231,7 +229,7 @@ export async function getServices(locale: Locale): Promise<CmsData<ServiceItem[]
   return { ok: true, data: records.map((record) => toService(record, locale)).filter((item) => item.title) };
 }
 
-export async function getContactServices(locale: Locale): Promise<CmsData<ServiceItem[]>> {
+export async function getContactServices(locale: Locale): Promise<CmsData<{ id: string; title: string }[]>> {
   const records = await loadList<ServiceRecord>(COLLECTIONS.services, {
     sort: 'displayOrder,title_fr',
     fields: CONTACT_SERVICE_FIELDS,
@@ -243,7 +241,6 @@ export async function getContactServices(locale: Locale): Promise<CmsData<Servic
       .map((record) => ({
         id: record.id,
         title: stripHtml(getLocalizedValue(record, 'title', locale)),
-        description: '',
       }))
       .filter((item) => item.title),
   };
@@ -261,7 +258,7 @@ export async function getPage(slug: PageSlug, locale: Locale): Promise<CmsData<E
   return { ok: true, data: record ? toEditorial(record, locale, `${slug}.hero`) : undefined };
 }
 
-export async function getHomeSections(locale: Locale): Promise<
+async function getHomeSections(locale: Locale): Promise<
   CmsData<{ sections: HomepageSection[]; content: Record<string, EditorialBlock> }>
 > {
   const records = await loadList<HomeSectionRecord>(COLLECTIONS.homeSections, {
@@ -289,7 +286,7 @@ export async function getHomeSections(locale: Locale): Promise<
 }
 
 export async function getAboutBlocks(locale: Locale): Promise<CmsData<EditorialBlock[]>> {
-  const records = await loadList<AboutSectionRecord>(COLLECTIONS.aboutSections, {
+  const records = await loadList<EditorialRecord>(COLLECTIONS.aboutSections, {
     filter: 'isActive=true',
     sort: 'displayOrder',
     fields: ABOUT_FIELDS,
@@ -336,22 +333,13 @@ export async function getNavLinks(locale: Locale): Promise<CmsData<NavLink[]>> {
   };
 }
 
-export async function getLayoutData(_locale: Locale): Promise<CmsData<{ partners: Partner[]; settings: SiteSettings }>> {
-  const [partners, settings] = await Promise.all([getPartners(), getSettings()]);
-  if (!partners.ok || !settings.ok) return { ok: false };
-  return { ok: true, data: { partners: partners.data, settings: settings.data } };
-}
-
-export async function getHomeData(locale: Locale): Promise<CmsData<HomeData>> {
-  const settings = await getSettings();
-  if (!settings.ok) return { ok: false };
-
+export async function getHomeData(locale: Locale, settings: SiteSettings): Promise<CmsData<HomeData>> {
   const [home, gallery, team, partners, events, services] = await Promise.all([
     getHomeSections(locale),
     getGallery({ limit: HOME_GALLERY_LIMIT, thumb: '800x600' }),
     getTeamMembers(locale),
     getPartners(),
-    getUpcomingEvents(locale, settings.data.upcomingEventsLimit),
+    getUpcomingEvents(locale, settings.upcomingEventsLimit),
     getServices(locale),
   ]);
 
@@ -370,8 +358,8 @@ export async function getHomeData(locale: Locale): Promise<CmsData<HomeData>> {
       partners: partners.data,
       services: services.data,
       content: home.data.content,
-      instagramUrl: settings.data.instagramUrl,
-      logoMark: settings.data.logoMark,
+      instagramUrl: settings.instagramUrl,
+      logoMark: settings.logoMark,
     },
   };
 }

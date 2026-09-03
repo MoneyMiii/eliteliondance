@@ -1,11 +1,9 @@
 ---
 import Button from '../common/Button.astro';
 import type { EditorialBlock } from '../../lib/types';
-import type { Locale } from '../../lib/locale';
 import { distinctText } from '../../lib/format';
 
 interface Props {
-  locale: Locale;
   content?: EditorialBlock;
 }
 

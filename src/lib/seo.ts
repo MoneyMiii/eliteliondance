@@ -22,7 +22,7 @@ interface OrganizationInput {
   logo?: string;
 }
 
-export function absoluteUrl(path: string, siteUrl?: string): string {
+function absoluteUrl(path: string, siteUrl?: string): string {
   if (!siteUrl) return path;
   try {
     return new URL(path, siteUrl).toString();

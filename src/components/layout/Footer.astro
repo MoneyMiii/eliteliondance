@@ -1,18 +1,16 @@
 ---
-import type { Locale } from '../../lib/locale';
 import { createT } from '../../lib/i18n';
 import type { Partner } from '../../lib/types';
 import InstagramButton from '../common/InstagramButton.astro';
 
 interface Props {
-  locale: Locale;
   instagramUrl: string;
   partners: Partner[];
   logoMark?: string;
 }
 
 const { instagramUrl, partners, logoMark } = Astro.props;
-const t = createT(Astro.locals.labels, Astro.locals.locale);
+const t = createT(Astro.locals.labels);
 const navLinks = Astro.locals.navLinks ?? [];
 const year = new Date().getFullYear();
 const brandName = t('brand.name') || Astro.locals.settings?.brandName || '';

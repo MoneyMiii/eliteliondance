@@ -1,12 +1,12 @@
-export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 /** Indicatif optionnel (+ ou 00), 8 à 15 chiffres, espaces / points / tirets / parenthèses. */
-export const PHONE_RE = /^(?:\+|00)?[0-9](?:[\s().-]*[0-9]){7,14}$/;
+const PHONE_RE = /^(?:\+|00)?[0-9](?:[\s().-]*[0-9]){7,14}$/;
 
-export function isEmail(value: string): boolean {
+function isEmail(value: string): boolean {
   return EMAIL_RE.test(value.trim());
 }
 
-export function isPhone(value: string): boolean {
+function isPhone(value: string): boolean {
   const trimmed = value.trim();
   if (!PHONE_RE.test(trimmed)) return false;
   const digits = trimmed.replace(/\D/g, '');

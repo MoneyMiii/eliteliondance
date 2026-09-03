@@ -23,7 +23,7 @@ const videoType = video?.includes('.webm') ? 'video/webm' : 'video/mp4';
 <section class="relative isolate flex min-h-[80svh] items-end overflow-hidden bg-paper">
   {video ? (
     <video
-      class="absolute inset-0 h-full w-full object-cover"
+      class="absolute inset-0 size-full object-cover"
       autoplay
       muted
       loop
@@ -38,14 +38,14 @@ const videoType = video?.includes('.webm') ? 'video/webm' : 'video/mp4';
     <img src={poster} alt="" class="absolute inset-0 h-full w-full object-cover kenburns" />
   ) : null}
   {hasMedia && <div class="overlay-scrim absolute inset-0"></div>}
-  <div class="container-page relative z-10 pt-36 pb-(--space-section)">
+  <div class="container-page relative z-10 pt-36 pb-[calc(var(--space-section)+var(--band-cut))]">
     {kicker && <p class:list={['eyebrow reveal', hasMedia && 'on-media']}>{kicker}</p>}
     {title && <h1 class:list={['display-title max-w-5xl reveal', kicker && 'mt-5', hasMedia && 'on-media']} style="animation-delay: 120ms">{title}</h1>}
     {(primaryCta && primaryUrl) || (secondaryCta && secondaryUrl) ? (
       <div class="mt-10 flex flex-wrap gap-3 reveal" style="animation-delay: 220ms">
         {primaryCta && primaryUrl && <Button href={primaryUrl}>{primaryCta}</Button>}
         {secondaryCta && secondaryUrl && (
-          <Button href={secondaryUrl} variant="secondary">{secondaryCta}</Button>
+          <Button href={secondaryUrl} variant="secondary" class="bg-paper">{secondaryCta}</Button>
         )}
       </div>
     ) : null}

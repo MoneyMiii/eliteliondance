@@ -21,6 +21,8 @@
     --header-height: 4.6rem;
     --space-section: 4rem;
     --space-block: 3rem;
+    --band-light-bg: #ffffff;
+    --band-dark-bg: #141a14;
   }
 
   html {
@@ -176,6 +178,64 @@
   .overlay-scrim {
     background:
       linear-gradient(180deg, rgb(10 10 10 / 0.2) 0%, rgb(10 10 10 / 0.45) 45%, rgb(10 10 10 / 0.78) 100%);
+  }
+
+  .band-light {
+    background-color: var(--band-light-bg);
+  }
+
+  .band-dark {
+    --color-ink: #eef3ee;
+    --color-mist: #9aa59a;
+    --color-forest: #1c261c;
+    --color-brand: #7cbc6d;
+    --color-paper: var(--band-dark-bg);
+    background-color: var(--band-dark-bg);
+    color: var(--color-ink);
+    color-scheme: dark;
+  }
+
+  .band-dark .icon-btn {
+    background-color: var(--color-forest);
+    color: var(--color-ink);
+  }
+
+  .band-cut-a,
+  .band-cut-b {
+    position: relative;
+    padding-top: var(--band-overlap, 0px);
+    padding-bottom: var(--band-cut);
+    margin-bottom: calc(-1 * var(--band-cut));
+  }
+
+  .band-hero {
+    padding-bottom: 0;
+    background-color: transparent;
+  }
+
+  .band-cut-a:last-child,
+  .band-cut-b:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    clip-path: none;
+  }
+
+  .site-footer {
+    --footer-cut: 1.5vw;
+    position: relative;
+    z-index: 20;
+    overflow: hidden;
+    padding-top: var(--footer-cut);
+    margin-top: calc(-1 * var(--footer-cut));
+    clip-path: polygon(0 var(--footer-cut), 100% 0, 100% 100%, 0 100%);
+  }
+
+  .band-cut-a {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--band-cut)), 0 100%);
+  }
+
+  .band-cut-b {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - var(--band-cut)));
   }
 }
 

@@ -36,14 +36,14 @@ function TeamCard({
 }) {
   return (
     <article className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-hidden rounded-[1.25rem] bg-forest [container-type:inline-size]">
-      <div className="aspect-[3/4] w-full shrink-0 overflow-hidden rounded-t-[1.25rem] bg-paper">
+      <div className="aspect-[3/4] w-full shrink-0 overflow-hidden">
         {member.photo ? (
           <img
             src={member.photo}
             alt=""
             draggable={false}
             data-cursor="drag"
-            className="h-full w-full object-cover"
+            className="block h-full w-full object-cover"
           />
         ) : logoMark ? (
           <img src={logoMark} alt="" draggable={false} data-cursor="drag" className="h-full w-full object-contain p-6" />

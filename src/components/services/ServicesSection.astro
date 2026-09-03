@@ -10,11 +10,13 @@ interface Props {
 }
 
 const { content, services } = Astro.props;
+const anchor = content?.anchor;
+const heading = Boolean(content?.title || content?.subtitle);
 ---
 
-<section id={content?.anchor} class:list={['container-page section-y', content?.anchor && 'anchor-offset']}>
-  {(content?.title || content?.subtitle) && (
-    <div class="block-gap">
+<section class="container-page section-y">
+  {heading && (
+    <div id={anchor} class:list={['block-gap', anchor && 'anchor-offset']}>
       <SectionTitle
         eyebrow={content?.subtitle}
         title={content?.title || ''}

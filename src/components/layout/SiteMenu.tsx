@@ -4,7 +4,8 @@ import { t, type Labels } from '../../lib/i18n';
 import type { NavLink } from '../../lib/types';
 
 const MENU_CLOSE_MS = 520;
-const NAV_SCROLL_MS = 900;
+const NAV_SCROLL_MS = 1500;
+const ANCHOR_GAP_PX = 12;
 
 function samePageHash(href: string): string | null {
   try {
@@ -15,6 +16,19 @@ function samePageHash(href: string): string | null {
   } catch {
     return href.startsWith('#') ? decodeURIComponent(href.slice(1)) || null : null;
   }
+}
+
+function scrollToAnchor(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const header = document.getElementById('site-header');
+  const headerH = header instanceof HTMLElement && !header.hasAttribute('data-hidden')
+    ? header.getBoundingClientRect().height
+    : 0;
+  const top = Math.max(0, window.scrollY + el.getBoundingClientRect().top - headerH - ANCHOR_GAP_PX);
+  window.scrollTo({ top, behavior: 'smooth' });
+  history.replaceState(null, '', `#${id}`);
 }
 
 interface Props {
@@ -95,15 +109,24 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
 
     const html = document.documentElement;
     html.setAttribute('data-nav-scrolling', '');
+
+    let done = false;
+    const clear = () => {
+      if (done) return;
+      done = true;
+      html.removeAttribute('data-nav-scrolling');
+      window.removeEventListener('scrollend', clear);
+    };
+
     const frame = window.requestAnimationFrame(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      history.replaceState(null, '', `#${id}`);
+      scrollToAnchor(id);
+      window.addEventListener('scrollend', clear, { once: true });
     });
-    const timeout = window.setTimeout(() => html.removeAttribute('data-nav-scrolling'), NAV_SCROLL_MS);
+    const timeout = window.setTimeout(clear, NAV_SCROLL_MS);
     return () => {
       window.cancelAnimationFrame(frame);
       window.clearTimeout(timeout);
-      html.removeAttribute('data-nav-scrolling');
+      clear();
     };
   }, [open]);
 

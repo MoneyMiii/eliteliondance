@@ -15,11 +15,13 @@ interface Props {
 const { members, content, logoMark } = Astro.props;
 const t = createT(Astro.locals.labels);
 const labels = Astro.locals.labels ?? {};
+const anchor = content?.anchor;
+const heading = Boolean(content?.title || content?.subtitle);
 ---
 
-<section id={content?.anchor} class:list={['section-y', content?.anchor && 'anchor-offset']}>
-  {(content?.title || content?.subtitle) && (
-    <div class="container-page block-gap">
+<section class:list={['section-y', anchor && 'min-h-[calc(100svh-var(--header-height))]']}>
+  {heading && (
+    <div id={anchor} class:list={['container-page block-gap', anchor && 'anchor-offset']}>
       <SectionTitle
         eyebrow={content?.subtitle}
         title={content?.title || ''}

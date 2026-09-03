@@ -233,6 +233,12 @@
   }
 }
 
+html.menu-open,
+html.menu-open body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 html.menu-open #site-header {
   border-bottom-color: transparent;
   background-color: #ffffff;
@@ -246,6 +252,7 @@ html.menu-open #site-header {
   inset: 0;
   z-index: 40;
   overflow: hidden;
+  overscroll-behavior: none;
   background-color: #ffffff;
   color: #141a14;
   pointer-events: none;

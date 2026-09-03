@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { t, type Labels } from '../../lib/i18n';
+import { lockPageScroll } from '../../lib/page-scroll-lock';
 import type { NavLink } from '../../lib/types';
 
 const MENU_CLOSE_MS = 520;
@@ -72,17 +73,9 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
     if (!open) return;
 
     const previous = document.activeElement as HTMLElement | null;
-    const header = document.getElementById('site-header');
     openerRef.current?.focus();
-
-    const widthBeforeLock = document.documentElement.clientWidth;
-    document.body.style.overflow = 'hidden';
-    const gutter = Math.max(0, document.documentElement.clientWidth - widthBeforeLock);
-    const gutterPx = `${gutter}px`;
-    document.documentElement.style.setProperty('--menu-gutter', gutterPx);
-    document.body.style.paddingRight = gutterPx;
-    if (header instanceof HTMLElement) header.style.paddingRight = gutterPx;
     document.documentElement.classList.add('menu-open');
+    const unlock = lockPageScroll();
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false);
@@ -92,11 +85,8 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
 
     return () => {
       document.documentElement.classList.remove('menu-open');
-      document.documentElement.style.removeProperty('--menu-gutter');
       document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-      if (header instanceof HTMLElement) header.style.paddingRight = '';
+      unlock();
       (previous || openerRef.current)?.focus();
     };
   }, [open]);
@@ -196,7 +186,7 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
               className="container-page page-y relative z-10 flex h-full flex-col"
               aria-label={t(labels, 'nav.main')}
             >
-              <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto font-display text-4xl uppercase sm:text-5xl">
+              <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain font-display text-4xl uppercase sm:text-5xl">
                 {navLinks.map((link) => (
                   <a
                     key={link.id}

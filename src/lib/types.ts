@@ -158,7 +158,6 @@ export interface TeamMember {
   lastName: string;
   roles: string[];
   isPriority: boolean;
-  description: string;
   photo?: string;
 }
 

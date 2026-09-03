@@ -332,7 +332,6 @@ const collections = [
       text('lastName', { required: true, presentable: true }),
       file('photo', { required: true, thumbs: ['800x1000'] }),
       relation('roles', IDS.teamRoles, { required: true, maxSelect: 20, presentable: true }),
-      ...localizedEditor('description'),
       bool('isActive'),
     ],
     [

@@ -44,7 +44,7 @@ const EVENT_FIELDS = `${META},title_fr,title_zh,dateTime,location_fr,location_zh
 const GALLERY_FIELDS = `${META},media,displayOrder`;
 const SERVICE_FIELDS = `${META},title_fr,title_zh,description_fr,description_zh,icon,photo,displayOrder`;
 const CONTACT_SERVICE_FIELDS = `${META},title_fr,title_zh,displayOrder`;
-const TEAM_FIELDS = `${META},firstName,lastName,photo,description_fr,description_zh,expand.roles.*`;
+const TEAM_FIELDS = `${META},firstName,lastName,photo,expand.roles.*`;
 const HOME_SECTION_FIELDS = `${META},slot,displayOrder,isActive,anchor,title_fr,title_zh,subtitle_fr,subtitle_zh,content_fr,content_zh,image,video,ctaLabel_fr,ctaLabel_zh,ctaUrl,ctaSecondaryLabel_fr,ctaSecondaryLabel_zh,ctaSecondaryUrl`;
 const PAGE_FIELDS = `${META},slug,title_fr,title_zh,subtitle_fr,subtitle_zh,content_fr,content_zh,image,ctaLabel_fr,ctaLabel_zh,ctaUrl`;
 const ABOUT_FIELDS = `${META},title_fr,title_zh,content_fr,content_zh,image,displayOrder`;
@@ -114,7 +114,6 @@ function toTeamMember(record: TeamMemberRecord, locale: Locale): TeamMember {
     lastName: record.lastName,
     roles: roleRecords.map((role) => getLocalizedValue(role, 'title', locale) || role.key),
     isPriority: roleRecords.some((role) => Boolean(role.isPriority)),
-    description: getLocalizedValue(record, 'description', locale),
     photo: getPocketBaseFileUrl(record, record.photo, '800x1000'),
   };
 }

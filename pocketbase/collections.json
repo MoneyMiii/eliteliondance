@@ -102,7 +102,7 @@
       {
         "exceptDomains": null,
         "hidden": false,
-        "id": "f_siteUrl_set01",
+        "id": "f_siteUrl_006",
         "name": "siteUrl",
         "onlyDomains": null,
         "presentable": false,
@@ -113,7 +113,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_brandName_set01",
+        "id": "f_brandName_007",
         "max": 0,
         "min": 0,
         "name": "brandName",
@@ -127,7 +127,7 @@
       {
         "exceptDomains": null,
         "hidden": false,
-        "id": "f_fromEmail_set01",
+        "id": "f_fromEmail_008",
         "name": "fromEmail",
         "onlyDomains": null,
         "presentable": false,
@@ -138,8 +138,8 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_themeColor_set01",
-        "max": 16,
+        "id": "f_themeColor_009",
+        "max": 0,
         "min": 0,
         "name": "themeColor",
         "pattern": "",
@@ -203,7 +203,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_key_006",
+        "id": "f_key_010",
         "max": 0,
         "min": 0,
         "name": "key",
@@ -217,7 +217,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_fr_007",
+        "id": "f_title_fr_011",
         "max": 0,
         "min": 0,
         "name": "title_fr",
@@ -231,7 +231,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_zh_008",
+        "id": "f_title_zh_012",
         "max": 0,
         "min": 0,
         "name": "title_zh",
@@ -244,7 +244,7 @@
       },
       {
         "hidden": false,
-        "id": "f_isActive_009",
+        "id": "f_isActive_013",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -304,7 +304,7 @@
       },
       {
         "hidden": false,
-        "id": "f_slot_010",
+        "id": "f_slot_014",
         "maxSelect": 1,
         "name": "slot",
         "presentable": true,
@@ -324,7 +324,7 @@
       },
       {
         "hidden": false,
-        "id": "f_displayOrder_011",
+        "id": "f_displayOrder_015",
         "max": null,
         "min": 1,
         "name": "displayOrder",
@@ -336,7 +336,7 @@
       },
       {
         "hidden": false,
-        "id": "f_isActive_012",
+        "id": "f_isActive_016",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -346,7 +346,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_anchor_013",
+        "id": "f_anchor_017",
         "max": 0,
         "min": 0,
         "name": "anchor",
@@ -360,7 +360,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_fr_014",
+        "id": "f_title_fr_018",
         "max": 0,
         "min": 0,
         "name": "title_fr",
@@ -374,7 +374,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_zh_015",
+        "id": "f_title_zh_019",
         "max": 0,
         "min": 0,
         "name": "title_zh",
@@ -388,7 +388,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_subtitle_fr_016",
+        "id": "f_subtitle_fr_020",
         "max": 0,
         "min": 0,
         "name": "subtitle_fr",
@@ -402,7 +402,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_subtitle_zh_017",
+        "id": "f_subtitle_zh_021",
         "max": 0,
         "min": 0,
         "name": "subtitle_zh",
@@ -416,7 +416,7 @@
       {
         "convertUrls": false,
         "hidden": false,
-        "id": "f_content_fr_018",
+        "id": "f_content_fr_022",
         "maxSize": 0,
         "name": "content_fr",
         "presentable": false,
@@ -427,7 +427,7 @@
       {
         "convertUrls": false,
         "hidden": false,
-        "id": "f_content_zh_019",
+        "id": "f_content_zh_023",
         "maxSize": 0,
         "name": "content_zh",
         "presentable": false,
@@ -437,7 +437,7 @@
       },
       {
         "hidden": false,
-        "id": "f_image_020",
+        "id": "f_image_024",
         "maxSelect": 1,
         "maxSize": 20971520,
         "mimeTypes": [
@@ -461,7 +461,7 @@
       },
       {
         "hidden": false,
-        "id": "f_video_021",
+        "id": "f_video_025",
         "maxSelect": 1,
         "maxSize": 83886080,
         "mimeTypes": [
@@ -479,7 +479,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_ctaLabel_fr_022",
+        "id": "f_ctaLabel_fr_026",
         "max": 0,
         "min": 0,
         "name": "ctaLabel_fr",
@@ -493,7 +493,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_ctaLabel_zh_023",
+        "id": "f_ctaLabel_zh_027",
         "max": 0,
         "min": 0,
         "name": "ctaLabel_zh",
@@ -507,7 +507,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_ctaUrl_024",
+        "id": "f_ctaUrl_028",
         "max": 0,
         "min": 0,
         "name": "ctaUrl",
@@ -549,7 +549,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_ctaSecondaryUrl_027",
+        "id": "f_ctaSecondaryUrl_031",
         "max": 0,
         "min": 0,
         "name": "ctaSecondaryUrl",
@@ -612,7 +612,7 @@
       },
       {
         "hidden": false,
-        "id": "f_slug_028",
+        "id": "f_slug_032",
         "maxSelect": 1,
         "name": "slug",
         "presentable": true,
@@ -626,7 +626,7 @@
       },
       {
         "hidden": false,
-        "id": "f_isActive_029",
+        "id": "f_isActive_033",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -636,7 +636,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_fr_030",
+        "id": "f_title_fr_034",
         "max": 0,
         "min": 0,
         "name": "title_fr",
@@ -650,7 +650,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_zh_031",
+        "id": "f_title_zh_035",
         "max": 0,
         "min": 0,
         "name": "title_zh",
@@ -664,7 +664,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_subtitle_fr_032",
+        "id": "f_subtitle_fr_036",
         "max": 0,
         "min": 0,
         "name": "subtitle_fr",
@@ -678,7 +678,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_subtitle_zh_033",
+        "id": "f_subtitle_zh_037",
         "max": 0,
         "min": 0,
         "name": "subtitle_zh",
@@ -692,7 +692,7 @@
       {
         "convertUrls": false,
         "hidden": false,
-        "id": "f_content_fr_034",
+        "id": "f_content_fr_038",
         "maxSize": 0,
         "name": "content_fr",
         "presentable": false,
@@ -703,7 +703,7 @@
       {
         "convertUrls": false,
         "hidden": false,
-        "id": "f_content_zh_035",
+        "id": "f_content_zh_039",
         "maxSize": 0,
         "name": "content_zh",
         "presentable": false,
@@ -713,7 +713,7 @@
       },
       {
         "hidden": false,
-        "id": "f_image_036",
+        "id": "f_image_040",
         "maxSelect": 1,
         "maxSize": 20971520,
         "mimeTypes": [
@@ -789,7 +789,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_fr_037",
+        "id": "f_title_fr_041",
         "max": 0,
         "min": 0,
         "name": "title_fr",
@@ -803,7 +803,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_zh_038",
+        "id": "f_title_zh_042",
         "max": 0,
         "min": 0,
         "name": "title_zh",
@@ -817,7 +817,7 @@
       {
         "convertUrls": false,
         "hidden": false,
-        "id": "f_content_fr_039",
+        "id": "f_content_fr_043",
         "maxSize": 0,
         "name": "content_fr",
         "presentable": false,
@@ -828,7 +828,7 @@
       {
         "convertUrls": false,
         "hidden": false,
-        "id": "f_content_zh_040",
+        "id": "f_content_zh_044",
         "maxSize": 0,
         "name": "content_zh",
         "presentable": false,
@@ -838,7 +838,7 @@
       },
       {
         "hidden": false,
-        "id": "f_image_041",
+        "id": "f_image_045",
         "maxSelect": 1,
         "maxSize": 20971520,
         "mimeTypes": [
@@ -860,7 +860,7 @@
       },
       {
         "hidden": false,
-        "id": "f_displayOrder_042",
+        "id": "f_displayOrder_046",
         "max": null,
         "min": 0,
         "name": "displayOrder",
@@ -872,7 +872,7 @@
       },
       {
         "hidden": false,
-        "id": "f_isActive_043",
+        "id": "f_isActive_047",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -933,7 +933,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_fr_044",
+        "id": "f_title_fr_048",
         "max": 0,
         "min": 0,
         "name": "title_fr",
@@ -947,7 +947,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_zh_045",
+        "id": "f_title_zh_049",
         "max": 0,
         "min": 0,
         "name": "title_zh",
@@ -960,7 +960,7 @@
       },
       {
         "hidden": false,
-        "id": "f_dateTime_046",
+        "id": "f_dateTime_050",
         "max": "",
         "min": "",
         "name": "dateTime",
@@ -972,7 +972,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_location_fr_047",
+        "id": "f_location_fr_051",
         "max": 0,
         "min": 0,
         "name": "location_fr",
@@ -986,7 +986,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_location_zh_048",
+        "id": "f_location_zh_052",
         "max": 0,
         "min": 0,
         "name": "location_zh",
@@ -1000,7 +1000,7 @@
       {
         "convertUrls": false,
         "hidden": false,
-        "id": "f_description_fr_049",
+        "id": "f_description_fr_053",
         "maxSize": 0,
         "name": "description_fr",
         "presentable": false,
@@ -1011,7 +1011,7 @@
       {
         "convertUrls": false,
         "hidden": false,
-        "id": "f_description_zh_050",
+        "id": "f_description_zh_054",
         "maxSize": 0,
         "name": "description_zh",
         "presentable": false,
@@ -1021,7 +1021,7 @@
       },
       {
         "hidden": false,
-        "id": "f_mainImage_051",
+        "id": "f_mainImage_055",
         "maxSelect": 1,
         "maxSize": 20971520,
         "mimeTypes": [
@@ -1043,7 +1043,7 @@
       },
       {
         "hidden": false,
-        "id": "f_isActive_052",
+        "id": "f_isActive_056",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -1102,7 +1102,7 @@
       },
       {
         "hidden": false,
-        "id": "f_media_053",
+        "id": "f_media_057",
         "maxSelect": 1,
         "maxSize": 20971520,
         "mimeTypes": [
@@ -1125,7 +1125,7 @@
       },
       {
         "hidden": false,
-        "id": "f_displayOrder_054",
+        "id": "f_displayOrder_058",
         "max": null,
         "min": 1,
         "name": "displayOrder",
@@ -1189,7 +1189,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_fr_055",
+        "id": "f_title_fr_059",
         "max": 0,
         "min": 0,
         "name": "title_fr",
@@ -1203,7 +1203,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_zh_056",
+        "id": "f_title_zh_060",
         "max": 0,
         "min": 0,
         "name": "title_zh",
@@ -1217,7 +1217,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_description_fr_057",
+        "id": "f_description_fr_061",
         "max": 0,
         "min": 0,
         "name": "description_fr",
@@ -1231,7 +1231,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_description_zh_058",
+        "id": "f_description_zh_062",
         "max": 0,
         "min": 0,
         "name": "description_zh",
@@ -1244,7 +1244,7 @@
       },
       {
         "hidden": false,
-        "id": "f_iconFile_svc1",
+        "id": "f_icon_063",
         "maxSelect": 1,
         "maxSize": 2097152,
         "mimeTypes": [
@@ -1265,7 +1265,7 @@
       },
       {
         "hidden": false,
-        "id": "f_photo_svc1",
+        "id": "f_photo_064",
         "maxSelect": 1,
         "maxSize": 20971520,
         "mimeTypes": [
@@ -1287,7 +1287,7 @@
       },
       {
         "hidden": false,
-        "id": "f_displayOrder_060",
+        "id": "f_displayOrder_065",
         "max": null,
         "min": 0,
         "name": "displayOrder",
@@ -1299,7 +1299,7 @@
       },
       {
         "hidden": false,
-        "id": "f_isActive_061",
+        "id": "f_isActive_066",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -1359,7 +1359,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_key_trole01",
+        "id": "f_key_067",
         "max": 0,
         "min": 0,
         "name": "key",
@@ -1373,7 +1373,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_fr_trole",
+        "id": "f_title_fr_068",
         "max": 0,
         "min": 0,
         "name": "title_fr",
@@ -1387,7 +1387,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_zh_trole",
+        "id": "f_title_zh_069",
         "max": 0,
         "min": 0,
         "name": "title_zh",
@@ -1400,15 +1400,8 @@
       },
       {
         "hidden": false,
-        "id": "f_isPriority_tr01",
-        "name": "isPriority",
-        "presentable": true,
-        "required": false,
-        "system": false,
-        "type": "bool"
-      },
-      {
-        "hidden": false,
+        "id": "f_displayOrder_070",
+        "max": null,
         "min": 1,
         "name": "displayOrder",
         "onlyInt": true,
@@ -1419,7 +1412,7 @@
       },
       {
         "hidden": false,
-        "id": "f_isActive_trole01",
+        "id": "f_isActive_071",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -1480,7 +1473,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_firstName_062",
+        "id": "f_firstName_072",
         "max": 0,
         "min": 0,
         "name": "firstName",
@@ -1494,7 +1487,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_lastName_063",
+        "id": "f_lastName_073",
         "max": 0,
         "min": 0,
         "name": "lastName",
@@ -1507,7 +1500,7 @@
       },
       {
         "hidden": false,
-        "id": "f_photo_064",
+        "id": "f_photo_074",
         "maxSelect": 1,
         "maxSize": 20971520,
         "mimeTypes": [
@@ -1531,7 +1524,7 @@
         "cascadeDelete": false,
         "collectionId": "eld_teamroles01",
         "hidden": false,
-        "id": "f_rolesRel_tm01",
+        "id": "f_roles_075",
         "maxSelect": 20,
         "minSelect": 0,
         "name": "roles",
@@ -1541,30 +1534,8 @@
         "type": "relation"
       },
       {
-        "convertUrls": false,
         "hidden": false,
-        "id": "f_description_fr_066",
-        "maxSize": 0,
-        "name": "description_fr",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "editor"
-      },
-      {
-        "convertUrls": false,
-        "hidden": false,
-        "id": "f_description_zh_067",
-        "maxSize": 0,
-        "name": "description_zh",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "editor"
-      },
-      {
-        "hidden": false,
-        "id": "f_isActive_068",
+        "id": "f_isActive_076",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -1625,7 +1596,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_name_069",
+        "id": "f_name_077",
         "max": 0,
         "min": 0,
         "name": "name",
@@ -1638,7 +1609,7 @@
       },
       {
         "hidden": false,
-        "id": "f_displayOrder_070",
+        "id": "f_displayOrder_078",
         "max": null,
         "min": 0,
         "name": "displayOrder",
@@ -1650,7 +1621,7 @@
       },
       {
         "hidden": false,
-        "id": "f_isActive_071",
+        "id": "f_isActive_079",
         "name": "isActive",
         "presentable": false,
         "required": false,
@@ -1711,7 +1682,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_fr_072",
+        "id": "f_title_fr_080",
         "max": 0,
         "min": 0,
         "name": "title_fr",
@@ -1725,7 +1696,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_title_zh_073",
+        "id": "f_title_zh_081",
         "max": 0,
         "min": 0,
         "name": "title_zh",
@@ -1739,7 +1710,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "f_href_074",
+        "id": "f_href_082",
         "max": 0,
         "min": 0,
         "name": "href",
@@ -1752,7 +1723,7 @@
       },
       {
         "hidden": false,
-        "id": "f_displayOrder_075",
+        "id": "f_displayOrder_083",
         "max": null,
         "min": 1,
         "name": "displayOrder",
@@ -1764,7 +1735,7 @@
       },
       {
         "hidden": false,
-        "id": "f_isActive_076",
+        "id": "f_isActive_084",
         "name": "isActive",
         "presentable": false,
         "required": false,

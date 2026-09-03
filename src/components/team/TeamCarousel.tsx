@@ -36,7 +36,7 @@ function TeamCard({
   logoMark?: string;
 }) {
   return (
-    <article className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col rounded-[1.25rem] bg-forest [container-type:inline-size]">
+    <article className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-hidden rounded-[1.25rem] bg-forest [container-type:inline-size]">
       <div className="aspect-[3/4] w-full shrink-0 overflow-hidden rounded-t-[1.25rem] bg-paper">
         {member.photo ? (
           <img
@@ -50,17 +50,14 @@ function TeamCard({
           <img src={logoMark} alt="" draggable={false} data-cursor="drag" className="h-full w-full object-contain p-6" />
         ) : null}
       </div>
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col p-[clamp(0.5rem,4cqi,1rem)]">
-        <h3 className="font-display text-[clamp(0.8rem,11cqi,1.25rem)] uppercase leading-snug text-ink hyphens-none">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center justify-center overflow-hidden px-[clamp(0.45rem,3.5cqi,0.9rem)] pt-[clamp(0.45rem,3.5cqi,0.9rem)] pb-[clamp(0.95rem,7.5cqi,1.6rem)] text-center">
+        <h3 className="min-w-0 font-display text-[clamp(0.7rem,9.5cqi,1.15rem)] uppercase leading-snug text-ink [overflow-wrap:anywhere]">
           {member.firstName} {member.lastName}
         </h3>
         {member.roles.length > 0 && (
-          <p className="mt-1 text-[clamp(0.65rem,8cqi,0.875rem)] leading-snug text-brand hyphens-none">
-            {member.roles.map((role, index) => (
-              <span key={role} className="inline-block max-w-full">
-                {index > 0 && (
-                  <span className="mx-1 text-mist" aria-hidden="true">·</span>
-                )}
+          <p className="mt-1 min-w-0 text-[clamp(0.6rem,7.5cqi,0.8rem)] leading-snug text-brand [overflow-wrap:anywhere]">
+            {member.roles.map((role) => (
+              <span key={role} className="block">
                 {role}
               </span>
             ))}

@@ -244,7 +244,9 @@ export default function Carousel({
 
       <div
         ref={viewportRef}
-        className="w-full min-w-0 touch-pan-y overflow-hidden pt-10 pb-6 outline-none sm:pt-14 sm:pb-8"
+        className={`w-full min-w-0 touch-pan-y overflow-hidden outline-none ${
+          visible > 1 ? 'pt-8 pb-1 sm:pt-10 sm:pb-2' : ''
+        }`}
         data-carousel=""
         tabIndex={looping ? 0 : undefined}
         onKeyDown={onKeyDown}
@@ -283,7 +285,7 @@ export default function Carousel({
                   paddingLeft: edgePad,
                   paddingRight: edgePad,
                   transform: featured ? `scale(${isCenter ? 1.12 : 0.9})` : undefined,
-                  transformOrigin: 'center bottom',
+                  transformOrigin: 'center center',
                   transition: animate
                     ? 'transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1)'
                     : 'none',

@@ -135,7 +135,7 @@
   }
 
   .eyebrow {
-    @apply font-display text-[0.72rem] uppercase tracking-[0.34em] text-brand;
+    @apply font-display text-[1.05rem] uppercase tracking-[0.2em] text-brand sm:text-[1.2rem];
   }
 
   .display-title {
@@ -147,11 +147,6 @@
   .display-title.on-media,
   .eyebrow.on-media {
     color: #fff;
-  }
-
-  .prose-eld.on-media,
-  .prose-eld.on-media p {
-    color: rgb(255 255 255 / 0.88);
   }
 
   .section-title {

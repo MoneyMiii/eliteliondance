@@ -245,7 +245,7 @@ export default function Carousel({
       <div
         ref={viewportRef}
         className={`w-full min-w-0 touch-pan-y overflow-hidden outline-none ${
-          visible > 1 ? 'pt-8 pb-1 sm:pt-10 sm:pb-2' : ''
+          visible > 1 ? 'py-8 sm:py-10' : ''
         }`}
         data-carousel=""
         tabIndex={looping ? 0 : undefined}

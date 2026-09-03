@@ -12,7 +12,7 @@ export default function CarouselDots({ labels, count, selected, goToLabel, onSel
   if (count < 2) return null;
 
   return (
-    <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5" role="tablist" aria-label={t(labels, 'carousel.dots')}>
+    <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5" role="tablist" aria-label={t(labels, 'carousel.dots')}>
       {Array.from({ length: count }, (_, index) => {
         const active = selected === index;
         return (

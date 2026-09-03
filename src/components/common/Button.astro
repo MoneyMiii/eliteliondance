@@ -2,11 +2,10 @@
 interface Props {
   href: string;
   variant?: 'primary' | 'secondary';
-  external?: boolean;
   class?: string;
 }
 
-const { href, variant = 'primary', external = false, class: className = '' } = Astro.props;
+const { href, variant = 'primary', class: className = '' } = Astro.props;
 
 const variants = {
   primary:
@@ -23,8 +22,6 @@ const variants = {
     variants[variant],
     className,
   ]}
-  target={external ? '_blank' : undefined}
-  rel={external ? 'noopener noreferrer' : undefined}
 >
   <slot />
 </a>

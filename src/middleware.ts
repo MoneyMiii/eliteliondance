@@ -6,6 +6,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const locale = getRequestLocale(context.cookies);
   context.locals.locale = locale;
 
+  const path = context.url.pathname;
+  if (path.startsWith('/media/') || path.startsWith('/api/') || path.startsWith('/_astro/')) {
+    return next();
+  }
+
   try {
     const [labels, navLinks, settings] = await Promise.all([
       getUiLabels(locale),

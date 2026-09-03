@@ -39,6 +39,18 @@ partners          noms affichés dans le footer
 
 Droits : List/View publics ; écriture réservée aux comptes admin (`@request.auth.id != ""`).
 
+## Charge PocketBase (1 instance)
+
+Le plan 1 instance ne se contourne pas. Le site limite les allers-retours :
+
+- `fields` : seulement les colonnes affichées
+- accueil : 8 photos (miniature `800x600`), N événements à venir (`dateTime >= @now`)
+- cache mémoire 5 min (`CMS_CACHE_TTL_MS`)
+- `/media` et `/api` : pas de bootstrap CMS (labels / nav / settings)
+- indexes `(isActive, dateTime)` et `(isActive, displayOrder)`
+
+Après un changement d’index : réimporter `pocketbase/collections.json` (Settings → Import collections).
+
 ## Collections (champs réellement affichés)
 
 ### `settings` — une ligne

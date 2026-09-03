@@ -114,7 +114,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   ].join('\n');
 
   if (!resendKey) {
-    console.info('[contact] captured request (no RESEND_API_KEY)', { to, from, lastName, email, phone, service: selectedService?.title });
     if (import.meta.env.PROD) {
       return new Response(JSON.stringify({ ok: false, error: 'unconfigured' }), { status: 503 });
     }

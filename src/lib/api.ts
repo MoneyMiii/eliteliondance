@@ -1,10 +1,10 @@
 import { COLLECTIONS } from './collections';
-import { fetchRecords } from './cms';
+import { fetchRecords, type FetchOptions } from './cms';
 import { sortAgendaEvents } from './events';
 import type { Labels } from './i18n';
 import type { Locale } from './locale';
 import { getLocalizedValue, stripHtml } from './localize';
-import { getPocketBaseFileIconUrl, getPocketBaseFileUrl } from './media';
+import { getPocketBaseFileUrl } from './media';
 import { sortPriorityMembersFirst } from './team';
 import {
   isHomepageSectionKey,
@@ -34,12 +34,27 @@ import {
 } from './types';
 
 const DEFAULT_UPCOMING_LIMIT = 3;
+export const HOME_GALLERY_LIMIT = 8;
+
+const META = 'id,collectionId,collectionName';
+const SETTINGS_FIELDS = `${META},contactEmail,instagramUrl,upcomingEventsLimit,logo,logoMark,siteUrl,brandName,fromEmail,themeColor`;
+const UI_LABEL_FIELDS = `${META},key,title_fr,title_zh`;
+const NAV_FIELDS = `${META},title_fr,title_zh,href,displayOrder`;
+const PARTNER_FIELDS = `${META},name,displayOrder`;
+const EVENT_FIELDS = `${META},title_fr,title_zh,dateTime,location_fr,location_zh,description_fr,description_zh,mainImage`;
+const GALLERY_FIELDS = `${META},media,displayOrder`;
+const SERVICE_FIELDS = `${META},title_fr,title_zh,description_fr,description_zh,icon,photo,displayOrder`;
+const CONTACT_SERVICE_FIELDS = `${META},title_fr,title_zh,displayOrder`;
+const TEAM_FIELDS = `${META},firstName,lastName,photo,description_fr,description_zh,expand.roles.*`;
+const HOME_SECTION_FIELDS = `${META},slot,displayOrder,isActive,anchor,title_fr,title_zh,subtitle_fr,subtitle_zh,content_fr,content_zh,image,video,ctaLabel_fr,ctaLabel_zh,ctaUrl,ctaSecondaryLabel_fr,ctaSecondaryLabel_zh,ctaSecondaryUrl`;
+const PAGE_FIELDS = `${META},slug,title_fr,title_zh,subtitle_fr,subtitle_zh,content_fr,content_zh,image,ctaLabel_fr,ctaLabel_zh,ctaUrl`;
+const ABOUT_FIELDS = `${META},title_fr,title_zh,content_fr,content_zh,image,displayOrder`;
 
 export type CmsData<T> = { ok: true; data: T } | { ok: false };
 
 async function loadList<T>(
   collection: string,
-  options: { filter?: string; sort?: string; expand?: string; skipCache?: boolean } = {},
+  options: FetchOptions = {},
 ): Promise<T[] | null> {
   const records = await fetchRecords<T>(collection, options);
   return records.ok ? records.data : null;
@@ -76,10 +91,10 @@ function toEvent(record: EventRecord, locale: Locale, now = new Date()): EventIt
   };
 }
 
-function toGallery(record: GalleryRecord): GalleryItem {
+function toGallery(record: GalleryRecord, thumb = '1600x0'): GalleryItem {
   return {
     id: record.id,
-    image: getPocketBaseFileUrl(record, record.media, '1600x0') ?? '',
+    image: getPocketBaseFileUrl(record, record.media, thumb) ?? '',
   };
 }
 
@@ -105,12 +120,12 @@ function toTeamMember(record: TeamMemberRecord, locale: Locale): TeamMember {
   };
 }
 
-async function toService(record: ServiceRecord, locale: Locale): Promise<ServiceItem> {
+function toService(record: ServiceRecord, locale: Locale): ServiceItem {
   return {
     id: record.id,
     title: stripHtml(getLocalizedValue(record, 'title', locale)),
     description: stripHtml(getLocalizedValue(record, 'description', locale)),
-    icon: await getPocketBaseFileIconUrl(record, record.icon),
+    icon: getPocketBaseFileUrl(record, record.icon),
     photo: getPocketBaseFileUrl(record, record.photo, '1200x800'),
   };
 }
@@ -131,7 +146,11 @@ function normalizeSettings(record?: SettingsRecord): SiteSettings {
 }
 
 export async function getSettings(): Promise<CmsData<SiteSettings>> {
-  const records = await loadList<SettingsRecord>(COLLECTIONS.settings);
+  const records = await loadList<SettingsRecord>(COLLECTIONS.settings, {
+    fields: SETTINGS_FIELDS,
+    page: 1,
+    perPage: 1,
+  });
   if (!records) return { ok: false };
   return { ok: true, data: normalizeSettings(records[0]) };
 }
@@ -140,17 +159,45 @@ export async function getEvents(locale: Locale): Promise<CmsData<EventItem[]>> {
   const records = await loadList<EventRecord>(COLLECTIONS.events, {
     filter: 'isActive=true',
     sort: 'dateTime',
+    fields: EVENT_FIELDS,
   });
   if (!records) return { ok: false };
   return { ok: true, data: sortAgendaEvents(records.map((record) => toEvent(record, locale))) };
 }
 
-export async function getGallery(): Promise<CmsData<GalleryItem[]>> {
-  const records = await loadList<GalleryRecord>(COLLECTIONS.gallery, {
-    sort: 'displayOrder',
+async function getUpcomingEvents(
+  locale: Locale,
+  limit: number,
+): Promise<CmsData<{ items: EventItem[]; hasMore: boolean }>> {
+  const records = await loadList<EventRecord>(COLLECTIONS.events, {
+    filter: 'isActive=true && dateTime>=@now',
+    sort: 'dateTime',
+    fields: EVENT_FIELDS,
+    page: 1,
+    perPage: Math.max(limit, 0) + 1,
   });
   if (!records) return { ok: false };
-  return { ok: true, data: records.map((record) => toGallery(record)).filter((item) => item.image) };
+  const items = records.map((record) => toEvent(record, locale));
+  return {
+    ok: true,
+    data: {
+      items: items.slice(0, limit),
+      hasMore: items.length > limit,
+    },
+  };
+}
+
+export async function getGallery(
+  options: { limit?: number; thumb?: string } = {},
+): Promise<CmsData<GalleryItem[]>> {
+  const records = await loadList<GalleryRecord>(COLLECTIONS.gallery, {
+    sort: 'displayOrder',
+    fields: GALLERY_FIELDS,
+    ...(options.limit ? { page: 1, perPage: options.limit } : {}),
+  });
+  if (!records) return { ok: false };
+  const thumb = options.thumb ?? '1600x0';
+  return { ok: true, data: records.map((record) => toGallery(record, thumb)).filter((item) => item.image) };
 }
 
 export async function getTeamMembers(locale: Locale): Promise<CmsData<TeamMember[]>> {
@@ -158,6 +205,7 @@ export async function getTeamMembers(locale: Locale): Promise<CmsData<TeamMember
     filter: 'isActive=true',
     sort: 'lastName,firstName',
     expand: 'roles',
+    fields: TEAM_FIELDS,
   });
   if (!records) return { ok: false };
   return { ok: true, data: sortPriorityMembersFirst(records.map((record) => toTeamMember(record, locale))) };
@@ -167,6 +215,7 @@ export async function getPartners(): Promise<CmsData<Partner[]>> {
   const records = await loadList<PartnerRecord>(COLLECTIONS.partners, {
     filter: 'isActive=true',
     sort: 'displayOrder',
+    fields: PARTNER_FIELDS,
   });
   if (!records) return { ok: false };
   return { ok: true, data: records.map((record) => ({ id: record.id, name: record.name })) };
@@ -176,25 +225,36 @@ export async function getServices(locale: Locale): Promise<CmsData<ServiceItem[]
   const records = await loadList<ServiceRecord>(COLLECTIONS.services, {
     filter: 'isActive=true',
     sort: 'displayOrder,title_fr',
+    fields: SERVICE_FIELDS,
   });
   if (!records) return { ok: false };
-  const items = await Promise.all(records.map((record) => toService(record, locale)));
-  return { ok: true, data: items.filter((item) => item.title) };
+  return { ok: true, data: records.map((record) => toService(record, locale)).filter((item) => item.title) };
 }
 
 export async function getContactServices(locale: Locale): Promise<CmsData<ServiceItem[]>> {
   const records = await loadList<ServiceRecord>(COLLECTIONS.services, {
     sort: 'displayOrder,title_fr',
-    skipCache: true,
+    fields: CONTACT_SERVICE_FIELDS,
   });
   if (!records) return { ok: false };
-  const items = await Promise.all(records.map((record) => toService(record, locale)));
-  return { ok: true, data: items.filter((item) => item.title) };
+  return {
+    ok: true,
+    data: records
+      .map((record) => ({
+        id: record.id,
+        title: stripHtml(getLocalizedValue(record, 'title', locale)),
+        description: '',
+      }))
+      .filter((item) => item.title),
+  };
 }
 
 export async function getPage(slug: PageSlug, locale: Locale): Promise<CmsData<EditorialBlock | undefined>> {
   const records = await loadList<PageRecord>(COLLECTIONS.pages, {
     filter: `slug="${slug}" && isActive=true`,
+    fields: PAGE_FIELDS,
+    page: 1,
+    perPage: 1,
   });
   if (!records) return { ok: false };
   const record = records[0];
@@ -205,7 +265,9 @@ export async function getHomeSections(locale: Locale): Promise<
   CmsData<{ sections: HomepageSection[]; content: Record<string, EditorialBlock> }>
 > {
   const records = await loadList<HomeSectionRecord>(COLLECTIONS.homeSections, {
+    filter: 'isActive=true',
     sort: 'displayOrder',
+    fields: HOME_SECTION_FIELDS,
   });
   if (!records) return { ok: false };
 
@@ -216,7 +278,7 @@ export async function getHomeSections(locale: Locale): Promise<
   }
 
   const sections = records
-    .filter((record) => record.isActive !== false && isHomepageSectionKey(record.slot))
+    .filter((record) => isHomepageSectionKey(record.slot))
     .map((record) => ({
       key: record.slot as HomepageSection['key'],
       displayOrder: record.displayOrder ?? 0,
@@ -230,6 +292,7 @@ export async function getAboutBlocks(locale: Locale): Promise<CmsData<EditorialB
   const records = await loadList<AboutSectionRecord>(COLLECTIONS.aboutSections, {
     filter: 'isActive=true',
     sort: 'displayOrder',
+    fields: ABOUT_FIELDS,
   });
   if (!records) return { ok: false };
   return {
@@ -243,6 +306,7 @@ export async function getAboutBlocks(locale: Locale): Promise<CmsData<EditorialB
 export async function getUiLabels(locale: Locale): Promise<CmsData<Labels>> {
   const records = await loadList<UiLabelRecord>(COLLECTIONS.uiLabels, {
     filter: 'isActive=true',
+    fields: UI_LABEL_FIELDS,
   });
   if (!records) return { ok: false };
 
@@ -259,6 +323,7 @@ export async function getNavLinks(locale: Locale): Promise<CmsData<NavLink[]>> {
   const records = await loadList<NavLinkRecord>(COLLECTIONS.navLinks, {
     filter: 'isActive=true',
     sort: 'displayOrder',
+    fields: NAV_FIELDS,
   });
   if (!records) return { ok: false };
   return {
@@ -271,49 +336,35 @@ export async function getNavLinks(locale: Locale): Promise<CmsData<NavLink[]>> {
   };
 }
 
-export async function getContactRecipientEmail(): Promise<string | undefined> {
-  const settings = await getSettings();
-  return settings.ok ? settings.data.contactEmail : undefined;
-}
-
-export async function getLayoutData(locale: Locale): Promise<CmsData<{ partners: Partner[]; settings: SiteSettings }>> {
+export async function getLayoutData(_locale: Locale): Promise<CmsData<{ partners: Partner[]; settings: SiteSettings }>> {
   const [partners, settings] = await Promise.all([getPartners(), getSettings()]);
   if (!partners.ok || !settings.ok) return { ok: false };
   return { ok: true, data: { partners: partners.data, settings: settings.data } };
 }
 
 export async function getHomeData(locale: Locale): Promise<CmsData<HomeData>> {
-  const [home, gallery, team, partners, events, services, settings] = await Promise.all([
+  const settings = await getSettings();
+  if (!settings.ok) return { ok: false };
+
+  const [home, gallery, team, partners, events, services] = await Promise.all([
     getHomeSections(locale),
-    getGallery(),
+    getGallery({ limit: HOME_GALLERY_LIMIT, thumb: '800x600' }),
     getTeamMembers(locale),
     getPartners(),
-    getEvents(locale),
+    getUpcomingEvents(locale, settings.data.upcomingEventsLimit),
     getServices(locale),
-    getSettings(),
   ]);
 
-  if (
-    !home.ok ||
-    !gallery.ok ||
-    !team.ok ||
-    !partners.ok ||
-    !events.ok ||
-    !services.ok ||
-    !settings.ok
-  ) {
+  if (!home.ok || !gallery.ok || !team.ok || !partners.ok || !events.ok || !services.ok) {
     return { ok: false };
   }
-
-  const allUpcoming = events.data.filter((event) => event.isUpcoming);
-  const upcomingEvents = allUpcoming.slice(0, settings.data.upcomingEventsLimit);
 
   return {
     ok: true,
     data: {
       sections: home.data.sections,
-      upcomingEvents,
-      hasMoreUpcoming: allUpcoming.length > upcomingEvents.length,
+      upcomingEvents: events.data.items,
+      hasMoreUpcoming: events.data.hasMore,
       gallery: gallery.data,
       team: team.data,
       partners: partners.data,

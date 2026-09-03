@@ -225,7 +225,10 @@ const collections = [
       text('title_zh', { required: true }),
       bool('isActive'),
     ],
-    ['CREATE UNIQUE INDEX `idx_ui_labels_key` ON `ui_labels` (`key`)'],
+    [
+      'CREATE UNIQUE INDEX `idx_ui_labels_key` ON `ui_labels` (`key`)',
+      'CREATE INDEX `idx_ui_labels_active` ON `ui_labels` (`isActive`)',
+    ],
   ),
   collection(
     IDS.homeSections,
@@ -237,7 +240,10 @@ const collections = [
       text('anchor'),
       ...editorialFields({ withVideo: true, withCta: true }),
     ],
-    ['CREATE UNIQUE INDEX `idx_home_sections_slot` ON `home_sections` (`slot`)'],
+    [
+      'CREATE UNIQUE INDEX `idx_home_sections_slot` ON `home_sections` (`slot`)',
+      'CREATE INDEX `idx_home_sections_active_order` ON `home_sections` (`isActive`, `displayOrder`)',
+    ],
   ),
   collection(
     IDS.pages,
@@ -259,7 +265,10 @@ const collections = [
       number('displayOrder', { required: true, min: 0 }),
       bool('isActive'),
     ],
-    ['CREATE INDEX `idx_about_sections_order` ON `about_sections` (`displayOrder`)'],
+    [
+      'CREATE INDEX `idx_about_sections_order` ON `about_sections` (`displayOrder`)',
+      'CREATE INDEX `idx_about_sections_active_order` ON `about_sections` (`isActive`, `displayOrder`)',
+    ],
   ),
   collection(
     IDS.events,
@@ -274,7 +283,10 @@ const collections = [
       file('mainImage', { thumbs: ['1200x800'] }),
       bool('isActive'),
     ],
-    ['CREATE INDEX `idx_events_datetime` ON `events` (`dateTime`)'],
+    [
+      'CREATE INDEX `idx_events_datetime` ON `events` (`dateTime`)',
+      'CREATE INDEX `idx_events_active_date` ON `events` (`isActive`, `dateTime`)',
+    ],
   ),
   collection(
     IDS.gallery,
@@ -296,7 +308,10 @@ const collections = [
       number('displayOrder', { required: true, min: 0 }),
       bool('isActive'),
     ],
-    ['CREATE INDEX `idx_services_order` ON `services` (`displayOrder`)'],
+    [
+      'CREATE INDEX `idx_services_order` ON `services` (`displayOrder`)',
+      'CREATE INDEX `idx_services_active_order` ON `services` (`isActive`, `displayOrder`)',
+    ],
   ),
   collection(
     IDS.teamRoles,
@@ -320,7 +335,10 @@ const collections = [
       ...localizedEditor('description'),
       bool('isActive'),
     ],
-    ['CREATE INDEX `idx_team_name` ON `team_members` (`lastName`, `firstName`)'],
+    [
+      'CREATE INDEX `idx_team_name` ON `team_members` (`lastName`, `firstName`)',
+      'CREATE INDEX `idx_team_active` ON `team_members` (`isActive`)',
+    ],
   ),
   collection(
     IDS.partners,
@@ -330,7 +348,10 @@ const collections = [
       number('displayOrder', { required: true, min: 0 }),
       bool('isActive'),
     ],
-    ['CREATE INDEX `idx_partners_order` ON `partners` (`displayOrder`)'],
+    [
+      'CREATE INDEX `idx_partners_order` ON `partners` (`displayOrder`)',
+      'CREATE INDEX `idx_partners_active_order` ON `partners` (`isActive`, `displayOrder`)',
+    ],
   ),
   collection(
     IDS.navLinks,
@@ -342,7 +363,10 @@ const collections = [
       number('displayOrder', { required: true, min: 1 }),
       bool('isActive'),
     ],
-    ['CREATE INDEX `idx_nav_links_order` ON `nav_links` (`displayOrder`)'],
+    [
+      'CREATE INDEX `idx_nav_links_order` ON `nav_links` (`displayOrder`)',
+      'CREATE INDEX `idx_nav_links_active_order` ON `nav_links` (`isActive`, `displayOrder`)',
+    ],
   ),
 ];
 

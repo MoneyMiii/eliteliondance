@@ -244,14 +244,16 @@ export default function Carousel({
 
       <div
         ref={viewportRef}
-        className="w-full min-w-0 touch-pan-y overflow-hidden outline-none"
+        className="w-full min-w-0 touch-pan-y overflow-hidden pt-10 pb-6 outline-none sm:pt-14 sm:pb-8"
         data-carousel=""
         tabIndex={looping ? 0 : undefined}
         onKeyDown={onKeyDown}
         onDragStart={(event) => event.preventDefault()}
       >
         <div
-          className={`flex w-full min-w-0 ${align === 'start' ? 'items-start' : 'items-stretch'}`}
+          className={`flex w-full min-w-0 ${
+            visible > 1 ? 'items-stretch' : align === 'start' ? 'items-start' : 'items-stretch'
+          }`}
           style={{
             transform: `translate3d(calc(${offset} * -100% / ${visible}), 0, 0)`,
             transition: animate ? 'transform 0.65s cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
@@ -261,20 +263,30 @@ export default function Carousel({
           {Array.from({ length: trackLength }, (_, trackIndex) => {
             const slideIndex = slideAt(trackIndex);
             const slide = slides[slideIndex];
-            const isCenter = trackIndex === offset + centerOffset;
+            const centerTrack = offset + centerOffset;
+            const isCenter =
+              trackIndex === centerTrack ||
+              trackIndex === centerTrack - count ||
+              trackIndex === centerTrack + count;
             const offscreen = trackIndex < offset || trackIndex >= offset + visible;
+            const featured = visible > 1;
             return (
               <div
                 key={`${trackIndex}-${slideIndex}`}
-                className={`box-border min-w-0 shrink-0 grow-0 overflow-hidden transition-opacity duration-500 ${
-                  visible > 1 && !isCenter ? 'opacity-55' : 'opacity-100'
-                }`}
+                className={`relative box-border min-w-0 shrink-0 grow-0 [&>*]:h-full ${
+                  featured && isCenter ? 'z-[2] opacity-100' : ''
+                } ${featured && !isCenter ? 'z-[1] opacity-55' : ''} ${!featured ? 'opacity-100' : ''}`}
                 style={{
                   flex: `0 0 calc(100% / ${visible})`,
                   width: `calc(100% / ${visible})`,
                   maxWidth: `calc(100% / ${visible})`,
                   paddingLeft: edgePad,
                   paddingRight: edgePad,
+                  transform: featured ? `scale(${isCenter ? 1.12 : 0.9})` : undefined,
+                  transformOrigin: 'center bottom',
+                  transition: animate
+                    ? 'transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1)'
+                    : 'none',
                 }}
                 aria-hidden={offscreen || undefined}
                 data-active={isCenter || undefined}

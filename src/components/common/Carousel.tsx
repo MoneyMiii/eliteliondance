@@ -42,6 +42,11 @@ function visibleForViewport(desktopCount: number, mobileCount = 1) {
   return window.matchMedia(DESKTOP_MQ).matches ? Math.max(1, desktopCount) : Math.max(1, mobileCount);
 }
 
+function uniqueVisible(requested: number, count: number) {
+  const cap = Math.max(1, Math.min(requested, count));
+  return cap > 1 && cap % 2 === 0 ? cap - 1 : cap;
+}
+
 function toSlides(children: ReactNode): ReactElement[] {
   return Children.toArray(children).filter(isValidElement) as ReactElement[];
 }
@@ -67,7 +72,9 @@ export default function Carousel({
   const wrapTimerRef = useRef(0);
 
   const isComputer = useIsComputer();
-  const [visible, setVisible] = useState(() => visibleForViewport(visibleCount, mobileCount));
+  const [visible, setVisible] = useState(() =>
+    uniqueVisible(visibleForViewport(visibleCount, mobileCount), count),
+  );
   const [offset, setOffset] = useState(0);
   const [animate, setAnimate] = useState(false);
 
@@ -82,14 +89,14 @@ export default function Carousel({
 
   useLayoutEffect(() => {
     const sync = () => {
-      const next = visibleForViewport(visibleCount, mobileCount);
+      const next = uniqueVisible(visibleForViewport(visibleCount, mobileCount), count);
       setVisible((current) => (current === next ? current : next));
     };
     sync();
     const desktop = window.matchMedia(DESKTOP_MQ);
     desktop.addEventListener('change', sync);
     return () => desktop.removeEventListener('change', sync);
-  }, [mobileCount, visibleCount]);
+  }, [count, mobileCount, visibleCount]);
 
   useLayoutEffect(() => {
     animatingRef.current = false;
@@ -259,11 +266,7 @@ export default function Carousel({
           {Array.from({ length: trackLength }, (_, trackIndex) => {
             const slideIndex = slideAt(trackIndex);
             const slide = slides[slideIndex];
-            const centerTrack = offset + centerOffset;
-            const isCenter =
-              trackIndex === centerTrack ||
-              trackIndex === centerTrack - count ||
-              trackIndex === centerTrack + count;
+            const isCenter = trackIndex === offset + centerOffset;
             const offscreen = trackIndex < offset || trackIndex >= offset + visible;
             const featured = visible > 1;
             return (

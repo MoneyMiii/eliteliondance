@@ -183,10 +183,10 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
               />
             )}
             <nav
-              className="container-page page-y relative z-10 flex h-full flex-col"
+              className="container-page relative z-10 flex h-full min-h-0 flex-col"
               aria-label={t(labels, 'nav.main')}
             >
-              <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain font-display text-4xl uppercase sm:text-5xl">
+              <div className="menu-links flex min-h-0 flex-1 flex-col font-display uppercase">
                 {navLinks.map((link) => (
                   <a
                     key={link.id}
@@ -202,7 +202,7 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
               {instagramUrl && (
                 <a
                   href={instagramUrl}
-                  className="menu-social mt-6 inline-flex w-fit text-ink hover:text-brand"
+                  className="menu-social inline-flex w-fit shrink-0 text-ink hover:text-brand"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={t(labels, 'cta.instagram')}

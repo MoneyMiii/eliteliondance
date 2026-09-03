@@ -34,8 +34,6 @@ interface Props {
   prevLabel: string;
   nextLabel: string;
   goToLabel?: string;
-  paused?: boolean;
-  align?: 'stretch' | 'start';
   children: ReactNode;
 }
 
@@ -56,8 +54,6 @@ export default function Carousel({
   prevLabel,
   nextLabel,
   goToLabel = 'carousel.goTo',
-  paused = false,
-  align = 'stretch',
   children,
 }: Props) {
   const slides = useMemo(() => toSlides(children), [children]);
@@ -205,14 +201,14 @@ export default function Carousel({
   }, []);
 
   useEffect(() => {
-    if (!looping || paused || !isComputer) return;
+    if (!looping || !isComputer) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const id = window.setInterval(() => {
       if (hoveredRef.current || animatingRef.current) return;
       step(1);
     }, AUTOPLAY_MS);
     return () => window.clearInterval(id);
-  }, [isComputer, looping, paused, step]);
+  }, [isComputer, looping, step]);
 
   const onTrackTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
@@ -253,9 +249,7 @@ export default function Carousel({
         onDragStart={(event) => event.preventDefault()}
       >
         <div
-          className={`flex w-full min-w-0 ${
-            visible > 1 ? 'items-stretch' : align === 'start' ? 'items-start' : 'items-stretch'
-          }`}
+          className="flex w-full min-w-0 items-stretch"
           style={{
             transform: `translate3d(calc(${offset} * -100% / ${visible}), 0, 0)`,
             transition: animate ? 'transform 0.65s cubic-bezier(0.22, 1, 0.36, 1)' : 'none',

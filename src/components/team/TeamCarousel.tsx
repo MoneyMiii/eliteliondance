@@ -16,7 +16,6 @@ export default function TeamCarousel({ labels, members, logoMark }: Props) {
       labels={labels}
       visibleCount={5}
       mobileCount={3}
-      align="stretch"
       ariaLabel={t(labels, 'team.carousel')}
       prevLabel={t(labels, 'carousel.prev')}
       nextLabel={t(labels, 'carousel.next')}

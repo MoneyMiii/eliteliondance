@@ -1,5 +1,5 @@
 export type Labels = Record<string, string>;
-export type TVars = Record<string, string | number>;
+type TVars = Record<string, string | number>;
 
 export function fill(template: string, vars?: TVars): string {
   if (!vars) return template;

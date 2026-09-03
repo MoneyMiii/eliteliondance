@@ -1,20 +1,16 @@
 @import "tailwindcss";
 
 @custom-variant computer (@media (hover: hover) and (pointer: fine) and (not (pointer: coarse)));
-@custom-variant touch (@media (pointer: coarse), (hover: none));
 
 @theme {
   --color-ink: #141a14;
   --color-forest: #eef3ee;
   --color-brand: #2e592b;
-  --color-glow: #2e592b;
   --color-mist: #6b746c;
   --color-paper: #ffffff;
-  --color-line: #d8e2d8;
 
   --font-display: "Oswald", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   --font-body: "Outfit", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-cjk: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
 
   --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -173,8 +169,7 @@
     border-radius: 1.5rem;
   }
 
-  .media-frame img,
-  .media-frame video {
+  .media-frame img {
     @apply h-full w-full object-cover;
   }
 

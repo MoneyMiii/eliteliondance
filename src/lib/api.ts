@@ -1,5 +1,5 @@
 import { COLLECTIONS } from './collections';
-import { fetchRecords, type FetchOptions } from './cms';
+import { fetchRecords } from './cms';
 import { sortAgendaEvents } from './events';
 import type { Labels } from './i18n';
 import type { Locale } from './locale';
@@ -49,11 +49,11 @@ const HOME_SECTION_FIELDS = `${META},slot,displayOrder,isActive,anchor,title_fr,
 const PAGE_FIELDS = `${META},slug,title_fr,title_zh,subtitle_fr,subtitle_zh,content_fr,content_zh,image,ctaLabel_fr,ctaLabel_zh,ctaUrl`;
 const ABOUT_FIELDS = `${META},title_fr,title_zh,content_fr,content_zh,image,displayOrder`;
 
-export type CmsData<T> = { ok: true; data: T } | { ok: false };
+type CmsData<T> = { ok: true; data: T } | { ok: false };
 
 async function loadList<T>(
   collection: string,
-  options: FetchOptions = {},
+  options: Parameters<typeof fetchRecords>[1] = {},
 ): Promise<T[] | null> {
   const records = await fetchRecords<T>(collection, options);
   return records.ok ? records.data : null;
@@ -277,8 +277,6 @@ async function getHomeSections(locale: Locale): Promise<
     .filter((record) => isHomepageSectionKey(record.slot))
     .map((record) => ({
       key: record.slot as HomepageSection['key'],
-      displayOrder: record.displayOrder ?? 0,
-      title: getLocalizedValue(record, 'title', locale),
     }));
 
   return { ok: true, data: { sections, content } };

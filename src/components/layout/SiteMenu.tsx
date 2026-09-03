@@ -44,7 +44,6 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
   const [open, setOpen] = useState(false);
   const [rendered, setRendered] = useState(false);
   const [shown, setShown] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLButtonElement>(null);
   const pendingHashRef = useRef<string | null>(null);
   const titleId = useId();
@@ -162,7 +161,6 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
       {rendered &&
         createPortal(
           <div
-            ref={panelRef}
             id="site-nav"
             className={`site-menu-panel${shown ? ' is-open' : ''}`}
             role="dialog"

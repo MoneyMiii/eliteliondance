@@ -3,7 +3,7 @@ import { getPocketBase } from './pocketbase';
 
 type CmsList<T> = { ok: true; data: T[] } | { ok: false };
 
-export type FetchOptions = {
+type FetchOptions = {
   filter?: string;
   sort?: string;
   expand?: string;

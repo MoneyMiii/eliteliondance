@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { t, type Labels } from '../../lib/i18n';
 import { contactFieldErrors, type ContactField, type ContactFieldIssue } from '../../lib/contact-validation';
 
-export interface ContactServiceOption {
+interface ContactServiceOption {
   id: string;
   title: string;
 }

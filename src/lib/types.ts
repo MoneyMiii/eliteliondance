@@ -48,8 +48,6 @@ export interface TeamMemberRecord extends PocketBaseRecord {
   lastName: string;
   photo: string;
   roles?: string[] | string;
-  description_fr?: string;
-  description_zh?: string;
   isActive: boolean;
   expand?: {
     roles?: TeamRoleRecord | TeamRoleRecord[];
@@ -117,7 +115,7 @@ export interface PageRecord extends EditorialRecord {
   slug: PageSlug | string;
 }
 
-export const HOMEPAGE_SECTION_KEYS = [
+const HOMEPAGE_SECTION_KEYS = [
   'hero',
   'intro',
   'services',
@@ -130,8 +128,7 @@ export const HOMEPAGE_SECTION_KEYS = [
 
 export type HomepageSectionKey = (typeof HOMEPAGE_SECTION_KEYS)[number];
 
-export const PAGE_SLUGS = ['about', 'contact'] as const;
-export type PageSlug = (typeof PAGE_SLUGS)[number];
+export type PageSlug = 'about' | 'contact';
 
 export function isHomepageSectionKey(value: string): value is HomepageSectionKey {
   return (HOMEPAGE_SECTION_KEYS as readonly string[]).includes(value);
@@ -196,8 +193,6 @@ export interface EditorialBlock {
 
 export interface HomepageSection {
   key: HomepageSectionKey;
-  title?: string;
-  displayOrder: number;
 }
 
 export interface SiteSettings {

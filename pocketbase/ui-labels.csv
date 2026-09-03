@@ -94,11 +94,17 @@ form.lastName,Nom,姓,true
 form.firstName,Prénom,名,true
 form.email,Email,邮箱,true
 form.phone,Téléphone,电话,true
+form.service,Prestation,服务,true
+form.servicePlaceholder,Choisir une prestation,请选择一项服务,true
 form.message,Message,留言,true
 form.submit,Envoyer la demande,发送请求,true
 form.success,Votre demande a bien été envoyée. Nous vous recontacterons rapidement.,您的请求已发送。我们会尽快与您联系。,true
 form.error,Impossible d’envoyer la demande pour le moment. Réessayez dans quelques instants.,暂时无法发送请求，请稍后再试。,true
-form.invalid,"Merci de renseigner le nom, l’email, le téléphone et le message.",请填写姓氏、邮箱、电话和留言。,true
+form.invalid,"Merci de renseigner le nom, l’email, le téléphone, la prestation et le message.",请填写姓氏、邮箱、电话、服务和留言。,true
+form.required,Ce champ est obligatoire.,此项为必填。,true
+form.invalidEmail,Adresse e-mail invalide.,邮箱地址无效。,true
+form.invalidPhone,Numéro de téléphone invalide.,电话号码无效。,true
+form.invalidService,Merci de choisir une prestation.,请选择一项服务。,true
 form.sending,Envoi…,发送中…,true
 form.honeypot,Société,公司,true
 form.emptyValue,-,-,true

@@ -235,7 +235,7 @@ export default function Carousel({
   return (
     <div
       ref={rootRef}
-      className="relative w-full min-w-0 max-w-full overflow-hidden isolate"
+      className="relative isolate w-full min-w-0 max-w-full select-none overflow-hidden"
       aria-labelledby={labelId}
     >
       <p id={labelId} className="sr-only">
@@ -248,6 +248,7 @@ export default function Carousel({
         data-carousel=""
         tabIndex={looping ? 0 : undefined}
         onKeyDown={onKeyDown}
+        onDragStart={(event) => event.preventDefault()}
       >
         <div
           className={`flex w-full min-w-0 ${align === 'start' ? 'items-start' : 'items-stretch'}`}

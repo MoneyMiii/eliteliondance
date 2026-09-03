@@ -55,7 +55,7 @@ export default function GalleryLightbox({ labels, items, index, onClose, onStep 
   return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[60] flex overscroll-x-none items-center justify-center bg-ink/88 p-4 sm:p-8"
+      className="fixed inset-0 z-[60] flex select-none items-center justify-center overscroll-x-none bg-ink/88 p-4 sm:p-8"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -112,7 +112,7 @@ export default function GalleryLightbox({ labels, items, index, onClose, onStep 
         </>
       )}
 
-      <figure className="max-h-[86svh] max-w-[min(92vw,72rem)]" onClick={(event) => event.stopPropagation()}>
+      <figure className="max-h-[86svh] max-w-[min(92vw,72rem)]" onClick={(event) => event.stopPropagation()} onDragStart={(event) => event.preventDefault()}>
         <img
           src={item.image}
           alt=""

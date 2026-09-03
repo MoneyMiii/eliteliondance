@@ -28,7 +28,7 @@ On n’envoie **pas** « depuis l’adresse du visiteur » : les anti-spam refus
 | Destinataire (`to`) | `min.sun@efrei.net` | `.env` → `CONTACT_TO_EMAIL`, sinon PocketBase `settings.contactEmail` |
 | Répondre à (`reply_to`) | e-mail saisi dans le formulaire | le visiteur |
 | Sujet | `Contact : {nom}` | libellé `form.emailSubject` |
-| Corps | nom, prénom, e-mail, téléphone, message | le formulaire |
+| Corps | nom, prénom, e-mail, téléphone, prestation, message | le formulaire |
 
 Un clic sur **Répondre** dans la messagerie ouvre un brouillon vers le visiteur, pas vers `noreply`.
 

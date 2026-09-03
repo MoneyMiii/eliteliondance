@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeading from '../components/common/PageHeading.astro';
 import ContactForm from '../components/contact/ContactForm';
-import { getLayoutData, getPage } from '../lib/api';
+import { getLayoutData, getPage, getServices } from '../lib/api';
 import { createT } from '../lib/i18n';
 import { getRequestLocale } from '../lib/request-locale';
 import type { EditorialBlock, Partner } from '../lib/types';
@@ -13,15 +13,21 @@ const labels = Astro.locals.labels ?? {};
 let partners: Partner[] = [];
 let instagramUrl = '';
 let hero: EditorialBlock | undefined;
-if (Astro.locals.cmsAvailable) {
-  const [layout, heroResult] = await Promise.all([getLayoutData(locale), getPage('contact', locale)]);
-  if (!layout.ok || !heroResult.ok) {
-    Astro.locals.cmsAvailable = false;
-  } else {
-    partners = layout.data.partners;
-    instagramUrl = layout.data.settings.instagramUrl;
-    hero = heroResult.data;
-  }
+let services: { id: string; title: string }[] = [];
+const [layout, heroResult, servicesResult] = await Promise.all([
+  getLayoutData(locale),
+  getPage('contact', locale),
+  getServices(locale),
+]);
+if (layout.ok && heroResult.ok) {
+  partners = layout.data.partners;
+  instagramUrl = layout.data.settings.instagramUrl;
+  hero = heroResult.data;
+} else {
+  Astro.locals.cmsAvailable = false;
+}
+if (servicesResult.ok) {
+  services = servicesResult.data.map((service) => ({ id: service.id, title: service.title }));
 }
 ---
 
@@ -39,6 +45,6 @@ if (Astro.locals.cmsAvailable) {
       title={hero?.title || t('contact.title')}
       lede={hero?.subtitle || t('contact.intro')}
     />
-    <ContactForm labels={labels} client:load />
+    <ContactForm labels={labels} services={services} client:load />
   </section>
 </BaseLayout>

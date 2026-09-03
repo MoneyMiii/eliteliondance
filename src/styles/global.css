@@ -129,6 +129,11 @@
     @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-brand/45 bg-paper text-ink transition-colors hover:border-brand hover:text-brand;
   }
 
+  [data-carousel] img,
+  [data-cursor="drag"] {
+    -webkit-user-drag: none;
+  }
+
   .eyebrow {
     @apply font-display text-[0.72rem] uppercase tracking-[0.34em] text-brand;
   }

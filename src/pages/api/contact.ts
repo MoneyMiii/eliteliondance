@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { getSettings, getUiLabels } from '../../lib/api';
+import { getServices, getSettings, getUiLabels } from '../../lib/api';
+import { contactFieldErrors } from '../../lib/contact-validation';
 import { getRequestLocale } from '../../lib/request-locale';
 import { t } from '../../lib/i18n';
 
@@ -36,16 +37,18 @@ function clean(value: unknown, max = 2000): string {
   return value.replace(/[\r\n]+/g, ' ').trim().slice(0, max);
 }
 
-function isEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
 function firstValue(...values: (string | undefined)[]): string | undefined {
   for (const value of values) {
     const trimmed = value?.trim();
     if (trimmed) return trimmed;
   }
   return undefined;
+}
+
+function readSecret(name: string): string {
+  const fromProcess = typeof process !== 'undefined' ? process.env[name] : undefined;
+  const fromImport = (import.meta.env as Record<string, string | undefined>)[name];
+  return (fromProcess || fromImport || '').trim().replace(/^["']|["']$/g, '');
 }
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -68,20 +71,35 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const firstName = clean(payload.firstName, 120);
   const email = clean(payload.email, 180);
   const phone = clean(payload.phone, 40);
+  const serviceId = clean(payload.service, 40);
   const message = clean(payload.message, 5000);
 
-  if (!lastName || !email || !phone || !message || !isEmail(email)) {
-    return new Response(JSON.stringify({ ok: false, error: 'invalid' }), { status: 400 });
-  }
-
   const locale = getRequestLocale(cookies);
-  const [labelsResult, settingsResult] = await Promise.all([getUiLabels(locale), getSettings()]);
+  const [labelsResult, settingsResult, servicesResult] = await Promise.all([
+    getUiLabels(locale),
+    getSettings(),
+    getServices(locale),
+  ]);
   const labels = labelsResult.ok ? labelsResult.data : {};
   const settings = settingsResult.ok ? settingsResult.data : undefined;
+  const services = servicesResult.ok ? servicesResult.data : [];
+  const selectedService = services.find((service) => service.id === serviceId);
 
-  const to = firstValue(import.meta.env.CONTACT_TO_EMAIL, settings?.contactEmail) ?? DEFAULT_TO;
-  const from = firstValue(import.meta.env.CONTACT_FROM_EMAIL) ?? DEFAULT_FROM;
-  const resendKey = import.meta.env.RESEND_API_KEY?.trim();
+  const fields = contactFieldErrors({
+    lastName,
+    email,
+    phone,
+    message,
+    service: selectedService ? selectedService.id : '',
+    serviceRequired: services.length > 0,
+  });
+  if (Object.keys(fields).length) {
+    return new Response(JSON.stringify({ ok: false, error: 'invalid', fields }), { status: 400 });
+  }
+
+  const to = firstValue(readSecret('CONTACT_TO_EMAIL'), settings?.contactEmail) ?? DEFAULT_TO;
+  const from = firstValue(readSecret('CONTACT_FROM_EMAIL')) ?? DEFAULT_FROM;
+  const resendKey = readSecret('RESEND_API_KEY');
 
   const empty = t(labels, 'form.emptyValue') || '-';
   const subject = t(labels, 'form.emailSubject', { name: lastName }) || `Contact : ${lastName}`;
@@ -90,12 +108,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     `${t(labels, 'form.firstName') || 'Prénom'}: ${firstName || empty}`,
     `${t(labels, 'form.email') || 'E-mail'}: ${email}`,
     `${t(labels, 'form.phone') || 'Téléphone'}: ${phone}`,
+    `${t(labels, 'form.service') || 'Prestation'}: ${selectedService?.title || empty}`,
     '',
     message,
   ].join('\n');
 
   if (!resendKey) {
-    console.info('[contact] captured request (no RESEND_API_KEY)', { to, from, lastName, email, phone });
+    console.info('[contact] captured request (no RESEND_API_KEY)', { to, from, lastName, email, phone, service: selectedService?.title });
     if (import.meta.env.PROD) {
       return new Response(JSON.stringify({ ok: false, error: 'unconfigured' }), { status: 503 });
     }

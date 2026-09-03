@@ -9,19 +9,19 @@ interface Props {
 const { icon, photo, title, description } = Astro.props;
 ---
 
-<article class="relative flex min-h-[22rem] min-w-0 flex-col overflow-hidden rounded-[1.75rem] bg-forest">
+<article class="relative h-full min-w-0 overflow-hidden rounded-[1.75rem] bg-forest">
   {photo && <img src={photo} alt="" class="absolute inset-0 block size-full object-cover" />}
-  <div class="relative flex min-h-[22rem] flex-1 flex-col p-5">
+  <div class="relative flex h-full flex-col p-5">
     {icon && (
-      <span class="inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-white/90 text-brand">
+      <span class="inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/90 text-brand">
         <img src={icon} alt="" class="h-9 w-9 object-contain" />
       </span>
     )}
     <div class="mt-auto rounded-2xl bg-white/92 px-5 py-4 backdrop-blur-sm">
-      <h3 class="break-words font-display text-3xl uppercase leading-none text-[#2e592b]">
+      <h3 class="line-clamp-2 break-words font-display text-3xl uppercase leading-none text-[#2e592b]">
         {title}
       </h3>
-      <p class="mt-3 text-sm leading-relaxed text-[#2e592b]">{description}</p>
+      <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-[#2e592b]">{description}</p>
     </div>
   </div>
 </article>

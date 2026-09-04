@@ -35,7 +35,7 @@ function TeamCard({
   logoMark?: string;
 }) {
   return (
-    <article className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-hidden rounded-[1.25rem] bg-forest [container-type:inline-size]">
+    <article className="mx-auto flex h-full min-h-0 min-w-0 w-full max-w-[6.75rem] flex-col overflow-hidden rounded-[1.25rem] bg-forest [container-type:inline-size] sm:max-w-[8.75rem] lg:max-w-[11.5rem]">
       <div className="aspect-[3/4] w-full shrink-0 overflow-hidden">
         {member.photo ? (
           <img

@@ -23,6 +23,7 @@ import type { Labels } from '../../lib/i18n';
 
 const GAP_PX = 20;
 const AUTOPLAY_MS = 3000;
+const AUTOPLAY_RESUME_MS = 10_000;
 const TRANSITION_MS = 650;
 const DESKTOP_MQ = '(min-width: 1024px)';
 
@@ -70,6 +71,10 @@ export default function Carousel({
   const animatingRef = useRef(false);
   const hoveredRef = useRef(false);
   const wrapTimerRef = useRef(0);
+  const autoplayTimerRef = useRef(0);
+  const resumeTimerRef = useRef(0);
+  const startAutoplayRef = useRef(() => {});
+  const stopAutoplayRef = useRef(() => {});
 
   const isComputer = useIsComputer();
   const [visible, setVisible] = useState(() =>
@@ -183,13 +188,31 @@ export default function Carousel({
     [baseOffset, count, looping, maxOffset, realIndex, shortestDelta, wrapOffset],
   );
 
-  useHorizontalPager(viewportRef, step, { enabled: looping });
+  const markUserAction = useCallback(() => {
+    stopAutoplayRef.current();
+    window.clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = window.setTimeout(() => {
+      startAutoplayRef.current();
+    }, AUTOPLAY_RESUME_MS);
+  }, []);
 
-  useEffect(() => () => window.clearTimeout(wrapTimerRef.current), []);
+  const stepRef = useRef(step);
+  stepRef.current = step;
+
+  useHorizontalPager(viewportRef, step, { enabled: looping, onInteract: markUserAction });
+
+  useEffect(() => () => {
+    window.clearTimeout(wrapTimerRef.current);
+    window.clearTimeout(resumeTimerRef.current);
+    window.clearInterval(autoplayTimerRef.current);
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
+    if (!root || !isComputer) {
+      hoveredRef.current = false;
+      return;
+    }
 
     const enter = () => {
       hoveredRef.current = true;
@@ -205,17 +228,29 @@ export default function Carousel({
       root.removeEventListener('pointerenter', enter);
       root.removeEventListener('pointerleave', leave);
     };
-  }, []);
+  }, [isComputer]);
 
   useEffect(() => {
-    if (!looping || !isComputer) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const id = window.setInterval(() => {
-      if (hoveredRef.current || animatingRef.current) return;
-      step(1);
-    }, AUTOPLAY_MS);
-    return () => window.clearInterval(id);
-  }, [isComputer, looping, step]);
+    const stop = () => {
+      window.clearInterval(autoplayTimerRef.current);
+      autoplayTimerRef.current = 0;
+    };
+    const start = () => {
+      stop();
+      if (!looping) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      autoplayTimerRef.current = window.setInterval(() => {
+        if (animatingRef.current) return;
+        if (hoveredRef.current) return;
+        stepRef.current(1);
+      }, AUTOPLAY_MS);
+    };
+
+    startAutoplayRef.current = start;
+    stopAutoplayRef.current = stop;
+    start();
+    return stop;
+  }, [looping]);
 
   const onTrackTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
@@ -226,9 +261,11 @@ export default function Carousel({
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'ArrowRight') {
       event.preventDefault();
+      markUserAction();
       step(1);
     } else if (event.key === 'ArrowLeft') {
       event.preventDefault();
+      markUserAction();
       step(-1);
     }
   };
@@ -240,6 +277,10 @@ export default function Carousel({
       ref={rootRef}
       className="relative isolate w-full min-w-0 max-w-full select-none overflow-hidden"
       aria-labelledby={labelId}
+      onPointerDownCapture={(event) => {
+        if (!event.isPrimary) return;
+        markUserAction();
+      }}
     >
       <p id={labelId} className="sr-only">
         {ariaLabel}
@@ -272,7 +313,7 @@ export default function Carousel({
             return (
               <div
                 key={`${trackIndex}-${slideIndex}`}
-                className={`relative box-border min-w-0 shrink-0 grow-0 [&>*]:h-full ${
+                className={`relative box-border flex min-w-0 shrink-0 grow-0 items-center justify-center [&>*]:h-full ${
                   featured && isCenter ? 'z-[2] opacity-100' : ''
                 } ${featured && !isCenter ? 'z-[1] opacity-55' : ''} ${!featured ? 'opacity-100' : ''}`}
                 style={{
@@ -301,16 +342,16 @@ export default function Carousel({
 
       {looping && (
         <>
-          <button type="button" className="icon-btn absolute left-2 top-1/2 z-10 -translate-y-1/2 sm:left-3" aria-label={prevLabel} onClick={() => step(-1)}>
+          <button type="button" className="icon-btn absolute left-2 top-1/2 z-10 -translate-y-1/2 sm:left-3" aria-label={prevLabel} onClick={() => { markUserAction(); step(-1); }}>
             <ArrowIcon className="rotate-180" />
           </button>
-          <button type="button" className="icon-btn absolute right-2 top-1/2 z-10 -translate-y-1/2 sm:right-3" aria-label={nextLabel} onClick={() => step(1)}>
+          <button type="button" className="icon-btn absolute right-2 top-1/2 z-10 -translate-y-1/2 sm:right-3" aria-label={nextLabel} onClick={() => { markUserAction(); step(1); }}>
             <ArrowIcon />
           </button>
         </>
       )}
 
-      <CarouselDots labels={labels} count={count} selected={index} goToLabel={goToLabel} onSelect={goToIndex} />
+      <CarouselDots labels={labels} count={count} selected={index} goToLabel={goToLabel} onSelect={(slideIndex) => { markUserAction(); goToIndex(slideIndex); }} />
     </div>
   );
 }

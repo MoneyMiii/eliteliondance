@@ -4,20 +4,23 @@ import { createOneStepGesture, DRAG_PX, horizontalWheelDx, isPagerPhotoTarget, W
 interface Options {
   enabled: boolean;
   onDrag?: () => void;
+  onInteract?: () => void;
 }
 
 export function useHorizontalPager(
   rootRef: RefObject<HTMLElement | null>,
   onStep: (delta: 1 | -1) => void,
-  { enabled, onDrag }: Options,
+  { enabled, onDrag, onInteract }: Options,
 ) {
   const onStepRef = useRef(onStep);
   const onDragRef = useRef(onDrag);
+  const onInteractRef = useRef(onInteract);
   const gestureRef = useRef(createOneStepGesture());
   const pointerIdRef = useRef<number | null>(null);
   const pointerXRef = useRef(0);
   onStepRef.current = onStep;
   onDragRef.current = onDrag;
+  onInteractRef.current = onInteract;
 
   useEffect(() => {
     const root = rootRef.current;
@@ -30,6 +33,7 @@ export function useHorizontalPager(
       if (!dx) return;
       event.preventDefault();
       if (pointerIdRef.current != null) return;
+      onInteractRef.current?.();
       gesture.tryRun(() => onStepRef.current(dx > 0 ? 1 : -1));
     };
 
@@ -37,6 +41,7 @@ export function useHorizontalPager(
       if (event.button !== 0 || !isPagerPhotoTarget(event.target)) return;
       pointerIdRef.current = event.pointerId;
       pointerXRef.current = event.clientX;
+      onInteractRef.current?.();
       root.setPointerCapture(event.pointerId);
     };
 

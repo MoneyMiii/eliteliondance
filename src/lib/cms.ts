@@ -1,7 +1,15 @@
 import { recordsCache } from './cms-cache';
 import { getPocketBase } from './pocketbase';
 
-type CmsList<T> = { ok: true; data: T[] } | { ok: false };
+export type CmsResult<T> = { ok: true; data: T } | { ok: false };
+
+export function takeCms<T>(locals: { cmsAvailable: boolean }, result: CmsResult<T>): T | undefined {
+  if (!result.ok) {
+    locals.cmsAvailable = false;
+    return undefined;
+  }
+  return result.data;
+}
 
 type FetchOptions = {
   filter?: string;
@@ -27,7 +35,7 @@ function cacheKey(collection: string, options: FetchOptions): string {
 export async function fetchRecords<T>(
   collection: string,
   options: FetchOptions = {},
-): Promise<CmsList<T>> {
+): Promise<CmsResult<T[]>> {
   const pb = getPocketBase();
   if (!pb) return { ok: false };
 

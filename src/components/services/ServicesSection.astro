@@ -1,8 +1,8 @@
 ---
 import type { EditorialBlock, ServiceItem } from '../../lib/types';
 import SectionTitle from '../common/SectionTitle.astro';
+import SectionCta from '../common/SectionCta.astro';
 import ServicesGrid from './ServicesGrid';
-import Button from '../common/Button.astro';
 
 interface Props {
   content?: EditorialBlock;
@@ -25,9 +25,5 @@ const heading = Boolean(content?.title || content?.subtitle);
     </div>
   )}
   <ServicesGrid labels={labels} services={services} client:visible />
-  {content?.ctaLabel && content?.ctaUrl && (
-    <div class="mt-10 flex justify-center">
-      <Button href={content.ctaUrl}>{content.ctaLabel}</Button>
-    </div>
-  )}
+  <SectionCta href={content?.ctaUrl} label={content?.ctaLabel} />
 </section>

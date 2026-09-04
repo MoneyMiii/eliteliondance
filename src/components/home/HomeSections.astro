@@ -29,11 +29,10 @@ const CUTS: Record<HomepageSectionKey, { dir: 'a' | 'b'; depth: string }> = {
 
 const { home } = Astro.props;
 const rest = home.sections.filter((section) => !PRESENTATION.has(section.key));
-const bands = home.sections.map((section) => {
-  if (PRESENTATION.has(section.key)) return { section, dark: false };
-  const index = rest.findIndex((item) => item.key === section.key);
-  return { section, dark: index % 2 === 0 };
-});
+const bands = home.sections.map((section) => ({
+  section,
+  dark: !PRESENTATION.has(section.key) && rest.findIndex((item) => item.key === section.key) % 2 === 0,
+}));
 ---
 
 {bands.map(({ section, dark }, index) => {
@@ -58,7 +57,6 @@ const bands = home.sections.map((section) => {
         events={home.upcomingEvents}
         hasMoreUpcoming={home.hasMoreUpcoming}
         content={home.content['home.events']}
-        logoMark={home.logoMark}
       />
     )}
     {section.key === 'gallery' && (
@@ -66,10 +64,10 @@ const bands = home.sections.map((section) => {
     )}
     {section.key === 'about' && <AboutPreview content={home.content['home.about']} />}
     {section.key === 'team' && (
-      <TeamSection members={home.team} content={home.content['home.team']} logoMark={home.logoMark} />
+      <TeamSection members={home.team} content={home.content['home.team']} />
     )}
     {section.key === 'instagram' && (
-      <InstagramSection content={home.content['home.instagram']} instagramUrl={home.instagramUrl} />
+      <InstagramSection content={home.content['home.instagram']} />
     )}
   </div>
   );

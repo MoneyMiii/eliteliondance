@@ -3,7 +3,8 @@ import { sortAgendaEvents, sortPastEvents, sortUpcomingEvents, type EventFilter 
 import type { Locale } from '../../lib/locale';
 import type { EventItem } from '../../lib/types';
 import { t, type Labels } from '../../lib/i18n';
-import EventCard from './EventCard';
+import EmptyState from '../common/EmptyState';
+import EventsGrid from './EventsGrid';
 
 interface Props {
   locale: Locale;
@@ -44,13 +45,9 @@ export default function EventsList({ locale, labels, events, initialFilter = 'al
         ))}
       </div>
       {visible.length ? (
-        <div className="grid items-start gap-4 pt-1 md:grid-cols-2">
-          {visible.map((event) => (
-            <EventCard key={event.id} locale={locale} labels={labels} event={event} logoMark={logoMark} />
-          ))}
-        </div>
+        <EventsGrid locale={locale} labels={labels} events={visible} logoMark={logoMark} />
       ) : (
-        <p className="rounded-3xl border border-brand/15 px-6 py-12 text-center text-mist">{t(labels, 'events.empty')}</p>
+        <EmptyState message={t(labels, 'events.empty')} />
       )}
     </div>
   );

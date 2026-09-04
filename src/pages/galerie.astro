@@ -2,35 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeading from '../components/common/PageHeading.astro';
 import GallerySection from '../components/gallery/GallerySection.astro';
-import { getGallery, getPartners } from '../lib/api';
+import { getGallery } from '../lib/api';
+import { takeCms } from '../lib/cms';
 import { createT } from '../lib/i18n';
-import { getRequestLocale } from '../lib/request-locale';
-import type { GalleryItem, Partner } from '../lib/types';
 
-const locale = getRequestLocale(Astro.cookies);
 const t = createT(Astro.locals.labels);
-let items: GalleryItem[] = [];
-let partners: Partner[] = [];
-const instagramUrl = Astro.locals.settings?.instagramUrl ?? '';
-if (Astro.locals.cmsAvailable) {
-  const [gallery, partnersResult] = await Promise.all([getGallery(), getPartners()]);
-  if (!gallery.ok || !partnersResult.ok) {
-    Astro.locals.cmsAvailable = false;
-  } else {
-    items = gallery.data;
-    partners = partnersResult.data;
-  }
-}
+const items = Astro.locals.cmsAvailable
+  ? takeCms(Astro.locals, await getGallery()) ?? []
+  : [];
 ---
 
-<BaseLayout
-  locale={locale}
-  path="/galerie"
-  title={t('nav.gallery')}
-  description={t('gallery.title')}
-  instagramUrl={instagramUrl}
-  partners={partners}
->
+<BaseLayout path="/galerie" title={t('nav.gallery')} description={t('gallery.title')}>
   <div class="page-y">
     <div class="container-page block-gap">
       <PageHeading kicker={t('gallery.kicker')} title={t('gallery.title')} />

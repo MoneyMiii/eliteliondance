@@ -1,12 +1,7 @@
 import PocketBase from 'pocketbase';
+import { readEnv } from './env';
 
-const REQUEST_TIMEOUT_MS = Number(import.meta.env.CMS_TIMEOUT_MS || process.env.CMS_TIMEOUT_MS || 15000);
-
-function readEnv(name: string): string {
-  const fromImport = (import.meta.env as Record<string, string | undefined>)[name];
-  const fromProcess = typeof process !== 'undefined' ? process.env[name] : undefined;
-  return (fromImport || fromProcess || '').trim();
-}
+const REQUEST_TIMEOUT_MS = Number(readEnv('CMS_TIMEOUT_MS') || 15000);
 
 export function getPocketBaseUrl(): string | undefined {
   const url = readEnv('PUBLIC_POCKETBASE_URL');

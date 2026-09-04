@@ -1,22 +1,22 @@
 ---
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import SiteMenu from './SiteMenu';
-import type { Locale } from '../../lib/locale';
 import { createT } from '../../lib/i18n';
 
 interface Props {
-  locale: Locale;
-  instagramUrl: string;
   currentPath: string;
-  logo?: string;
-  logoMark?: string;
 }
 
-const { locale, instagramUrl, currentPath, logo, logoMark } = Astro.props;
+const { currentPath } = Astro.props;
+const locale = Astro.locals.locale;
 const labels = Astro.locals.labels ?? {};
 const navLinks = Astro.locals.navLinks ?? [];
+const settings = Astro.locals.settings;
+const instagramUrl = settings?.instagramUrl ?? '';
 const t = createT(labels);
-const brandName = t('brand.name') || Astro.locals.settings?.brandName || '';
+const brandName = t('brand.name') || settings?.brandName || '';
+const logo = settings?.logo;
+const logoMark = settings?.logoMark;
 const homeHref = navLinks.find((link) => link.href === '/')?.href || navLinks[0]?.href || '/';
 const isHome = currentPath === '/' || currentPath === homeHref;
 ---

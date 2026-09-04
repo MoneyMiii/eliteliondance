@@ -1,0 +1,12 @@
+---
+import { sanitizeHtml } from '../../lib/localize';
+
+interface Props {
+  html: string;
+  class?: string;
+}
+
+const { html, class: className = 'prose-eld' } = Astro.props;
+---
+
+<div class={className} set:html={sanitizeHtml(html)} />

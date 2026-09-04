@@ -2,43 +2,30 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeading from '../components/common/PageHeading.astro';
 import EventsList from '../components/events/EventsList';
-import { getEvents, getPartners } from '../lib/api';
+import { getEvents } from '../lib/api';
+import { takeCms } from '../lib/cms';
 import { parseEventFilter } from '../lib/events';
 import { createT } from '../lib/i18n';
-import { getRequestLocale } from '../lib/request-locale';
-import type { EventItem, Partner } from '../lib/types';
 
-const locale = getRequestLocale(Astro.cookies);
+const locale = Astro.locals.locale;
 const t = createT(Astro.locals.labels);
-const labels = Astro.locals.labels ?? {};
-const initialFilter = parseEventFilter(Astro.url.searchParams.get('filtre'));
-let events: EventItem[] = [];
-let partners: Partner[] = [];
-const instagramUrl = Astro.locals.settings?.instagramUrl ?? '';
-const logoMark = Astro.locals.settings?.logoMark;
-if (Astro.locals.cmsAvailable) {
-  const [eventsResult, partnersResult] = await Promise.all([getEvents(locale), getPartners()]);
-  if (!eventsResult.ok || !partnersResult.ok) {
-    Astro.locals.cmsAvailable = false;
-  } else {
-    events = eventsResult.data;
-    partners = partnersResult.data;
-  }
-}
+const events = Astro.locals.cmsAvailable
+  ? takeCms(Astro.locals, await getEvents(locale)) ?? []
+  : [];
 ---
 
-<BaseLayout
-  locale={locale}
-  path="/evenements"
-  title={t('nav.events')}
-  description={t('events.allTitle')}
-  instagramUrl={instagramUrl}
-  partners={partners}
->
+<BaseLayout path="/evenements" title={t('nav.events')} description={t('events.allTitle')}>
   <section class="container-page page-y">
     <PageHeading kicker={t('events.kicker')} title={t('events.allTitle')} />
     <div class="mt-(--space-block)">
-      <EventsList locale={locale} labels={labels} events={events} initialFilter={initialFilter} logoMark={logoMark} client:load />
+      <EventsList
+        locale={locale}
+        labels={Astro.locals.labels ?? {}}
+        events={events}
+        initialFilter={parseEventFilter(Astro.url.searchParams.get('filtre'))}
+        logoMark={Astro.locals.settings?.logoMark}
+        client:load
+      />
     </div>
   </section>
 </BaseLayout>

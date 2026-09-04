@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { Locale } from '../../lib/locale';
 import type { EventItem } from '../../lib/types';
 import { t, type Labels } from '../../lib/i18n';
 import { formatEventDate } from '../../lib/format';
+import { sanitizeHtml } from '../../lib/localize';
 
 interface Props {
   locale: Locale;
@@ -36,7 +37,7 @@ function ChevronIcon({ open }: { open: boolean }) {
 
 export default function EventCard({ locale, labels, event, logoMark }: Props) {
   const [open, setOpen] = useState(false);
-  const dateLabel = useMemo(() => formatEventDate(event.dateTime, locale), [event.dateTime, locale]);
+  const dateLabel = formatEventDate(event.dateTime, locale);
   const onMedia = Boolean(event.image);
   const canExpand = Boolean(event.description);
 
@@ -117,7 +118,7 @@ export default function EventCard({ locale, labels, event, logoMark }: Props) {
               <span className="mb-2.5 block h-px w-8 bg-paper/25" />
               <div
                 className="prose-eld text-sm leading-relaxed text-paper/80 [&_*]:text-paper/80"
-                dangerouslySetInnerHTML={{ __html: event.description }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }}
               />
             </div>
           </div>

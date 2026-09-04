@@ -1,4 +1,4 @@
-import { fill } from './i18n';
+import { t } from './i18n';
 import type { Locale } from './locale';
 
 interface SeoInput {
@@ -48,7 +48,7 @@ export function buildSeo({
   const pattern = titlePattern || '{title} | {brand}';
   const pageTitle = !title || title === brand || title === resolvedTitle
     ? resolvedTitle
-    : fill(pattern, { title, brand });
+    : t({ pattern }, 'pattern', { title, brand });
   const pageDescription = description || defaultDescription || '';
 
   return {

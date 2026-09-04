@@ -1,9 +1,9 @@
 import { COLLECTIONS } from './collections';
-import { fetchRecords } from './cms';
+import { fetchRecords, type CmsResult } from './cms';
 import { sortAgendaEvents } from './events';
 import type { Labels } from './i18n';
 import type { Locale } from './locale';
-import { getLocalizedValue, stripHtml } from './localize';
+import { getLocalizedValue, localizedPlain } from './localize';
 import { getPocketBaseFileUrl } from './media';
 import { sortPriorityMembersFirst } from './team';
 import {
@@ -49,7 +49,7 @@ const HOME_SECTION_FIELDS = `${META},slot,displayOrder,isActive,anchor,title_fr,
 const PAGE_FIELDS = `${META},slug,title_fr,title_zh,subtitle_fr,subtitle_zh,content_fr,content_zh,image,ctaLabel_fr,ctaLabel_zh,ctaUrl`;
 const ABOUT_FIELDS = `${META},title_fr,title_zh,content_fr,content_zh,image,displayOrder`;
 
-type CmsData<T> = { ok: true; data: T } | { ok: false };
+type CmsData<T> = CmsResult<T>;
 
 async function loadList<T>(
   collection: string,
@@ -59,10 +59,19 @@ async function loadList<T>(
   return records.ok ? records.data : null;
 }
 
+async function loadMapped<T, R>(
+  collection: string,
+  options: Parameters<typeof fetchRecords>[1],
+  map: (records: T[]) => R,
+): Promise<CmsData<R>> {
+  const records = await loadList<T>(collection, options);
+  if (!records) return { ok: false };
+  return { ok: true, data: map(records) };
+}
+
 function toEditorial(record: EditorialRecord, locale: Locale, key: string): EditorialBlock {
   const thumb = key === 'home.about' || key === 'about.hero' ? '1600x900' : '1200x800';
   return {
-    key,
     title: getLocalizedValue(record, 'title', locale),
     subtitle: getLocalizedValue(record, 'subtitle', locale),
     content: getLocalizedValue(record, 'content', locale),
@@ -121,8 +130,8 @@ function toTeamMember(record: TeamMemberRecord, locale: Locale): TeamMember {
 function toService(record: ServiceRecord, locale: Locale): ServiceItem {
   return {
     id: record.id,
-    title: stripHtml(getLocalizedValue(record, 'title', locale)),
-    description: stripHtml(getLocalizedValue(record, 'description', locale)),
+    title: localizedPlain(record, 'title', locale),
+    description: localizedPlain(record, 'description', locale),
     icon: getPocketBaseFileUrl(record, record.icon),
     photo: getPocketBaseFileUrl(record, record.photo, '1200x800'),
   };
@@ -142,119 +151,106 @@ function normalizeSettings(record?: SettingsRecord): SiteSettings {
   };
 }
 
-export async function getSettings(): Promise<CmsData<SiteSettings>> {
-  const records = await loadList<SettingsRecord>(COLLECTIONS.settings, {
-    fields: SETTINGS_FIELDS,
-    page: 1,
-    perPage: 1,
-  });
-  if (!records) return { ok: false };
-  return { ok: true, data: normalizeSettings(records[0]) };
+export function getSettings(): Promise<CmsData<SiteSettings>> {
+  return loadMapped<SettingsRecord, SiteSettings>(
+    COLLECTIONS.settings,
+    { fields: SETTINGS_FIELDS, page: 1, perPage: 1 },
+    (records) => normalizeSettings(records[0]),
+  );
 }
 
-export async function getEvents(locale: Locale): Promise<CmsData<EventItem[]>> {
-  const records = await loadList<EventRecord>(COLLECTIONS.events, {
-    filter: 'isActive=true',
-    sort: 'dateTime',
-    fields: EVENT_FIELDS,
-  });
-  if (!records) return { ok: false };
-  return { ok: true, data: sortAgendaEvents(records.map((record) => toEvent(record, locale))) };
+export function getEvents(locale: Locale): Promise<CmsData<EventItem[]>> {
+  return loadMapped<EventRecord, EventItem[]>(
+    COLLECTIONS.events,
+    { filter: 'isActive=true', sort: 'dateTime', fields: EVENT_FIELDS },
+    (records) => sortAgendaEvents(records.map((record) => toEvent(record, locale))),
+  );
 }
 
-async function getUpcomingEvents(
+function getUpcomingEvents(
   locale: Locale,
   limit: number,
 ): Promise<CmsData<{ items: EventItem[]; hasMore: boolean }>> {
-  const records = await loadList<EventRecord>(COLLECTIONS.events, {
-    filter: 'isActive=true && dateTime>=@now',
-    sort: 'dateTime',
-    fields: EVENT_FIELDS,
-    page: 1,
-    perPage: Math.max(limit, 0) + 1,
-  });
-  if (!records) return { ok: false };
-  const items = records.map((record) => toEvent(record, locale));
-  return {
-    ok: true,
-    data: {
-      items: items.slice(0, limit),
-      hasMore: items.length > limit,
+  return loadMapped<EventRecord, { items: EventItem[]; hasMore: boolean }>(
+    COLLECTIONS.events,
+    {
+      filter: 'isActive=true && dateTime>=@now',
+      sort: 'dateTime',
+      fields: EVENT_FIELDS,
+      page: 1,
+      perPage: Math.max(limit, 0) + 1,
     },
-  };
+    (records) => {
+      const items = records.map((record) => toEvent(record, locale));
+      return { items: items.slice(0, limit), hasMore: items.length > limit };
+    },
+  );
 }
 
-export async function getGallery(
+export function getGallery(
   options: { limit?: number; thumb?: string } = {},
 ): Promise<CmsData<GalleryItem[]>> {
-  const records = await loadList<GalleryRecord>(COLLECTIONS.gallery, {
-    sort: 'displayOrder',
-    fields: GALLERY_FIELDS,
-    ...(options.limit ? { page: 1, perPage: options.limit } : {}),
-  });
-  if (!records) return { ok: false };
   const thumb = options.thumb ?? '1600x0';
-  return { ok: true, data: records.map((record) => toGallery(record, thumb)).filter((item) => item.image) };
+  return loadMapped<GalleryRecord, GalleryItem[]>(
+    COLLECTIONS.gallery,
+    {
+      sort: 'displayOrder',
+      fields: GALLERY_FIELDS,
+      ...(options.limit ? { page: 1, perPage: options.limit } : {}),
+    },
+    (records) => records.map((record) => toGallery(record, thumb)).filter((item) => item.image),
+  );
 }
 
-async function getTeamMembers(locale: Locale): Promise<CmsData<TeamMember[]>> {
-  const records = await loadList<TeamMemberRecord>(COLLECTIONS.teamMembers, {
-    filter: 'isActive=true',
-    sort: 'lastName,firstName',
-    expand: 'roles',
-    fields: TEAM_FIELDS,
-  });
-  if (!records) return { ok: false };
-  return { ok: true, data: sortPriorityMembersFirst(records.map((record) => toTeamMember(record, locale))) };
+function getTeamMembers(locale: Locale): Promise<CmsData<TeamMember[]>> {
+  return loadMapped<TeamMemberRecord, TeamMember[]>(
+    COLLECTIONS.teamMembers,
+    {
+      filter: 'isActive=true',
+      sort: 'lastName,firstName',
+      expand: 'roles',
+      fields: TEAM_FIELDS,
+    },
+    (records) => sortPriorityMembersFirst(records.map((record) => toTeamMember(record, locale))),
+  );
 }
 
-export async function getPartners(): Promise<CmsData<Partner[]>> {
-  const records = await loadList<PartnerRecord>(COLLECTIONS.partners, {
-    filter: 'isActive=true',
-    sort: 'displayOrder',
-    fields: PARTNER_FIELDS,
-  });
-  if (!records) return { ok: false };
-  return { ok: true, data: records.map((record) => ({ id: record.id, name: record.name })) };
+export function getPartners(): Promise<CmsData<Partner[]>> {
+  return loadMapped<PartnerRecord, Partner[]>(
+    COLLECTIONS.partners,
+    { filter: 'isActive=true', sort: 'displayOrder', fields: PARTNER_FIELDS },
+    (records) => records.map((record) => ({ id: record.id, name: record.name })),
+  );
 }
 
-async function getServices(locale: Locale): Promise<CmsData<ServiceItem[]>> {
-  const records = await loadList<ServiceRecord>(COLLECTIONS.services, {
-    filter: 'isActive=true',
-    sort: 'displayOrder,title_fr',
-    fields: SERVICE_FIELDS,
-  });
-  if (!records) return { ok: false };
-  return { ok: true, data: records.map((record) => toService(record, locale)).filter((item) => item.title) };
+function getServices(locale: Locale): Promise<CmsData<ServiceItem[]>> {
+  return loadMapped<ServiceRecord, ServiceItem[]>(
+    COLLECTIONS.services,
+    { filter: 'isActive=true', sort: 'displayOrder,title_fr', fields: SERVICE_FIELDS },
+    (records) => records.map((record) => toService(record, locale)).filter((item) => item.title),
+  );
 }
 
-export async function getContactServices(locale: Locale): Promise<CmsData<{ id: string; title: string }[]>> {
-  const records = await loadList<ServiceRecord>(COLLECTIONS.services, {
-    sort: 'displayOrder,title_fr',
-    fields: CONTACT_SERVICE_FIELDS,
-  });
-  if (!records) return { ok: false };
-  return {
-    ok: true,
-    data: records
-      .map((record) => ({
-        id: record.id,
-        title: stripHtml(getLocalizedValue(record, 'title', locale)),
-      }))
-      .filter((item) => item.title),
-  };
+export function getContactServices(locale: Locale): Promise<CmsData<{ id: string; title: string }[]>> {
+  return loadMapped<ServiceRecord, { id: string; title: string }[]>(
+    COLLECTIONS.services,
+    { filter: 'isActive=true', sort: 'displayOrder,title_fr', fields: CONTACT_SERVICE_FIELDS },
+    (records) =>
+      records
+        .map((record) => ({
+          id: record.id,
+          title: localizedPlain(record, 'title', locale),
+        }))
+        .filter((item) => item.title),
+  );
 }
 
-export async function getPage(slug: PageSlug, locale: Locale): Promise<CmsData<EditorialBlock | undefined>> {
-  const records = await loadList<PageRecord>(COLLECTIONS.pages, {
-    filter: `slug="${slug}" && isActive=true`,
-    fields: PAGE_FIELDS,
-    page: 1,
-    perPage: 1,
-  });
-  if (!records) return { ok: false };
-  const record = records[0];
-  return { ok: true, data: record ? toEditorial(record, locale, `${slug}.hero`) : undefined };
+export function getPage(slug: PageSlug, locale: Locale): Promise<CmsData<EditorialBlock | undefined>> {
+  return loadMapped<PageRecord, EditorialBlock | undefined>(
+    COLLECTIONS.pages,
+    { filter: `slug="${slug}" && isActive=true`, fields: PAGE_FIELDS, page: 1, perPage: 1 },
+    (records) => (records[0] ? toEditorial(records[0], locale, `${slug}.hero`) : undefined),
+  );
 }
 
 async function getHomeSections(locale: Locale): Promise<
@@ -267,80 +263,63 @@ async function getHomeSections(locale: Locale): Promise<
   });
   if (!records) return { ok: false };
 
+  const sections: HomepageSection[] = [];
   const content: Record<string, EditorialBlock> = {};
   for (const record of records) {
     if (!isHomepageSectionKey(record.slot)) continue;
+    sections.push({ key: record.slot });
     content[`home.${record.slot}`] = toEditorial(record, locale, `home.${record.slot}`);
   }
-
-  const sections = records
-    .filter((record) => isHomepageSectionKey(record.slot))
-    .map((record) => ({
-      key: record.slot as HomepageSection['key'],
-    }));
 
   return { ok: true, data: { sections, content } };
 }
 
-export async function getAboutBlocks(locale: Locale): Promise<CmsData<EditorialBlock[]>> {
-  const records = await loadList<EditorialRecord>(COLLECTIONS.aboutSections, {
-    filter: 'isActive=true',
-    sort: 'displayOrder',
-    fields: ABOUT_FIELDS,
-  });
-  if (!records) return { ok: false };
-  return {
-    ok: true,
-    data: records.map((record, index) =>
-      toEditorial(record, locale, record.id ? `about.${record.id}` : `about.section-${index}`),
-    ),
-  };
+export function getAboutBlocks(locale: Locale): Promise<CmsData<EditorialBlock[]>> {
+  return loadMapped<EditorialRecord, EditorialBlock[]>(
+    COLLECTIONS.aboutSections,
+    { filter: 'isActive=true', sort: 'displayOrder', fields: ABOUT_FIELDS },
+    (records) =>
+      records.map((record, index) =>
+        toEditorial(record, locale, record.id ? `about.${record.id}` : `about.section-${index}`),
+      ),
+  );
 }
 
-export async function getUiLabels(locale: Locale): Promise<CmsData<Labels>> {
-  const records = await loadList<UiLabelRecord>(COLLECTIONS.uiLabels, {
-    filter: 'isActive=true',
-    fields: UI_LABEL_FIELDS,
+export function getUiLabels(locale: Locale): Promise<CmsData<Labels>> {
+  return loadMapped<UiLabelRecord, Labels>(COLLECTIONS.uiLabels, { filter: 'isActive=true', fields: UI_LABEL_FIELDS }, (records) => {
+    const labels: Labels = {};
+    for (const record of records) {
+      const key = record.key.replace(/^ui\./, '');
+      const value = getLocalizedValue(record, 'title', locale);
+      if (key && value) labels[key] = value;
+    }
+    return labels;
   });
-  if (!records) return { ok: false };
-
-  const labels: Labels = {};
-  for (const record of records) {
-    const key = record.key.replace(/^ui\./, '');
-    const value = getLocalizedValue(record, 'title', locale);
-    if (key && value) labels[key] = value;
-  }
-  return { ok: true, data: labels };
 }
 
-export async function getNavLinks(locale: Locale): Promise<CmsData<NavLink[]>> {
-  const records = await loadList<NavLinkRecord>(COLLECTIONS.navLinks, {
-    filter: 'isActive=true',
-    sort: 'displayOrder',
-    fields: NAV_FIELDS,
-  });
-  if (!records) return { ok: false };
-  return {
-    ok: true,
-    data: records.map((record) => ({
-      id: record.id,
-      href: record.href,
-      label: getLocalizedValue(record, 'title', locale),
-    })),
-  };
+export function getNavLinks(locale: Locale): Promise<CmsData<NavLink[]>> {
+  return loadMapped<NavLinkRecord, NavLink[]>(
+    COLLECTIONS.navLinks,
+    { filter: 'isActive=true', sort: 'displayOrder', fields: NAV_FIELDS },
+    (records) =>
+      records.map((record) => ({
+        id: record.id,
+        href: record.href,
+        label: getLocalizedValue(record, 'title', locale),
+      })),
+  );
 }
 
 export async function getHomeData(locale: Locale, settings: SiteSettings): Promise<CmsData<HomeData>> {
-  const [home, gallery, team, partners, events, services] = await Promise.all([
+  const [home, gallery, team, events, services] = await Promise.all([
     getHomeSections(locale),
     getGallery({ limit: HOME_GALLERY_LIMIT, thumb: '800x600' }),
     getTeamMembers(locale),
-    getPartners(),
     getUpcomingEvents(locale, settings.upcomingEventsLimit),
     getServices(locale),
   ]);
 
-  if (!home.ok || !gallery.ok || !team.ok || !partners.ok || !events.ok || !services.ok) {
+  if (!home.ok || !gallery.ok || !team.ok || !events.ok || !services.ok) {
     return { ok: false };
   }
 
@@ -352,11 +331,8 @@ export async function getHomeData(locale: Locale, settings: SiteSettings): Promi
       hasMoreUpcoming: events.data.hasMore,
       gallery: gallery.data,
       team: team.data,
-      partners: partners.data,
       services: services.data,
       content: home.data.content,
-      instagramUrl: settings.instagramUrl,
-      logoMark: settings.logoMark,
     },
   };
 }
@@ -367,9 +343,6 @@ export interface HomeData {
   hasMoreUpcoming: boolean;
   gallery: GalleryItem[];
   team: TeamMember[];
-  partners: Partner[];
   services: ServiceItem[];
   content: Record<string, EditorialBlock>;
-  instagramUrl: string;
-  logoMark?: string;
 }

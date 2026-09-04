@@ -2,41 +2,23 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeading from '../components/common/PageHeading.astro';
 import ContactForm from '../components/contact/ContactForm';
-import { getContactServices, getPage, getPartners } from '../lib/api';
+import { getContactServices, getPage } from '../lib/api';
+import { takeCms } from '../lib/cms';
 import { createT } from '../lib/i18n';
-import { getRequestLocale } from '../lib/request-locale';
-import type { EditorialBlock, Partner } from '../lib/types';
 
-const locale = getRequestLocale(Astro.cookies);
+const locale = Astro.locals.locale;
 const t = createT(Astro.locals.labels);
-const labels = Astro.locals.labels ?? {};
-let partners: Partner[] = [];
-const instagramUrl = Astro.locals.settings?.instagramUrl ?? '';
-let hero: EditorialBlock | undefined;
-let services: { id: string; title: string }[] = [];
-const [partnersResult, heroResult, servicesResult] = await Promise.all([
-  getPartners(),
-  getPage('contact', locale),
-  getContactServices(locale),
-]);
-if (partnersResult.ok && heroResult.ok) {
-  partners = partnersResult.data;
-  hero = heroResult.data;
-} else {
-  Astro.locals.cmsAvailable = false;
-}
-if (servicesResult.ok) {
-  services = servicesResult.data;
-}
+const [heroResult, servicesResult] = Astro.locals.cmsAvailable
+  ? await Promise.all([getPage('contact', locale), getContactServices(locale)])
+  : [];
+const hero = heroResult ? takeCms(Astro.locals, heroResult) : undefined;
+const services = servicesResult?.ok ? servicesResult.data : [];
 ---
 
 <BaseLayout
-  locale={locale}
   path="/contact"
   title={hero?.title || t('nav.contact')}
   description={hero?.subtitle || t('contact.intro')}
-  instagramUrl={instagramUrl}
-  partners={partners}
 >
   <section class="container-page page-y grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
     <PageHeading
@@ -44,6 +26,6 @@ if (servicesResult.ok) {
       title={hero?.title || t('contact.title')}
       lede={hero?.subtitle || t('contact.intro')}
     />
-    <ContactForm labels={labels} services={services} client:load />
+    <ContactForm labels={Astro.locals.labels ?? {}} services={services} client:load />
   </section>
 </BaseLayout>

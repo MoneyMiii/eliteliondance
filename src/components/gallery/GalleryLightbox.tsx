@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useId, useRef } from 'react';
+import { useCallback, useId, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import ArrowIcon from '../common/ArrowIcon';
+import CloseIcon from '../common/CloseIcon';
 import { lockPageScroll } from '../../lib/page-scroll-lock';
+import { useWindowKeydown } from '../../lib/use-window-keydown';
 import { useHorizontalPager } from '../../lib/use-horizontal-pager';
-import { t, type Labels } from '../../lib/i18n';
+import { closeLabel, t, type Labels } from '../../lib/i18n';
 import type { GalleryItem } from '../../lib/types';
 
 interface Props {
@@ -36,19 +38,13 @@ export default function GalleryLightbox({ labels, items, index, onClose, onStep 
     },
   });
 
-  useEffect(() => {
-    const unlock = lockPageScroll();
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-      if (event.key === 'ArrowRight') go(1);
-      if (event.key === 'ArrowLeft') go(-1);
-    };
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      unlock();
-    };
-  }, [go, onClose]);
+  useLayoutEffect(() => lockPageScroll(), []);
+
+  useWindowKeydown((event) => {
+    if (event.key === 'Escape') onClose();
+    if (event.key === 'ArrowRight') go(1);
+    if (event.key === 'ArrowLeft') go(-1);
+  });
 
   if (!item) return null;
 
@@ -73,16 +69,13 @@ export default function GalleryLightbox({ labels, items, index, onClose, onStep 
       <button
         type="button"
         className="icon-btn absolute right-4 top-4 sm:right-8 sm:top-8"
-        aria-label={t(labels, 'gallery.close')}
+        aria-label={closeLabel(labels)}
         onClick={(event) => {
           event.stopPropagation();
           onClose();
         }}
       >
-        <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[2.4]" aria-hidden="true">
-          <path d="M6.5 6.5 17.5 17.5" strokeLinecap="round" />
-          <path d="M17.5 6.5 6.5 17.5" strokeLinecap="round" />
-        </svg>
+        <CloseIcon />
       </button>
 
       {canCycle && (

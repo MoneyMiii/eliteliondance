@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import CloseIcon from '../common/CloseIcon';
 import { lockPageScroll } from '../../lib/page-scroll-lock';
-import { t, type Labels } from '../../lib/i18n';
+import { useWindowKeydown } from '../../lib/use-window-keydown';
+import { closeLabel, type Labels } from '../../lib/i18n';
 import type { ServiceItem } from '../../lib/types';
 
 interface Props {
@@ -25,6 +27,53 @@ function flipFrames(from: DOMRect, to: DOMRect) {
     collapsed: { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, opacity: 0 },
     expanded: { transform: 'none', opacity: 1 },
   };
+}
+
+function ServiceTile({ service }: { service: ServiceItem }) {
+  const onPhoto = Boolean(service.photo);
+  return (
+    <>
+      {onPhoto && (
+        <>
+          <img
+            src={service.photo}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 block size-full object-cover transition-transform duration-700 ease-cinematic computer:group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0d120d] via-[#0d120d]/45 to-transparent" />
+        </>
+      )}
+      {service.icon && (
+        <img
+          src={service.icon}
+          alt=""
+          loading="lazy"
+          className={
+            onPhoto
+              ? 'relative m-3 h-10 w-10 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] sm:m-4 sm:h-12 sm:w-12'
+              : 'h-10 w-10 object-contain sm:h-12 sm:w-12'
+          }
+        />
+      )}
+      <div className={onPhoto ? 'relative mt-auto p-3 sm:p-4' : 'mt-auto'}>
+        <h3
+          className={`line-clamp-2 break-words font-display text-[0.95rem] uppercase leading-tight sm:text-lg ${
+            onPhoto ? 'text-white' : 'text-ink'
+          }`}
+        >
+          {service.title}
+        </h3>
+        <p
+          className={`mt-1.5 text-xs leading-relaxed sm:text-sm ${
+            onPhoto ? 'line-clamp-2 text-white/70' : 'line-clamp-3 text-mist'
+          }`}
+        >
+          {service.description}
+        </p>
+      </div>
+    </>
+  );
 }
 
 export default function ServicesGrid({ labels, services }: Props) {
@@ -73,18 +122,12 @@ export default function ServicesGrid({ labels, services }: Props) {
 
   useLayoutEffect(() => {
     if (!active) return;
-    const unlock = lockPageScroll();
-    return unlock;
+    return lockPageScroll();
   }, [active]);
 
-  useEffect(() => {
-    if (!active) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') close();
-    };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [active, close]);
+  useWindowKeydown((event) => {
+    if (event.key === 'Escape') close();
+  }, Boolean(active));
 
   if (!services.length) return null;
 
@@ -101,49 +144,10 @@ export default function ServicesGrid({ labels, services }: Props) {
             }`}
           >
             {service.photo ? (
-              <>
-                <img
-                  src={service.photo}
-                  alt=""
-                  loading="lazy"
-                  className="absolute inset-0 block size-full object-cover transition-transform duration-700 ease-cinematic computer:group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0d120d] via-[#0d120d]/45 to-transparent" />
-                {service.icon && (
-                  <img
-                    src={service.icon}
-                    alt=""
-                    loading="lazy"
-                    className="relative m-3 h-10 w-10 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] sm:m-4 sm:h-12 sm:w-12"
-                  />
-                )}
-                <div className="relative mt-auto p-3 sm:p-4">
-                  <h3 className="line-clamp-2 break-words font-display text-[0.95rem] uppercase leading-tight text-white sm:text-lg">
-                    {service.title}
-                  </h3>
-                  <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/70 sm:text-sm">
-                    {service.description}
-                  </p>
-                </div>
-              </>
+              <ServiceTile service={service} />
             ) : (
               <div className="flex h-full flex-col p-3 sm:p-4">
-                {service.icon && (
-                  <img
-                    src={service.icon}
-                    alt=""
-                    loading="lazy"
-                    className="h-10 w-10 object-contain sm:h-12 sm:w-12"
-                  />
-                )}
-                <div className="mt-auto">
-                  <h3 className="line-clamp-2 break-words font-display text-[0.95rem] uppercase leading-tight text-ink sm:text-lg">
-                    {service.title}
-                  </h3>
-                  <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-mist sm:text-sm">
-                    {service.description}
-                  </p>
-                </div>
+                <ServiceTile service={service} />
               </div>
             )}
           </button>
@@ -170,13 +174,10 @@ export default function ServicesGrid({ labels, services }: Props) {
               <button
                 type="button"
                 className="icon-btn absolute right-4 top-4"
-                aria-label={t(labels, 'gallery.close')}
+                aria-label={closeLabel(labels)}
                 onClick={close}
               >
-                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[2.4]" aria-hidden="true">
-                  <path d="M6.5 6.5 17.5 17.5" strokeLinecap="round" />
-                  <path d="M17.5 6.5 6.5 17.5" strokeLinecap="round" />
-                </svg>
+                <CloseIcon />
               </button>
               <div className="p-6 sm:p-8">
                 {active.icon && (

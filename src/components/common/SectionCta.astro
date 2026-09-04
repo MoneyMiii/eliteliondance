@@ -1,0 +1,23 @@
+---
+import Button from './Button.astro';
+
+interface Props {
+  href?: string;
+  label?: string;
+  variant?: 'primary' | 'secondary';
+  class?: string;
+}
+
+const {
+  href,
+  label,
+  variant = 'primary',
+  class: className = 'mt-10 flex justify-center',
+} = Astro.props;
+---
+
+{href && label && (
+  <div class={className}>
+    <Button href={href} variant={variant}>{label}</Button>
+  </div>
+)}

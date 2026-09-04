@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { t, type Labels } from '../../lib/i18n';
 import { contactFieldErrors, type ContactField, type ContactFieldIssue } from '../../lib/contact-validation';
 
@@ -41,6 +41,33 @@ const FALLBACK: Labels = {
   'form.servicePlaceholder': 'Choisir une prestation',
 };
 
+function inputClass(invalid?: boolean) {
+  return [
+    'h-auto w-full self-start rounded-2xl border bg-paper px-4 py-3 text-ink outline-none transition focus:border-brand',
+    invalid ? 'border-red-700' : 'border-brand/20',
+  ].join(' ');
+}
+
+function Field({
+  label,
+  error,
+  className = '',
+  children,
+}: {
+  label: string;
+  error?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className={`grid items-start gap-2 text-sm ${className}`}>
+      {label}
+      {children}
+      {error && <span className="text-red-800">{error}</span>}
+    </label>
+  );
+}
+
 export default function ContactForm({ labels, services }: Props) {
   const [form, setForm] = useState<FormState>(initial);
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -69,13 +96,6 @@ export default function ContactForm({ labels, services }: Props) {
         return next;
       });
     }
-  }
-
-  function inputClass(field: ContactField): string {
-    return [
-      'h-auto w-full self-start rounded-2xl border bg-paper px-4 py-3 text-ink outline-none transition focus:border-brand',
-      fieldErrors[field] ? 'border-red-700' : 'border-brand/20',
-    ].join(' ');
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -123,51 +143,40 @@ export default function ContactForm({ labels, services }: Props) {
 
   return (
     <form className="grid items-start gap-5 md:grid-cols-2" onSubmit={onSubmit} noValidate>
-      <label className="grid items-start gap-2 text-sm">
-        {label('form.lastName')} *
-        <input className={inputClass('lastName')} name="lastName" autoComplete="family-name" required value={form.lastName} onChange={(e) => update('lastName', e.target.value)} aria-invalid={Boolean(fieldErrors.lastName)} />
-        {fieldMessage('lastName') && <span className="text-red-800">{fieldMessage('lastName')}</span>}
-      </label>
-      <label className="grid items-start gap-2 text-sm">
-        {label('form.firstName')}
-        <input className="h-auto w-full self-start rounded-2xl border border-brand/20 bg-paper px-4 py-3 text-ink outline-none transition focus:border-brand" name="firstName" autoComplete="given-name" value={form.firstName} onChange={(e) => update('firstName', e.target.value)} />
-      </label>
-      <label className="grid items-start gap-2 text-sm">
-        {label('form.email')} *
-        <input className={inputClass('email')} name="email" type="email" autoComplete="email" required value={form.email} onChange={(e) => update('email', e.target.value)} aria-invalid={Boolean(fieldErrors.email)} />
-        {fieldMessage('email') && <span className="text-red-800">{fieldMessage('email')}</span>}
-      </label>
-      <label className="grid items-start gap-2 text-sm">
-        {label('form.phone')} *
-        <input className={inputClass('phone')} name="phone" type="tel" autoComplete="tel" required value={form.phone} onChange={(e) => update('phone', e.target.value)} aria-invalid={Boolean(fieldErrors.phone)} />
-        {fieldMessage('phone') && <span className="text-red-800">{fieldMessage('phone')}</span>}
-      </label>
+      <Field label={`${label('form.lastName')} *`} error={fieldMessage('lastName')}>
+        <input className={inputClass(Boolean(fieldErrors.lastName))} name="lastName" autoComplete="family-name" required value={form.lastName} onChange={(e) => update('lastName', e.target.value)} aria-invalid={Boolean(fieldErrors.lastName)} />
+      </Field>
+      <Field label={label('form.firstName')}>
+        <input className={inputClass()} name="firstName" autoComplete="given-name" value={form.firstName} onChange={(e) => update('firstName', e.target.value)} />
+      </Field>
+      <Field label={`${label('form.email')} *`} error={fieldMessage('email')}>
+        <input className={inputClass(Boolean(fieldErrors.email))} name="email" type="email" autoComplete="email" required value={form.email} onChange={(e) => update('email', e.target.value)} aria-invalid={Boolean(fieldErrors.email)} />
+      </Field>
+      <Field label={`${label('form.phone')} *`} error={fieldMessage('phone')}>
+        <input className={inputClass(Boolean(fieldErrors.phone))} name="phone" type="tel" autoComplete="tel" required value={form.phone} onChange={(e) => update('phone', e.target.value)} aria-invalid={Boolean(fieldErrors.phone)} />
+      </Field>
       {serviceRequired && (
-      <label className="grid items-start gap-2 text-sm md:col-span-2">
-        {label('form.service')} *
-        <select
-          className={`${inputClass('service')} cursor-pointer`}
-          name="service"
-          required={serviceRequired}
-          value={form.service}
-          onChange={(e) => update('service', e.target.value)}
-          aria-invalid={Boolean(fieldErrors.service)}
-        >
-          <option value="">{label('form.servicePlaceholder')}</option>
-          {services.map((service) => (
-            <option key={service.id} value={service.id}>
-              {service.title}
-            </option>
-          ))}
-        </select>
-        {fieldMessage('service') && <span className="text-red-800">{fieldMessage('service')}</span>}
-      </label>
+        <Field label={`${label('form.service')} *`} error={fieldMessage('service')} className="md:col-span-2">
+          <select
+            className={`${inputClass(Boolean(fieldErrors.service))} cursor-pointer`}
+            name="service"
+            required={serviceRequired}
+            value={form.service}
+            onChange={(e) => update('service', e.target.value)}
+            aria-invalid={Boolean(fieldErrors.service)}
+          >
+            <option value="">{label('form.servicePlaceholder')}</option>
+            {services.map((service) => (
+              <option key={service.id} value={service.id}>
+                {service.title}
+              </option>
+            ))}
+          </select>
+        </Field>
       )}
-      <label className="grid items-start gap-2 text-sm md:col-span-2">
-        {label('form.message')} *
-        <textarea className={`${inputClass('message')} min-h-36`} name="message" required value={form.message} onChange={(e) => update('message', e.target.value)} aria-invalid={Boolean(fieldErrors.message)} />
-        {fieldMessage('message') && <span className="text-red-800">{fieldMessage('message')}</span>}
-      </label>
+      <Field label={`${label('form.message')} *`} error={fieldMessage('message')} className="md:col-span-2">
+        <textarea className={`${inputClass(Boolean(fieldErrors.message))} min-h-36`} name="message" required value={form.message} onChange={(e) => update('message', e.target.value)} aria-invalid={Boolean(fieldErrors.message)} />
+      </Field>
       <div className="hidden" aria-hidden="true">
         <label>
           {label('form.honeypot')}

@@ -3,16 +3,16 @@ import { createT } from '../../lib/i18n';
 import type { EditorialBlock, TeamMember } from '../../lib/types';
 import SectionTitle from '../common/SectionTitle.astro';
 import TeamCarousel from './TeamCarousel';
-import EmptyState from '../common/EmptyState.astro';
-import Button from '../common/Button.astro';
+import EmptyState from '../common/EmptyState';
+import SectionCta from '../common/SectionCta.astro';
 
 interface Props {
   members: TeamMember[];
   content?: EditorialBlock;
-  logoMark?: string;
 }
 
-const { members, content, logoMark } = Astro.props;
+const { members, content } = Astro.props;
+const logoMark = Astro.locals.settings?.logoMark;
 const t = createT(Astro.locals.labels);
 const labels = Astro.locals.labels ?? {};
 const anchor = content?.anchor;
@@ -39,9 +39,5 @@ const heading = Boolean(content?.title || content?.subtitle);
       </div>
     )
   )}
-  {content?.ctaLabel && content?.ctaUrl && (
-    <div class="container-page mt-10 flex justify-center">
-      <Button href={content.ctaUrl}>{content.ctaLabel}</Button>
-    </div>
-  )}
+  <SectionCta href={content?.ctaUrl} label={content?.ctaLabel} class="container-page mt-10 flex justify-center" />
 </section>

@@ -1,39 +1,22 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AboutContent from '../components/about/AboutContent.astro';
-import { getAboutBlocks, getPage, getPartners } from '../lib/api';
+import { getAboutBlocks, getPage } from '../lib/api';
+import { takeCms } from '../lib/cms';
 import { stripHtml } from '../lib/localize';
-import { getRequestLocale } from '../lib/request-locale';
-import type { EditorialBlock, Partner } from '../lib/types';
 
-const locale = getRequestLocale(Astro.cookies);
-let hero: EditorialBlock | undefined;
-let blocks: EditorialBlock[] = [];
-let partners: Partner[] = [];
-const instagramUrl = Astro.locals.settings?.instagramUrl ?? '';
-if (Astro.locals.cmsAvailable) {
-  const [heroResult, blocksResult, partnersResult] = await Promise.all([
-    getPage('about', locale),
-    getAboutBlocks(locale),
-    getPartners(),
-  ]);
-  if (!heroResult.ok || !blocksResult.ok || !partnersResult.ok) {
-    Astro.locals.cmsAvailable = false;
-  } else {
-    hero = heroResult.data;
-    blocks = blocksResult.data;
-    partners = partnersResult.data;
-  }
-}
+const locale = Astro.locals.locale;
+const [heroResult, blocksResult] = Astro.locals.cmsAvailable
+  ? await Promise.all([getPage('about', locale), getAboutBlocks(locale)])
+  : [];
+const hero = heroResult ? takeCms(Astro.locals, heroResult) : undefined;
+const blocks = blocksResult ? takeCms(Astro.locals, blocksResult) ?? [] : [];
 ---
 
 <BaseLayout
-  locale={locale}
   path="/a-propos"
   title={hero?.title}
   description={stripHtml(hero?.content || hero?.subtitle || '')}
-  instagramUrl={instagramUrl}
-  partners={partners}
 >
   <AboutContent hero={hero} blocks={blocks} />
 </BaseLayout>

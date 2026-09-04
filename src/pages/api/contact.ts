@@ -1,13 +1,14 @@
 import type { APIRoute } from 'astro';
 import { getContactServices, getSettings, getUiLabels } from '../../lib/api';
 import { contactFieldErrors } from '../../lib/contact-validation';
+import { readEnv } from '../../lib/env';
 import { getRequestLocale } from '../../lib/request-locale';
 import { t } from '../../lib/i18n';
 
 export const prerender = false;
 
-const WINDOW_MS = Number(import.meta.env.CONTACT_RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000);
-const MAX = Number(import.meta.env.CONTACT_RATE_LIMIT_MAX || 5);
+const WINDOW_MS = Number(readEnv('CONTACT_RATE_LIMIT_WINDOW_MS') || 15 * 60 * 1000);
+const MAX = Number(readEnv('CONTACT_RATE_LIMIT_MAX') || 5);
 const hits = new Map<string, number[]>();
 
 /** Destinataire tant que le domaine n’est pas vérifié : l’e-mail du compte Resend. */
@@ -43,12 +44,6 @@ function firstValue(...values: (string | undefined)[]): string | undefined {
     if (trimmed) return trimmed;
   }
   return undefined;
-}
-
-function readSecret(name: string): string {
-  const fromProcess = typeof process !== 'undefined' ? process.env[name] : undefined;
-  const fromImport = (import.meta.env as Record<string, string | undefined>)[name];
-  return (fromProcess || fromImport || '').trim().replace(/^["']|["']$/g, '');
 }
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -97,9 +92,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response(JSON.stringify({ ok: false, error: 'invalid', fields }), { status: 400 });
   }
 
-  const to = firstValue(readSecret('CONTACT_TO_EMAIL'), settings?.contactEmail) ?? DEFAULT_TO;
-  const from = firstValue(readSecret('CONTACT_FROM_EMAIL')) ?? DEFAULT_FROM;
-  const resendKey = readSecret('RESEND_API_KEY');
+  const to = firstValue(readEnv('CONTACT_TO_EMAIL'), settings?.contactEmail) ?? DEFAULT_TO;
+  const from = firstValue(readEnv('CONTACT_FROM_EMAIL')) ?? DEFAULT_FROM;
+  const resendKey = readEnv('RESEND_API_KEY');
 
   const empty = t(labels, 'form.emptyValue') || '-';
   const subject = t(labels, 'form.emailSubject', { name: lastName }) || `Contact : ${lastName}`;

@@ -1,19 +1,15 @@
 ---
 import { createT } from '../../lib/i18n';
-import type { Partner } from '../../lib/types';
 import InstagramButton from '../common/InstagramButton.astro';
 
-interface Props {
-  instagramUrl: string;
-  partners: Partner[];
-  logoMark?: string;
-}
-
-const { instagramUrl, partners, logoMark } = Astro.props;
+const settings = Astro.locals.settings;
+const instagramUrl = settings?.instagramUrl ?? '';
+const partners = Astro.locals.partners ?? [];
+const logoMark = settings?.logoMark;
 const t = createT(Astro.locals.labels);
 const navLinks = Astro.locals.navLinks ?? [];
 const year = new Date().getFullYear();
-const brandName = t('brand.name') || Astro.locals.settings?.brandName || '';
+const brandName = t('brand.name') || settings?.brandName || '';
 ---
 
 <footer class="site-footer band-dark">

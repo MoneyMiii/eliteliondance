@@ -1,8 +1,8 @@
 ---
 import { createT } from '../../lib/i18n';
 import type { EditorialBlock } from '../../lib/types';
-import { sanitizeHtml } from '../../lib/localize';
 import PageHeading from '../common/PageHeading.astro';
+import ProseHtml from '../common/ProseHtml.astro';
 
 interface Props {
   hero?: EditorialBlock;
@@ -17,11 +17,11 @@ const t = createT(Astro.locals.labels);
   {(hero?.title || hero?.subtitle) && (
     <PageHeading kicker={hero?.subtitle} title={hero?.title || ''} />
   )}
-  {hero?.content && <div class="prose-eld mt-(--space-block) max-w-3xl text-lg" set:html={sanitizeHtml(hero.content)} />}
+  {hero?.content && <ProseHtml html={hero.content} class="prose-eld mt-(--space-block) max-w-3xl text-lg" />}
 
   {hero?.image && (
     <figure class="media-frame mt-(--space-block) aspect-[16/9] lg:aspect-[2/1]">
-      <img src={hero.image} alt={t('brand.logoAlt')} class="h-full w-full object-cover" />
+      <img src={hero.image} alt={t('about.teamPhotoAlt')} class="h-full w-full object-cover" />
     </figure>
   )}
 
@@ -30,7 +30,7 @@ const t = createT(Astro.locals.labels);
       <article class:list={['grid gap-8 lg:grid-cols-2 lg:items-center', index % 2 === 1 && 'lg:[&>div:first-child]:order-2']}>
         <div>
           {block.title && <h2 class="section-title">{block.title}</h2>}
-          {block.content && <div class="prose-eld mt-5" set:html={sanitizeHtml(block.content)} />}
+          {block.content && <ProseHtml html={block.content} class="prose-eld mt-5" />}
         </div>
         {block.image && (
           <div class="media-frame min-h-[18rem]">

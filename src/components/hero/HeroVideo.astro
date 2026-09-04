@@ -8,8 +8,8 @@ interface Props {
 }
 
 const { content } = Astro.props;
-const title = content?.subtitle || content?.title || '';
-const kicker = distinctText(content?.title, title);
+const title = content?.title || '';
+const kicker = distinctText(content?.subtitle, title);
 const primaryCta = content?.ctaLabel;
 const primaryUrl = content?.ctaUrl;
 const secondaryCta = content?.ctaSecondaryLabel;

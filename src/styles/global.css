@@ -137,7 +137,7 @@
   }
 
   .display-title {
-    @apply font-display font-semibold uppercase leading-[0.88] tracking-tight text-ink;
+    @apply font-display font-semibold uppercase leading-[1.08] tracking-tight text-ink;
     font-size: clamp(2.4rem, 7vw, 6.5rem);
     overflow-wrap: anywhere;
   }
@@ -148,7 +148,7 @@
   }
 
   .section-title {
-    @apply font-display font-semibold uppercase leading-[0.92] tracking-tight text-ink;
+    @apply font-display font-semibold uppercase leading-[1.12] tracking-tight text-ink;
     font-size: clamp(1.85rem, 4.4vw, 4rem);
     overflow-wrap: anywhere;
   }

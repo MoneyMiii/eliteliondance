@@ -3,35 +3,25 @@ import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import CustomCursor from '../components/common/CustomCursor';
 import CmsErrorDialog from '../components/common/CmsErrorDialog.astro';
-import { htmlLang, type Locale } from '../lib/locale';
+import { htmlLang } from '../lib/locale';
 import { createT } from '../lib/i18n';
 import { cmsErrorCopy } from '../lib/cms-error';
 import { buildSeo, organizationJsonLd } from '../lib/seo';
 import '../styles/global.css';
-import type { Partner } from '../lib/types';
 
 interface Props {
-  locale: Locale;
   title?: string;
   description?: string;
   path: string;
-  instagramUrl?: string;
-  partners?: Partner[];
   image?: string;
 }
 
-const {
-  locale,
-  title,
-  description,
-  path,
-  instagramUrl = '',
-  partners = [],
-  image,
-} = Astro.props;
+const { title, description, path, image } = Astro.props;
+const locale = Astro.locals.locale;
 const cmsAvailable = Astro.locals.cmsAvailable;
 const labels = Astro.locals.labels ?? {};
 const settings = Astro.locals.settings;
+const instagramUrl = settings?.instagramUrl ?? '';
 const t = createT(labels);
 const errorCopy = cmsErrorCopy(locale);
 const brandName = t('brand.name') || settings?.brandName || '';
@@ -61,7 +51,7 @@ const jsonLd = organizationJsonLd({
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{cmsAvailable ? brandName : errorCopy.title}</title>
+    <title>{cmsAvailable ? seo.title : errorCopy.title}</title>
     <meta name="description" content={seo.description} />
     <link rel="canonical" href={seo.url} />
     {settings?.logoMark && <link rel="icon" type="image/png" href={settings.logoMark} />}
@@ -130,11 +120,11 @@ const jsonLd = organizationJsonLd({
         <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[120] focus:rounded-full focus:bg-brand focus:px-4 focus:py-2 focus:text-paper">
           {t('nav.skip')}
         </a>
-        <Header locale={locale} instagramUrl={instagramUrl} currentPath={path} logo={settings?.logo} logoMark={settings?.logoMark} />
+        <Header currentPath={path} />
         <main id="main" class="overflow-x-hidden">
           <slot />
         </main>
-        <Footer instagramUrl={instagramUrl} partners={partners} logoMark={settings?.logoMark} />
+        <Footer />
         <CustomCursor labels={labels} client:only="react" />
       </>
     ) : (

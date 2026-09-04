@@ -1,36 +1,14 @@
 import { useEffect, useId, useRef, useState, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
+import InstagramIcon from '../common/InstagramIcon';
+import { samePageHash, scrollToAnchor } from '../../lib/anchor-scroll';
 import { t, type Labels } from '../../lib/i18n';
 import { lockPageScroll } from '../../lib/page-scroll-lock';
+import { useWindowKeydown } from '../../lib/use-window-keydown';
 import type { NavLink } from '../../lib/types';
 
 const MENU_CLOSE_MS = 520;
 const NAV_SCROLL_MS = 1500;
-const ANCHOR_GAP_PX = 12;
-
-function samePageHash(href: string): string | null {
-  try {
-    const url = new URL(href, window.location.href);
-    if (url.pathname !== window.location.pathname) return null;
-    const id = decodeURIComponent(url.hash.replace(/^#/, ''));
-    return id || null;
-  } catch {
-    return href.startsWith('#') ? decodeURIComponent(href.slice(1)) || null : null;
-  }
-}
-
-function scrollToAnchor(id: string) {
-  const el = document.getElementById(id);
-  if (!el) return;
-
-  const header = document.getElementById('site-header');
-  const headerH = header instanceof HTMLElement && !header.hasAttribute('data-hidden')
-    ? header.getBoundingClientRect().height
-    : 0;
-  const top = Math.max(0, window.scrollY + el.getBoundingClientRect().top - headerH - ANCHOR_GAP_PX);
-  window.scrollTo({ top, behavior: 'smooth' });
-  history.replaceState(null, '', `#${id}`);
-}
 
 interface Props {
   labels: Labels;
@@ -76,19 +54,16 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
     document.documentElement.classList.add('menu-open');
     const unlock = lockPageScroll();
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false);
-    };
-
-    document.addEventListener('keydown', onKeyDown);
-
     return () => {
       document.documentElement.classList.remove('menu-open');
-      document.removeEventListener('keydown', onKeyDown);
       unlock();
       (previous || openerRef.current)?.focus();
     };
   }, [open]);
+
+  useWindowKeydown((event) => {
+    if (event.key === 'Escape') setOpen(false);
+  }, open);
 
   useEffect(() => {
     if (open) return;
@@ -205,7 +180,7 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
                   rel="noopener noreferrer"
                   aria-label={t(labels, 'cta.instagram')}
                 >
-                  <InstagramIcon />
+                  <InstagramIcon className="h-9 w-9" />
                 </a>
               )}
             </nav>
@@ -213,13 +188,5 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
           document.body,
         )}
     </>
-  );
-}
-
-function InstagramIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-9 w-9 fill-current" aria-hidden="true">
-      <path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3Z" />
-    </svg>
   );
 }

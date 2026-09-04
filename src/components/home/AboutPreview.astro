@@ -1,9 +1,9 @@
 ---
 import { createT } from '../../lib/i18n';
 import type { EditorialBlock } from '../../lib/types';
-import Button from '../common/Button.astro';
-import { sanitizeHtml } from '../../lib/localize';
-import { distinctText } from '../../lib/format';
+import SectionTitle from '../common/SectionTitle.astro';
+import SectionCta from '../common/SectionCta.astro';
+import ProseHtml from '../common/ProseHtml.astro';
 
 interface Props {
   content?: EditorialBlock;
@@ -11,26 +11,15 @@ interface Props {
 
 const { content } = Astro.props;
 const t = createT(Astro.locals.labels);
-const title = content?.title || '';
-const kicker = distinctText(content?.subtitle, title);
 ---
 
 <section class="container-page section-y">
   <div class="block-gap max-w-3xl">
-    {kicker && <p class="eyebrow">{kicker}</p>}
-    {title && <h2 class:list={['section-title', kicker && 'mt-4']}>{title}</h2>}
-    {content?.content && (
-      <div class="prose-eld mt-6 text-lg">
-        <div set:html={sanitizeHtml(content.content)} />
-      </div>
+    {(content?.title || content?.subtitle) && (
+      <SectionTitle eyebrow={content?.subtitle} title={content?.title || ''} />
     )}
-    {content?.ctaLabel && content?.ctaUrl && (
-      <div class="mt-8">
-        <Button href={content.ctaUrl} variant="secondary">
-          {content.ctaLabel}
-        </Button>
-      </div>
-    )}
+    {content?.content && <ProseHtml html={content.content} class="prose-eld mt-6 text-lg" />}
+    <SectionCta href={content?.ctaUrl} label={content?.ctaLabel} variant="secondary" class="mt-8" />
   </div>
   {content?.image && (
     <figure class="media-frame aspect-[16/9] lg:aspect-[2/1]">

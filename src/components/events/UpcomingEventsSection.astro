@@ -1,58 +1,41 @@
 ---
 import { createT } from '../../lib/i18n';
 import type { EditorialBlock, EventItem } from '../../lib/types';
-import SectionTitle from '../common/SectionTitle.astro';
-import EventCard from './EventCard';
-import EmptyState from '../common/EmptyState.astro';
-import Button from '../common/Button.astro';
+import SectionHeader from '../common/SectionHeader.astro';
+import EventsGrid from './EventsGrid';
+import EmptyState from '../common/EmptyState';
 
 interface Props {
   events: EventItem[];
   hasMoreUpcoming?: boolean;
   content?: EditorialBlock;
-  logoMark?: string;
 }
 
-const { events, hasMoreUpcoming = false, content, logoMark } = Astro.props;
+const { events, hasMoreUpcoming = false, content } = Astro.props;
+const logoMark = Astro.locals.settings?.logoMark;
 const t = createT(Astro.locals.labels);
-const labels = Astro.locals.labels ?? {};
-const locale = Astro.locals.locale;
 const moreHref = content?.ctaUrl
   ? `${content.ctaUrl}${content.ctaUrl.includes('?') ? '&' : '?'}filtre=avenir`
   : undefined;
 ---
 
 <section class="container-page section-y">
-  <div class="block-gap flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-    {(content?.title || content?.subtitle) && (
-      <SectionTitle
-        eyebrow={content?.subtitle}
-        title={content?.title || ''}
-      />
-    )}
-    {content?.ctaLabel && content?.ctaUrl && (
-      <Button href={content.ctaUrl} variant="secondary" class="text-center">
-        {content.ctaLabel}
-      </Button>
-    )}
-  </div>
+  <SectionHeader
+    eyebrow={content?.subtitle}
+    title={content?.title}
+    ctaLabel={content?.ctaLabel}
+    ctaUrl={content?.ctaUrl}
+  />
   {events.length ? (
-    <div class="grid items-start gap-4 pt-1 md:grid-cols-2">
-      {events.map((event) => (
-        <EventCard locale={locale} labels={labels} event={event} logoMark={logoMark} client:load />
-      ))}
-      {hasMoreUpcoming && moreHref && (
-        <div class="flex items-center justify-center self-center py-2 md:py-0">
-          <a
-            href={moreHref}
-            class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-brand text-2xl font-semibold leading-none text-paper transition-colors hover:bg-ink"
-            aria-label={t('events.moreUpcoming')}
-          >
-            +
-          </a>
-        </div>
-      )}
-    </div>
+    <EventsGrid
+      locale={Astro.locals.locale}
+      labels={Astro.locals.labels ?? {}}
+      events={events}
+      logoMark={logoMark}
+      moreHref={hasMoreUpcoming ? moreHref : undefined}
+      moreLabel={t('events.moreUpcoming')}
+      client:load
+    />
   ) : (
     t('events.noneUpcoming') && <EmptyState message={t('events.noneUpcoming')} />
   )}

@@ -1,10 +1,10 @@
-export interface PocketBaseRecord {
+interface PocketBaseRecord {
   id: string;
   collectionId?: string;
   collectionName?: string;
 }
 
-export interface LocalizedFields {
+interface LocalizedFields {
   title_fr?: string;
   title_zh?: string;
   subtitle_fr?: string;
@@ -178,7 +178,6 @@ export interface NavLink {
 }
 
 export interface EditorialBlock {
-  key: string;
   title: string;
   subtitle: string;
   content: string;

@@ -23,5 +23,6 @@ declare namespace App {
     navLinks: import('./lib/types').NavLink[];
     cmsAvailable: boolean;
     settings?: import('./lib/types').SiteSettings;
+    partners: import('./lib/types').Partner[];
   }
 }

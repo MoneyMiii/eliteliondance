@@ -2,27 +2,13 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/common/Button.astro';
 import PageHeading from '../components/common/PageHeading.astro';
-import { getPartners } from '../lib/api';
 import { createT } from '../lib/i18n';
-import { getRequestLocale } from '../lib/request-locale';
-import type { Partner } from '../lib/types';
 
-const locale = getRequestLocale(Astro.cookies);
 const t = createT(Astro.locals.labels);
 const homeHref = Astro.locals.navLinks.find((link) => link.href === '/')?.href || Astro.locals.navLinks[0]?.href || '/';
-let partners: Partner[] = [];
-const instagramUrl = Astro.locals.settings?.instagramUrl ?? '';
-if (Astro.locals.cmsAvailable) {
-  const partnersResult = await getPartners();
-  if (!partnersResult.ok) {
-    Astro.locals.cmsAvailable = false;
-  } else {
-    partners = partnersResult.data;
-  }
-}
 ---
 
-<BaseLayout locale={locale} path="/404" title={t('notFound.code')} instagramUrl={instagramUrl} partners={partners}>
+<BaseLayout path="/404" title={t('notFound.code')}>
   <section class="container-page page-y flex min-h-[70vh] flex-col items-start justify-center">
     <PageHeading kicker={t('notFound.code')} title={t('notFound.title')} />
     <div class="mt-(--space-block)">

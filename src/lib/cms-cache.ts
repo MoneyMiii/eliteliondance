@@ -1,3 +1,5 @@
+import { readEnv } from './env';
+
 type CacheEntry<T> = { expires: number; value: T };
 
 function createTtlCache<T>(ttlMs: number) {
@@ -45,9 +47,7 @@ function createTtlCache<T>(ttlMs: number) {
 }
 
 function readTtl(name: 'CMS_CACHE_TTL_MS' | 'CMS_FILE_CACHE_TTL_MS', fallback: number): number {
-  const fromImport = import.meta.env[name];
-  const fromProcess = typeof process !== 'undefined' ? process.env[name] : undefined;
-  const value = Number(fromImport || fromProcess);
+  const value = Number(readEnv(name));
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 

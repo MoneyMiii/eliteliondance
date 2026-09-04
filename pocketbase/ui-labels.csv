@@ -43,8 +43,6 @@ events.filterUpcoming,À venir,即将举行,true
 events.filterPast,Passés,往期活动,true
 events.empty,Aucun événement à afficher pour le moment.,暂无活动。,true
 events.noneUpcoming,Aucun événement n’est planifié pour le moment.,目前没有已安排的活动。,true
-events.flip,Voir les détails,查看详情,true
-events.unflip,Revenir à la carte,返回卡片正面,true
 events.seePastAndFuture,Voir les événements passés et futurs,查看往期与即将举行的活动,true
 events.moreUpcoming,Voir plus d’événements à venir,查看更多即将举行的活动,true
 gallery.kicker,Galerie,图库,true
@@ -55,6 +53,7 @@ gallery.carousel,Carrousel photos,照片轮播,true
 gallery.prev,Photo précédente,上一张,true
 gallery.next,Photo suivante,下一张,true
 gallery.close,Fermer,关闭,true
+common.close,Fermer,关闭,true
 gallery.open,Agrandir {title},放大 {title},true
 gallery.goTo,Aller à la photo {index},查看第 {index} 张,true
 gallery.counter,{current} / {total},{current} / {total},true

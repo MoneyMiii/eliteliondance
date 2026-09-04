@@ -231,30 +231,44 @@ export default function Carousel({
     const leave = () => {
       hoveredRef.current = false;
     };
+
+    const hasFocus = () => root.contains(document.activeElement);
+
     /**
-     * `:focus-visible` distingue le focus clavier de celui qu'une flèche reçoit
-     * au clic : ce dernier ne doit pas figer le carrousel une fois la souris
-     * partie. `focusout` précède toujours `focusin`, donc un déplacement du
-     * focus à l'intérieur du carrousel est réévalué juste après.
+     * Un clic souris sur une flèche donne le focus sans `:focus-visible` :
+     * on ne fige alors que le temps du survol. Tab ou une flèche clavier
+     * ouvre une session clavier, qui dure jusqu'à ce que le focus quitte
+     * le carrousel — même si la souris est déjà dehors.
      */
-    const focusIn = (event: FocusEvent) => {
-      focusedRef.current = (event.target as Element).matches(':focus-visible');
+    const syncKeyboardFocus = () => {
+      if (!hasFocus()) {
+        focusedRef.current = false;
+        return;
+      }
+      if (root.querySelector(':focus-visible')) focusedRef.current = true;
     };
-    const focusOut = () => {
-      focusedRef.current = false;
+
+    const onKeyDown = () => {
+      if (hasFocus()) focusedRef.current = true;
+    };
+
+    const onFocusChange = () => {
+      requestAnimationFrame(syncKeyboardFocus);
     };
 
     hoveredRef.current = root.matches(':hover');
-    focusedRef.current = Boolean(root.querySelector(':focus-visible'));
+    syncKeyboardFocus();
     root.addEventListener('pointerenter', enter);
     root.addEventListener('pointerleave', leave);
-    root.addEventListener('focusin', focusIn);
-    root.addEventListener('focusout', focusOut);
+    root.addEventListener('keydown', onKeyDown);
+    root.addEventListener('focusin', onFocusChange);
+    root.addEventListener('focusout', onFocusChange);
     return () => {
       root.removeEventListener('pointerenter', enter);
       root.removeEventListener('pointerleave', leave);
-      root.removeEventListener('focusin', focusIn);
-      root.removeEventListener('focusout', focusOut);
+      root.removeEventListener('keydown', onKeyDown);
+      root.removeEventListener('focusin', onFocusChange);
+      root.removeEventListener('focusout', onFocusChange);
     };
   }, [isComputer]);
 
@@ -309,6 +323,7 @@ export default function Carousel({
         if (!event.isPrimary) return;
         markUserAction();
       }}
+      onKeyDown={onKeyDown}
     >
       <p id={labelId} className="sr-only">
         {ariaLabel}
@@ -321,7 +336,6 @@ export default function Carousel({
         }`}
         data-carousel=""
         tabIndex={looping ? 0 : undefined}
-        onKeyDown={onKeyDown}
         onDragStart={(event) => event.preventDefault()}
       >
         <div

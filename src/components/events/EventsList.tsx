@@ -44,7 +44,7 @@ export default function EventsList({ locale, labels, events, initialFilter = 'al
         ))}
       </div>
       {visible.length ? (
-        <div className="grid items-stretch gap-5 pt-1 md:grid-cols-2">
+        <div className="grid items-start gap-4 pt-1 md:grid-cols-2">
           {visible.map((event) => (
             <EventCard key={event.id} locale={locale} labels={labels} event={event} logoMark={logoMark} />
           ))}

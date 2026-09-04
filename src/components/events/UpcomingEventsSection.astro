@@ -37,15 +37,15 @@ const moreHref = content?.ctaUrl
     )}
   </div>
   {events.length ? (
-    <div class="grid items-stretch gap-5 pt-1 md:grid-cols-2">
+    <div class="grid items-start gap-4 pt-1 md:grid-cols-2">
       {events.map((event) => (
         <EventCard locale={locale} labels={labels} event={event} logoMark={logoMark} client:load />
       ))}
       {hasMoreUpcoming && moreHref && (
-        <div class="flex items-center justify-center py-4 md:py-0">
+        <div class="flex items-center justify-center self-center py-2 md:py-0">
           <a
             href={moreHref}
-            class="inline-flex h-28 w-28 items-center justify-center rounded-full bg-brand text-5xl font-semibold leading-none text-paper transition-colors hover:bg-ink"
+            class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-brand text-2xl font-semibold leading-none text-paper transition-colors hover:bg-ink"
             aria-label={t('events.moreUpcoming')}
           >
             +

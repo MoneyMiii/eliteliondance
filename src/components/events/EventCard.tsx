@@ -3,7 +3,6 @@ import type { Locale } from '../../lib/locale';
 import type { EventItem } from '../../lib/types';
 import { t, type Labels } from '../../lib/i18n';
 import { formatEventDate } from '../../lib/format';
-import { useIsComputer } from '../../lib/pointer';
 
 interface Props {
   locale: Locale;
@@ -21,105 +20,109 @@ function LocationIcon() {
   );
 }
 
-function EyeIcon() {
+function ChevronIcon({ open }: { open: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current stroke-[1.7]" aria-hidden="true">
-      <path d="M2.5 12s3.6-7 9.5-7 9.5 7 9.5 7-3.6 7-9.5 7-9.5-7-9.5-7Z" strokeLinejoin="round" />
-      <circle cx="12" cy="12" r="2.75" />
-    </svg>
-  );
-}
-
-function EyeOffIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current stroke-[1.7]" aria-hidden="true">
-      <path d="M3 3l18 18" strokeLinecap="round" />
-      <path d="M10.6 10.6A2.75 2.75 0 0 0 12 14.75" strokeLinecap="round" />
-      <path d="M6.1 6.4C3.7 8.2 2.5 12 2.5 12s3.6 7 9.5 7c1.8 0 3.4-.5 4.8-1.3M17.6 15.3C20 13.6 21.5 12 21.5 12s-3.6-7-9.5-7c-.7 0-1.4.1-2 .3" strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      viewBox="0 0 24 24"
+      className={`h-4 w-4 fill-none stroke-current stroke-[2] transition-transform duration-500 ease-cinematic ${
+        open ? 'rotate-180' : ''
+      }`}
+      aria-hidden="true"
+    >
+      <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
 export default function EventCard({ locale, labels, event, logoMark }: Props) {
   const [open, setOpen] = useState(false);
-  const computer = useIsComputer();
   const dateLabel = useMemo(() => formatEventDate(event.dateTime, locale), [event.dateTime, locale]);
   const onMedia = Boolean(event.image);
+  const canExpand = Boolean(event.description);
 
-  return (
-    <article className="group h-full transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] computer:hover:-translate-y-1.5 computer:focus-within:-translate-y-1.5">
-      <div className="relative flex h-full min-h-[22rem] flex-col overflow-hidden rounded-[1.75rem] border border-brand/15 bg-forest p-6 shadow-[0_8px_24px_rgba(20,26,20,0.04)] transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] computer:group-hover:border-brand/50 computer:group-hover:shadow-[0_12px_28px_rgba(46,89,43,0.1)] computer:group-focus-within:border-brand/50 computer:group-focus-within:shadow-[0_12px_28px_rgba(46,89,43,0.1)]">
-        {onMedia ? (
-          <img
-            src={event.image}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] computer:group-hover:scale-[1.04] computer:group-focus-within:scale-[1.04]"
-          />
-        ) : logoMark ? (
-          <img
-            src={logoMark}
-            alt=""
-            className="pointer-events-none absolute -right-[16%] bottom-[8%] h-[72%] w-auto opacity-[0.16] transition-opacity duration-500 computer:group-hover:opacity-[0.08] computer:group-focus-within:opacity-[0.08]"
-          />
-        ) : null}
-        {onMedia && <div className="absolute inset-0 bg-gradient-to-b from-ink via-ink/30 to-transparent" />}
+  const body = (
+    <div className="relative overflow-hidden">
+      {onMedia ? (
+        <>
+          <img src={event.image} alt="" className="absolute inset-0 size-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink via-ink/45 to-ink/20" />
+        </>
+      ) : logoMark ? (
+        <img
+          src={logoMark}
+          alt=""
+          className="pointer-events-none absolute -right-3 bottom-0 h-16 w-auto opacity-[0.14]"
+        />
+      ) : null}
 
-        <div className="relative">
-          <p className={`text-[0.68rem] uppercase tracking-[0.28em] ${onMedia ? 'text-paper/75' : 'text-brand'}`}>
+      <div className="relative flex items-start justify-between gap-3 px-3.5 py-3">
+        <div className="min-w-0">
+          <p className={`text-[0.62rem] uppercase tracking-[0.24em] ${onMedia ? 'text-paper/75' : 'text-brand'}`}>
             {event.isUpcoming ? t(labels, 'events.filterUpcoming') : t(labels, 'events.filterPast')}
           </p>
-          <h3 className={`mt-2 font-display text-3xl uppercase leading-none ${onMedia ? 'text-paper' : 'text-ink'}`}>
+          <h3 className={`mt-0.5 font-display text-lg uppercase leading-tight ${onMedia ? 'text-paper' : 'text-ink'}`}>
             {event.title}
           </h3>
-          <p className={`mt-3 text-sm ${onMedia ? 'text-paper/70' : 'text-mist'}`}>{dateLabel}</p>
+          <p className={`mt-1 text-xs ${onMedia ? 'text-paper/70' : 'text-mist'}`}>{dateLabel}</p>
           {event.location ? (
-            <p className={`mt-2 inline-flex items-center gap-1.5 text-sm ${onMedia ? 'text-paper/85' : 'text-brand'}`}>
+            <p className={`mt-1 inline-flex items-center gap-1.5 text-xs ${onMedia ? 'text-paper/85' : 'text-brand'}`}>
               <LocationIcon />
               <span>{event.location}</span>
             </p>
           ) : null}
         </div>
-
-        <div className="relative min-h-0 flex-1" />
-
-        {event.description ? (
-          <div
-            className={`relative overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              computer
-                ? 'translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100'
-                : open
-                  ? 'mt-5 max-h-52 opacity-100'
-                  : 'mt-0 max-h-0 opacity-0'
+        {canExpand && (
+          <span
+            className={`mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border ${
+              onMedia ? 'border-paper/35 bg-ink/40 text-paper' : 'border-brand/25 bg-paper text-brand'
             }`}
           >
-            <span className={`mb-3 block h-px w-8 ${onMedia ? 'bg-paper/40' : 'bg-brand/35'}`} />
-            <div
-              className={`prose-eld line-clamp-4 max-w-[34ch] text-[0.9rem] leading-relaxed ${
-                onMedia ? 'text-paper/80 [&_*]:text-paper/80' : 'text-mist'
-              }`}
-              dangerouslySetInnerHTML={{ __html: event.description }}
-            />
-          </div>
-        ) : null}
-
-        {!computer && event.description ? (
-          <button
-            type="button"
-            className={`relative z-10 mt-5 inline-flex h-12 w-12 items-center justify-center rounded-full border transition-colors ${
-              open
-                ? 'border-brand bg-brand text-paper'
-                : onMedia
-                  ? 'border-paper/30 bg-ink/50 text-paper'
-                  : 'border-brand/25 bg-paper text-brand'
-            }`}
-            onClick={() => setOpen((value) => !value)}
-            aria-expanded={open}
-            aria-label={open ? t(labels, 'events.unflip') : t(labels, 'events.flip')}
-          >
-            {open ? <EyeOffIcon /> : <EyeIcon />}
-          </button>
-        ) : null}
+            <ChevronIcon open={open} />
+          </span>
+        )}
       </div>
+    </div>
+  );
+
+  return (
+    <article
+      className={`overflow-hidden rounded-xl border shadow-[0_8px_24px_rgba(20,26,20,0.04)] transition-[border-color,box-shadow] duration-500 ease-cinematic ${
+        onMedia ? 'bg-ink' : 'bg-forest'
+      } ${open ? 'border-brand/50 shadow-[0_12px_28px_rgba(46,89,43,0.1)]' : 'border-brand/15'}`}
+    >
+      {canExpand ? (
+        <button
+          type="button"
+          className="block w-full text-left"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          aria-controls={`event-desc-${event.id}`}
+        >
+          {body}
+        </button>
+      ) : (
+        <div>{body}</div>
+      )}
+
+      {canExpand ? (
+        <div
+          id={`event-desc-${event.id}`}
+          aria-hidden={!open}
+          className={`grid bg-ink transition-[grid-template-rows] duration-500 ease-cinematic ${
+            open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+          }`}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div className="px-3.5 py-3">
+              <span className="mb-2.5 block h-px w-8 bg-paper/25" />
+              <div
+                className="prose-eld text-sm leading-relaxed text-paper/80 [&_*]:text-paper/80"
+                dangerouslySetInnerHTML={{ __html: event.description }}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </article>
   );
 }

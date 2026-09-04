@@ -1,7 +1,7 @@
 ---
 import type { EditorialBlock, ServiceItem } from '../../lib/types';
 import SectionTitle from '../common/SectionTitle.astro';
-import ServiceCard from './ServiceCard.astro';
+import ServicesGrid from './ServicesGrid';
 import Button from '../common/Button.astro';
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { content, services } = Astro.props;
+const labels = Astro.locals.labels ?? {};
 const anchor = content?.anchor;
 const heading = Boolean(content?.title || content?.subtitle);
 ---
@@ -23,15 +24,7 @@ const heading = Boolean(content?.title || content?.subtitle);
       />
     </div>
   )}
-  {
-    services.length > 0 && (
-      <div class="grid auto-rows-[26rem] gap-5 sm:grid-cols-2">
-        {services.map((service) => (
-          <ServiceCard icon={service.icon} photo={service.photo} title={service.title} description={service.description} />
-        ))}
-      </div>
-    )
-  }
+  <ServicesGrid labels={labels} services={services} client:visible />
   {content?.ctaLabel && content?.ctaUrl && (
     <div class="mt-10 flex justify-center">
       <Button href={content.ctaUrl}>{content.ctaLabel}</Button>

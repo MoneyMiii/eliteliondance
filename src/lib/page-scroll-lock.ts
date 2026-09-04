@@ -40,6 +40,8 @@ export function lockPageScroll() {
   return () => {
     document.removeEventListener('wheel', prevent);
     document.removeEventListener('touchmove', prevent);
+    const behavior = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
     html.style.overflow = '';
     html.style.removeProperty('--menu-gutter');
     body.style.overflow = '';
@@ -50,6 +52,7 @@ export function lockPageScroll() {
     body.style.width = '';
     body.style.paddingRight = '';
     if (header instanceof HTMLElement) header.style.paddingRight = '';
-    window.scrollTo(0, scrollY);
+    window.scrollTo({ top: scrollY, left: 0, behavior: 'instant' });
+    html.style.scrollBehavior = behavior;
   };
 }

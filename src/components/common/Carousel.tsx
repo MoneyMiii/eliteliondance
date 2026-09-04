@@ -70,6 +70,7 @@ export default function Carousel({
   const offsetRef = useRef(0);
   const animatingRef = useRef(false);
   const hoveredRef = useRef(false);
+  const focusedRef = useRef(false);
   const wrapTimerRef = useRef(0);
   const autoplayTimerRef = useRef(0);
   const resumeTimerRef = useRef(0);
@@ -192,8 +193,9 @@ export default function Carousel({
   isComputerRef.current = isComputer;
 
   /**
-   * Sur ordinateur, le survol suffit à mettre en pause. La temporisation est
-   * réservée au tactile, où rien n'indique que l'utilisateur regarde encore.
+   * Sur ordinateur, le survol et le focus clavier suffisent à mettre en pause.
+   * La temporisation est réservée au tactile, où rien n'indique que
+   * l'utilisateur regarde encore le carrousel.
    */
   const markUserAction = useCallback(() => {
     if (isComputerRef.current) return;
@@ -219,6 +221,7 @@ export default function Carousel({
     const root = rootRef.current;
     if (!root || !isComputer) {
       hoveredRef.current = false;
+      focusedRef.current = false;
       return;
     }
 
@@ -228,13 +231,30 @@ export default function Carousel({
     const leave = () => {
       hoveredRef.current = false;
     };
+    /**
+     * `:focus-visible` distingue le focus clavier de celui qu'une flèche reçoit
+     * au clic : ce dernier ne doit pas figer le carrousel une fois la souris
+     * partie. `focusout` précède toujours `focusin`, donc un déplacement du
+     * focus à l'intérieur du carrousel est réévalué juste après.
+     */
+    const focusIn = (event: FocusEvent) => {
+      focusedRef.current = (event.target as Element).matches(':focus-visible');
+    };
+    const focusOut = () => {
+      focusedRef.current = false;
+    };
 
     hoveredRef.current = root.matches(':hover');
+    focusedRef.current = Boolean(root.querySelector(':focus-visible'));
     root.addEventListener('pointerenter', enter);
     root.addEventListener('pointerleave', leave);
+    root.addEventListener('focusin', focusIn);
+    root.addEventListener('focusout', focusOut);
     return () => {
       root.removeEventListener('pointerenter', enter);
       root.removeEventListener('pointerleave', leave);
+      root.removeEventListener('focusin', focusIn);
+      root.removeEventListener('focusout', focusOut);
     };
   }, [isComputer]);
 
@@ -249,7 +269,7 @@ export default function Carousel({
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       autoplayTimerRef.current = window.setInterval(() => {
         if (animatingRef.current) return;
-        if (hoveredRef.current) return;
+        if (hoveredRef.current || focusedRef.current) return;
         stepRef.current(1);
       }, AUTOPLAY_MS);
     };

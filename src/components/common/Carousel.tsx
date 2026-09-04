@@ -188,7 +188,15 @@ export default function Carousel({
     [baseOffset, count, looping, maxOffset, realIndex, shortestDelta, wrapOffset],
   );
 
+  const isComputerRef = useRef(isComputer);
+  isComputerRef.current = isComputer;
+
+  /**
+   * Sur ordinateur, le survol suffit à mettre en pause. La temporisation est
+   * réservée au tactile, où rien n'indique que l'utilisateur regarde encore.
+   */
   const markUserAction = useCallback(() => {
+    if (isComputerRef.current) return;
     stopAutoplayRef.current();
     window.clearTimeout(resumeTimerRef.current);
     resumeTimerRef.current = window.setTimeout(() => {

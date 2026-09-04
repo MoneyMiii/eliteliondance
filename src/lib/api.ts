@@ -132,7 +132,7 @@ function toService(record: ServiceRecord, locale: Locale): ServiceItem {
     id: record.id,
     title: localizedPlain(record, 'title', locale),
     description: localizedPlain(record, 'description', locale),
-    icon: getPocketBaseFileUrl(record, record.icon),
+    icon: getPocketBaseFileUrl(record, record.icon, '128x128f'),
     photo: getPocketBaseFileUrl(record, record.photo, '1200x800'),
   };
 }
@@ -143,8 +143,9 @@ function normalizeSettings(record?: SettingsRecord): SiteSettings {
     contactEmail: record?.contactEmail?.trim() || undefined,
     instagramUrl: record?.instagramUrl?.trim() || '',
     upcomingEventsLimit: Number.isFinite(limit) && limit > 0 ? limit : DEFAULT_UPCOMING_LIMIT,
-    logo: record ? getPocketBaseFileUrl(record, record.logo) : undefined,
-    logoMark: record ? getPocketBaseFileUrl(record, record.logoMark) : undefined,
+    logo: record ? getPocketBaseFileUrl(record, record.logo, '0x160') : undefined,
+    // Aussi utilisé en og:image et en favicon, d'où une taille plus généreuse.
+    logoMark: record ? getPocketBaseFileUrl(record, record.logoMark, '0x600') : undefined,
     siteUrl: record?.siteUrl?.trim() || '',
     brandName: record?.brandName?.trim() || '',
     themeColor: record?.themeColor?.trim() || undefined,

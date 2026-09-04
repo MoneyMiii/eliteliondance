@@ -26,7 +26,6 @@ export default function GalleryCarousel({ labels, items }: Props) {
               src={item.image}
               alt=""
               draggable={false}
-              data-cursor="drag"
               className="mx-auto max-h-full w-auto max-w-full rounded-[1.5rem] object-contain"
             />
           </figure>

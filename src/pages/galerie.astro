@@ -14,7 +14,7 @@ const items = Astro.locals.cmsAvailable
 
 <BaseLayout path="/galerie" title={t('nav.gallery')} description={t('gallery.title')}>
   <div class="page-y">
-    <div class="container-page block-gap">
+    <div class="container-page block-gap" data-reveal>
       <PageHeading kicker={t('gallery.kicker')} title={t('gallery.title')} />
     </div>
     <GallerySection items={items} heading={false} />

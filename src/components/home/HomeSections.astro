@@ -37,37 +37,44 @@ const bands = home.sections.map((section) => ({
 
 {bands.map(({ section, dark }, index) => {
   const cut = CUTS[section.key];
-  const overlap = index > 0 ? CUTS[bands[index - 1].section.key].depth : '0px';
+  const above = index > 0 ? CUTS[bands[index - 1].section.key] : null;
   return (
   <div
     class:list={[
       dark ? 'band-dark' : 'band-light',
       cut.dir === 'a' ? 'band-cut-a' : 'band-cut-b',
       section.key === 'hero' && 'band-hero',
+      above?.dir === 'a' && 'reveal-from-a',
+      above?.dir === 'b' && 'reveal-from-b',
     ]}
-    style={`z-index: ${bands.length - index}; --band-cut: ${cut.depth}; --band-overlap: ${overlap}`}
+    style={`z-index: ${bands.length - index}; --band-cut: ${cut.depth}; --band-overlap: ${above?.depth ?? '0px'}`}
   >
-    {section.key === 'hero' && <HeroVideo content={home.content['home.hero']} />}
-    {section.key === 'intro' && <IntroSection content={home.content['home.intro']} />}
-    {section.key === 'services' && (
-      <ServicesSection content={home.content['home.services']} services={home.services} />
-    )}
-    {section.key === 'events' && (
-      <UpcomingEventsSection
-        events={home.upcomingEvents}
-        hasMoreUpcoming={home.hasMoreUpcoming}
-        content={home.content['home.events']}
-      />
-    )}
-    {section.key === 'gallery' && (
-      <GallerySection items={home.gallery} content={home.content['home.gallery']} preview />
-    )}
-    {section.key === 'about' && <AboutPreview content={home.content['home.about']} />}
-    {section.key === 'team' && (
-      <TeamSection members={home.team} content={home.content['home.team']} />
-    )}
-    {section.key === 'instagram' && (
-      <InstagramSection content={home.content['home.instagram']} />
+    {section.key === 'hero' ? (
+      <HeroVideo content={home.content['home.hero']} />
+    ) : (
+      <div data-reveal="wipe">
+        {section.key === 'intro' && <IntroSection content={home.content['home.intro']} />}
+        {section.key === 'services' && (
+          <ServicesSection content={home.content['home.services']} services={home.services} />
+        )}
+        {section.key === 'events' && (
+          <UpcomingEventsSection
+            events={home.upcomingEvents}
+            hasMoreUpcoming={home.hasMoreUpcoming}
+            content={home.content['home.events']}
+          />
+        )}
+        {section.key === 'gallery' && (
+          <GallerySection items={home.gallery} content={home.content['home.gallery']} preview />
+        )}
+        {section.key === 'about' && <AboutPreview content={home.content['home.about']} />}
+        {section.key === 'team' && (
+          <TeamSection members={home.team} content={home.content['home.team']} />
+        )}
+        {section.key === 'instagram' && (
+          <InstagramSection content={home.content['home.instagram']} />
+        )}
+      </div>
     )}
   </div>
   );

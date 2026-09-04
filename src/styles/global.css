@@ -28,6 +28,7 @@
   html {
     scroll-behavior: smooth;
     overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100%;
   }
 
@@ -76,7 +77,9 @@
       radial-gradient(1000px 520px at 90% -10%, rgb(46 89 43 / 0.08), transparent 55%),
       radial-gradient(800px 420px at -8% 110%, rgb(46 89 43 / 0.05), transparent 50%);
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100%;
   }
 
@@ -278,6 +281,28 @@
   animation: rise 0.9s var(--ease-cinematic) both;
 }
 
+html.js [data-reveal] {
+  --reveal-progress: 0;
+  opacity: var(--reveal-progress);
+}
+
+html.js [data-reveal]:not([data-reveal='wipe']) {
+  transform: translate3d(0, calc(1.75rem * (1 - var(--reveal-progress))), 0);
+}
+
+html.js [data-reveal='wipe'] {
+  --reveal-dx: 0px;
+  --reveal-dy: 0px;
+  --reveal-rot: 0deg;
+  transform: translate3d(
+      calc(var(--reveal-dx) * (1 - var(--reveal-progress))),
+      calc(var(--reveal-dy) * (1 - var(--reveal-progress))),
+      0
+    )
+    rotate(calc(var(--reveal-rot) * (1 - var(--reveal-progress))));
+  transform-origin: 50% 0;
+}
+
 .kenburns {
   animation: kenburns 18s linear alternate infinite;
 }
@@ -285,6 +310,10 @@
 @media (prefers-reduced-motion: reduce) {
   .kenburns {
     animation: none;
+  }
+
+  html.js [data-reveal] {
+    --reveal-progress: 1;
   }
 }
 

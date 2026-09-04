@@ -38,7 +38,7 @@ export function horizontalWheelDx(event: WheelEvent, minPx: number) {
   return dx;
 }
 
-export function isPagerPhotoTarget(target: EventTarget | null) {
+export function isPagerGrabTarget(target: EventTarget | null) {
   const hit = (target as HTMLElement | null)?.closest('[data-cursor="drag"]');
   if (!hit) return false;
   const slide = hit.closest('[data-carousel-slide]');

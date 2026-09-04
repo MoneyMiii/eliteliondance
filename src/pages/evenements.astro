@@ -15,7 +15,7 @@ const events = Astro.locals.cmsAvailable
 ---
 
 <BaseLayout path="/evenements" title={t('nav.events')} description={t('events.allTitle')}>
-  <section class="container-page page-y">
+  <section class="container-page page-y" data-reveal>
     <PageHeading kicker={t('events.kicker')} title={t('events.allTitle')} />
     <div class="mt-(--space-block)">
       <EventsList

@@ -17,9 +17,11 @@ const { items, content, preview = false, heading = true } = Astro.props;
 const labels = Astro.locals.labels ?? {};
 const t = createT(labels);
 const photos = preview ? items.slice(0, 8) : items;
+// En aperçu la section est déjà à l'intérieur d'une bande animée.
+const revealOnScroll = !preview;
 ---
 
-<section class:list={[heading && 'section-y']}>
+<section class:list={[heading && 'section-y']} data-reveal={revealOnScroll ? '' : undefined}>
   {heading && (
     <SectionHeader
       class="container-page"

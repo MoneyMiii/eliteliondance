@@ -1,5 +1,5 @@
 import { useEffect, useRef, type RefObject } from 'react';
-import { createOneStepGesture, DRAG_PX, horizontalWheelDx, isPagerPhotoTarget, WHEEL_PX } from './pager-gesture';
+import { createOneStepGesture, DRAG_PX, horizontalWheelDx, isPagerGrabTarget, WHEEL_PX } from './pager-gesture';
 
 interface Options {
   enabled: boolean;
@@ -28,7 +28,7 @@ export function useHorizontalPager(
     const gesture = gestureRef.current;
 
     const onWheel = (event: WheelEvent) => {
-      if (!isPagerPhotoTarget(event.target)) return;
+      if (!isPagerGrabTarget(event.target)) return;
       const dx = horizontalWheelDx(event, WHEEL_PX);
       if (!dx) return;
       event.preventDefault();
@@ -38,7 +38,7 @@ export function useHorizontalPager(
     };
 
     const onPointerDown = (event: PointerEvent) => {
-      if (event.button !== 0 || !isPagerPhotoTarget(event.target)) return;
+      if (event.button !== 0 || !isPagerGrabTarget(event.target)) return;
       pointerIdRef.current = event.pointerId;
       pointerXRef.current = event.clientX;
       onInteractRef.current?.();

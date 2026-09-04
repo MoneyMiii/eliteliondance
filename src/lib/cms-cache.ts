@@ -2,7 +2,11 @@ import { readEnv } from './env';
 
 type CacheEntry<T> = { expires: number; value: T };
 
-function createTtlCache<T>(ttlMs: number) {
+/**
+ * Les entrées périmées sont conservées jusqu'à ce que la limite les chasse :
+ * elles servent de repli quand PocketBase répond en erreur ou sature son quota.
+ */
+function createTtlCache<T>(ttlMs: number, maxEntries: number) {
   const store = new Map<string, CacheEntry<T>>();
   const inflight = new Map<string, Promise<T>>();
 
@@ -16,7 +20,12 @@ function createTtlCache<T>(ttlMs: number) {
       return store.get(key)?.value;
     },
     set(key: string, value: T) {
+      store.delete(key);
       store.set(key, { expires: Date.now() + ttlMs, value });
+      for (const oldest of store.keys()) {
+        if (store.size <= maxEntries) break;
+        store.delete(oldest);
+      }
     },
     async getOrLoad(key: string, load: () => Promise<T>): Promise<T> {
       const fresh = this.get(key);
@@ -51,7 +60,8 @@ function readTtl(name: 'CMS_CACHE_TTL_MS' | 'CMS_FILE_CACHE_TTL_MS', fallback: n
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
-export const recordsCache = createTtlCache<unknown[]>(readTtl('CMS_CACHE_TTL_MS', 5 * 60 * 1000));
+export const recordsCache = createTtlCache<unknown[]>(readTtl('CMS_CACHE_TTL_MS', 5 * 60 * 1000), 100);
 export const fileCache = createTtlCache<{ body: Uint8Array; contentType: string }>(
   readTtl('CMS_FILE_CACHE_TTL_MS', 60 * 60 * 1000),
+  80,
 );

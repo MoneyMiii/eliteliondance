@@ -14,20 +14,22 @@ const t = createT(Astro.locals.labels);
 ---
 
 <section class="container-page page-y">
-  {(hero?.title || hero?.subtitle) && (
-    <PageHeading kicker={hero?.subtitle} title={hero?.title || ''} />
-  )}
-  {hero?.content && <ProseHtml html={hero.content} class="prose-eld mt-(--space-block) max-w-3xl text-lg" />}
+  <div data-reveal>
+    {(hero?.title || hero?.subtitle) && (
+      <PageHeading kicker={hero?.subtitle} title={hero?.title || ''} />
+    )}
+    {hero?.content && <ProseHtml html={hero.content} class="prose-eld mt-(--space-block) max-w-3xl text-lg" />}
 
-  {hero?.image && (
-    <figure class="media-frame mt-(--space-block) aspect-[16/9] lg:aspect-[2/1]">
-      <img src={hero.image} alt={t('about.teamPhotoAlt')} class="h-full w-full object-cover" />
-    </figure>
-  )}
+    {hero?.image && (
+      <figure class="media-frame mt-(--space-block) aspect-[16/9] lg:aspect-[2/1]">
+        <img src={hero.image} alt={t('about.teamPhotoAlt')} class="h-full w-full object-cover" />
+      </figure>
+    )}
+  </div>
 
   <div class="stack-y mt-(--space-section)">
     {blocks.map((block, index) => (
-      <article class:list={['grid gap-8 lg:grid-cols-2 lg:items-center', index % 2 === 1 && 'lg:[&>div:first-child]:order-2']}>
+      <article class:list={['grid gap-8 lg:grid-cols-2 lg:items-center', index % 2 === 1 && 'lg:[&>div:first-child]:order-2']} data-reveal>
         <div>
           {block.title && <h2 class="section-title">{block.title}</h2>}
           {block.content && <ProseHtml html={block.content} class="prose-eld mt-5" />}

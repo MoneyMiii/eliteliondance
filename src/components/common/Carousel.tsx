@@ -331,7 +331,7 @@ export default function Carousel({
                 aria-hidden={offscreen || undefined}
                 data-active={isCenter || undefined}
                 data-carousel-slide=""
-                data-cursor={visible > 1 && !offscreen ? 'drag' : undefined}
+                data-cursor={offscreen ? undefined : 'drag'}
               >
                 {cloneElement(slide, { key: `${trackIndex}-${slideIndex}` })}
               </div>

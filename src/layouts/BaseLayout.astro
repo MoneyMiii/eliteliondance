@@ -51,6 +51,7 @@ const jsonLd = organizationJsonLd({
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
     <title>{cmsAvailable ? seo.title : errorCopy.title}</title>
     <meta name="description" content={seo.description} />
     <link rel="canonical" href={seo.url} />
@@ -121,7 +122,7 @@ const jsonLd = organizationJsonLd({
           {t('nav.skip')}
         </a>
         <Header currentPath={path} />
-        <main id="main" class="overflow-x-hidden">
+        <main id="main">
           <slot />
         </main>
         <Footer />
@@ -130,5 +131,9 @@ const jsonLd = organizationJsonLd({
     ) : (
       <CmsErrorDialog />
     )}
+    <script>
+      import { initRevealOnScroll } from '../lib/reveal-on-scroll';
+      initRevealOnScroll();
+    </script>
   </body>
 </html>

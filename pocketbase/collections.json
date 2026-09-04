@@ -76,7 +76,9 @@
         "protected": false,
         "required": false,
         "system": false,
-        "thumbs": [],
+        "thumbs": [
+          "0x160"
+        ],
         "type": "file"
       },
       {
@@ -96,7 +98,9 @@
         "protected": false,
         "required": false,
         "system": false,
-        "thumbs": [],
+        "thumbs": [
+          "0x600"
+        ],
         "type": "file"
       },
       {
@@ -1260,7 +1264,9 @@
         "protected": false,
         "required": false,
         "system": false,
-        "thumbs": [],
+        "thumbs": [
+          "128x128f"
+        ],
         "type": "file"
       },
       {

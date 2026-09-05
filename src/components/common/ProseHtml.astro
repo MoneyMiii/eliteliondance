@@ -4,9 +4,10 @@ import { sanitizeHtml } from '../../lib/localize';
 interface Props {
   html: string;
   class?: string;
+  i18n?: string;
 }
 
-const { html, class: className = 'prose-eld' } = Astro.props;
+const { html, class: className = 'prose-eld', i18n } = Astro.props;
 ---
 
-<div class={className} set:html={sanitizeHtml(html)} />
+<div class={className} data-i18n-html={i18n} data-i18n-empty="hide" hidden={!html} set:html={sanitizeHtml(html)} />

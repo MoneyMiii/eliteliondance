@@ -3,9 +3,10 @@ interface Props {
   href: string;
   variant?: 'primary' | 'secondary';
   class?: string;
+  i18n?: string;
 }
 
-const { href, variant = 'primary', class: className = '' } = Astro.props;
+const { href, variant = 'primary', class: className = '', i18n } = Astro.props;
 
 const variants = {
   primary:
@@ -22,6 +23,7 @@ const variants = {
     variants[variant],
     className,
   ]}
+  data-i18n={i18n}
 >
   <slot />
 </a>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { t, type Labels } from '../../lib/i18n';
 import { COMPUTER_MQ } from '../../lib/pointer';
+import { useLiveLabels } from '../../lib/use-live-i18n';
 
 interface Props {
   labels: Labels;
@@ -18,6 +19,7 @@ function modeFromElement(target: Element | null): 'default' | 'hover' | 'drag' |
 }
 
 export default function CustomCursor({ labels }: Props) {
+  const liveLabels = useLiveLabels(labels);
   const [enabled, setEnabled] = useState(false);
   const [visible, setVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -107,7 +109,7 @@ export default function CustomCursor({ labels }: Props) {
               : 'h-3.5 w-3.5 border-brand bg-brand'
         }`}
       >
-        {mode === 'drag' ? t(labels, 'cursor.drag') : null}
+        {mode === 'drag' ? t(liveLabels, 'cursor.drag') : null}
       </div>
     </div>
   );

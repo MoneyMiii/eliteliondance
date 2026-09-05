@@ -17,12 +17,12 @@ const brandName = t('brand.name') || settings?.brandName || '';
   <div class="container-page flex flex-col gap-6 py-8">
     <div class="grid w-full grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-8">
       {navLinks.length > 0 && (
-        <nav class="min-w-0" aria-label={t('footer.navAria')}>
-          {t('footer.menu') && <p class="eyebrow mb-2">{t('footer.menu')}</p>}
+        <nav class="min-w-0" aria-label={t('footer.navAria')} data-i18n-attr="aria-label:footer.navAria">
+          <p class="eyebrow mb-2" data-i18n="footer.menu" data-i18n-empty="hide" hidden={!t('footer.menu')}>{t('footer.menu')}</p>
           <ul class="flex flex-col gap-1.5 text-ink/90">
             {navLinks.map((link) => (
               <li class="min-w-0">
-                <a href={link.href} class="hover:text-brand">{link.label}</a>
+                <a href={link.href} class="hover:text-brand" data-i18n={`navLink.${link.id}`}>{link.label}</a>
               </li>
             ))}
           </ul>
@@ -30,7 +30,7 @@ const brandName = t('brand.name') || settings?.brandName || '';
       )}
       {partners.length > 0 && (
         <div class="min-w-0">
-          {t('partners.title') && <p class="eyebrow mb-2">{t('partners.title')}</p>}
+          <p class="eyebrow mb-2" data-i18n="partners.title" data-i18n-empty="hide" hidden={!t('partners.title')}>{t('partners.title')}</p>
           <ul class="flex flex-col gap-1.5">
             {partners.map((partner) => (
               <li class="min-w-0">{partner.name}</li>
@@ -42,7 +42,7 @@ const brandName = t('brand.name') || settings?.brandName || '';
         <div class="flex min-h-0 min-w-0 flex-col">
           {instagramUrl && (
             <>
-              {t('footer.social') && <p class="eyebrow mb-2">{t('footer.social')}</p>}
+              <p class="eyebrow mb-2" data-i18n="footer.social" data-i18n-empty="hide" hidden={!t('footer.social')}>{t('footer.social')}</p>
               <span class="self-start">
                 <InstagramButton href={instagramUrl} label={t('cta.instagram')} padded={false} />
               </span>
@@ -52,6 +52,7 @@ const brandName = t('brand.name') || settings?.brandName || '';
             <img
               src={logoMark}
               alt={t('brand.logoAlt') || brandName}
+              data-i18n-attr="alt:brand.logoAlt"
               class="mt-auto h-16 w-16 self-end rounded-full object-contain sm:h-20 sm:w-20"
             />
           )}
@@ -60,7 +61,7 @@ const brandName = t('brand.name') || settings?.brandName || '';
     </div>
   </div>
   <div class="container-page flex flex-col gap-1 border-t border-brand/20 py-4 text-sm text-mist sm:flex-row sm:items-center sm:justify-between">
-    <p>{t('footer.copyright', { year, name: brandName, rights: t('footer.rights') })}</p>
-    {t('footer.domain') && <p>{t('footer.domain')}</p>}
+    <p data-i18n="footer.copyright">{t('footer.copyright', { year, name: brandName, rights: t('footer.rights') })}</p>
+    <p data-i18n="footer.domain" data-i18n-empty="hide" hidden={!t('footer.domain')}>{t('footer.domain')}</p>
   </div>
 </footer>

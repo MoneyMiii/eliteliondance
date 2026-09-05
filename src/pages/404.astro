@@ -12,7 +12,7 @@ const homeHref = Astro.locals.navLinks.find((link) => link.href === '/')?.href |
   <section class="container-page page-y flex min-h-[70vh] flex-col items-start justify-center">
     <PageHeading kicker={t('notFound.code')} title={t('notFound.title')} />
     <div class="mt-(--space-block)">
-      <Button href={homeHref}>{t('notFound.back')}</Button>
+      <Button href={homeHref} i18n="notFound.back">{t('notFound.back')}</Button>
     </div>
   </section>
 </BaseLayout>

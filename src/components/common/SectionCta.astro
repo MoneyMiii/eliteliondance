@@ -6,6 +6,7 @@ interface Props {
   label?: string;
   variant?: 'primary' | 'secondary';
   class?: string;
+  i18n?: string;
 }
 
 const {
@@ -13,11 +14,12 @@ const {
   label,
   variant = 'primary',
   class: className = 'mt-10 flex justify-center',
+  i18n,
 } = Astro.props;
 ---
 
-{href && label && (
-  <div class={className}>
-    <Button href={href} variant={variant}>{label}</Button>
-  </div>
-)}
+<div class={className} data-i18n-show={i18n} hidden={!href || !label}>
+  {href && (
+    <Button href={href} variant={variant} i18n={i18n}>{label}</Button>
+  )}
+</div>

@@ -15,17 +15,16 @@ const t = createT(Astro.locals.labels);
 
 <section class="container-page section-y">
   <div class="block-gap max-w-3xl">
-    {(content?.title || content?.subtitle) && (
-      <SectionTitle eyebrow={content?.subtitle} title={content?.title || ''} />
-    )}
-    {content?.content && <ProseHtml html={content.content} class="prose-eld mt-6 text-lg" />}
-    <SectionCta href={content?.ctaUrl} label={content?.ctaLabel} variant="secondary" class="mt-8" />
+    <SectionTitle eyebrow={content?.subtitle} title={content?.title || ''} i18nPrefix="home.about" />
+    <ProseHtml html={content?.content || ''} i18n="home.about.content" class="prose-eld mt-6 text-lg" />
+    <SectionCta href={content?.ctaUrl} label={content?.ctaLabel} variant="secondary" class="mt-8" i18n="home.about.cta" />
   </div>
   {content?.image && (
     <figure class="media-frame aspect-[16/9] lg:aspect-[2/1]">
       <img
         src={content.image}
         alt={t('about.teamPhotoAlt')}
+        data-i18n-attr="alt:about.teamPhotoAlt"
         class="h-full w-full object-cover object-center"
         loading="lazy"
       />

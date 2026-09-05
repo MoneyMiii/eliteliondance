@@ -29,6 +29,7 @@ const revealOnScroll = !preview;
       title={content?.title}
       ctaLabel={preview ? content?.ctaLabel : undefined}
       ctaUrl={preview ? content?.ctaUrl : undefined}
+      i18nPrefix={heading ? 'home.gallery' : undefined}
     />
   )}
 
@@ -41,7 +42,7 @@ const revealOnScroll = !preview;
   ) : (
     t('gallery.empty') && (
       <div class="container-page">
-        <EmptyState message={t('gallery.empty')} />
+        <EmptyState message={t('gallery.empty')} i18n="gallery.empty" />
       </div>
     )
   )}

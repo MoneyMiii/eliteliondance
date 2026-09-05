@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { GalleryItem } from '../../lib/types';
 import { t, type Labels } from '../../lib/i18n';
+import { useLiveLabels } from '../../lib/use-live-i18n';
 import GalleryLightbox from './GalleryLightbox';
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function GalleryGrid({ labels, items }: Props) {
+  const liveLabels = useLiveLabels(labels);
   const [active, setActive] = useState<number | null>(null);
 
   if (!items.length) return null;
@@ -22,7 +24,7 @@ export default function GalleryGrid({ labels, items }: Props) {
               type="button"
               className="group relative block w-full overflow-hidden rounded-[1.5rem] border-0 bg-forest p-0 text-left"
               onClick={() => setActive(itemIndex)}
-              aria-label={t(labels, 'gallery.open', { title: String(itemIndex + 1) })}
+              aria-label={t(liveLabels, 'gallery.open', { title: String(itemIndex + 1) })}
             >
               <img
                 src={entry.image}
@@ -37,7 +39,7 @@ export default function GalleryGrid({ labels, items }: Props) {
 
       {active != null && (
         <GalleryLightbox
-          labels={labels}
+          labels={liveLabels}
           items={items}
           index={active}
           onClose={() => setActive(null)}

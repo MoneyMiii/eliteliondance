@@ -8,20 +8,23 @@ interface Props {
   ctaLabel?: string;
   ctaUrl?: string;
   class?: string;
+  i18nPrefix?: string;
 }
 
-const { eyebrow, title = '', ctaLabel, ctaUrl, class: className = '' } = Astro.props;
+const { eyebrow, title = '', ctaLabel, ctaUrl, class: className = '', i18nPrefix } = Astro.props;
 const heading = Boolean(title || eyebrow);
 const cta = Boolean(ctaLabel && ctaUrl);
 ---
 
-{(heading || cta) && (
+{(heading || cta || i18nPrefix) && (
   <div class:list={['block-gap flex flex-col gap-6 md:flex-row md:items-end md:justify-between', className]}>
-    {heading && <SectionTitle eyebrow={eyebrow} title={title} />}
-    {cta && ctaUrl && (
-      <Button href={ctaUrl} variant="secondary" class="text-center">
-        {ctaLabel}
-      </Button>
+    {(heading || i18nPrefix) && <SectionTitle eyebrow={eyebrow} title={title} i18nPrefix={i18nPrefix} />}
+    {(cta || i18nPrefix) && ctaUrl && (
+      <span data-i18n-show={i18nPrefix ? `${i18nPrefix}.cta` : undefined} hidden={!cta}>
+        <Button href={ctaUrl} variant="secondary" class="text-center" i18n={i18nPrefix ? `${i18nPrefix}.cta` : undefined}>
+          {ctaLabel}
+        </Button>
+      </span>
     )}
   </div>
 )}

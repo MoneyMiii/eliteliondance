@@ -1,5 +1,6 @@
 import type { GalleryItem } from '../../lib/types';
 import { t, type Labels } from '../../lib/i18n';
+import { useLiveLabels } from '../../lib/use-live-i18n';
 import Carousel from '../common/Carousel';
 
 interface Props {
@@ -8,16 +9,17 @@ interface Props {
 }
 
 export default function GalleryCarousel({ labels, items }: Props) {
+  const liveLabels = useLiveLabels(labels);
   if (!items.length) return null;
 
   return (
     <div className="container-page">
       <Carousel
-        labels={labels}
+        labels={liveLabels}
         visibleCount={1}
-        ariaLabel={t(labels, 'gallery.carousel')}
-        prevLabel={t(labels, 'gallery.prev')}
-        nextLabel={t(labels, 'gallery.next')}
+        ariaLabel={t(liveLabels, 'gallery.carousel')}
+        prevLabel={t(liveLabels, 'gallery.prev')}
+        nextLabel={t(liveLabels, 'gallery.next')}
         goToLabel="gallery.goTo"
       >
         {items.map((item) => (

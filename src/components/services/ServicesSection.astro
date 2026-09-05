@@ -21,9 +21,10 @@ const heading = Boolean(content?.title || content?.subtitle);
       <SectionTitle
         eyebrow={content?.subtitle}
         title={content?.title || ''}
+        i18nPrefix="home.services"
       />
     </div>
   )}
   <ServicesGrid labels={labels} services={services} client:visible />
-  <SectionCta href={content?.ctaUrl} label={content?.ctaLabel} />
+  <SectionCta href={content?.ctaUrl} label={content?.ctaLabel} i18n="home.services.cta" />
 </section>

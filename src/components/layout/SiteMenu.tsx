@@ -4,6 +4,7 @@ import InstagramIcon from '../common/InstagramIcon';
 import { samePageHash, scrollToAnchor } from '../../lib/anchor-scroll';
 import { t, type Labels } from '../../lib/i18n';
 import { lockPageScroll } from '../../lib/page-scroll-lock';
+import { useLiveLabels, useLiveSlice } from '../../lib/use-live-i18n';
 import { useWindowKeydown } from '../../lib/use-window-keydown';
 import type { NavLink } from '../../lib/types';
 
@@ -19,6 +20,8 @@ interface Props {
 }
 
 export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, logoMark }: Props) {
+  const liveLabels = useLiveLabels(labels);
+  const liveLinks = useLiveSlice('navLinks', navLinks);
   const [open, setOpen] = useState(false);
   const [rendered, setRendered] = useState(false);
   const [shown, setShown] = useState(false);
@@ -111,7 +114,7 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
         className="icon-btn"
         aria-expanded={open}
         aria-controls="site-nav"
-        aria-label={open ? t(labels, 'nav.closeMenu') : t(labels, 'nav.openMenu')}
+        aria-label={open ? t(liveLabels, 'nav.closeMenu') : t(liveLabels, 'nav.openMenu')}
         onClick={() => setOpen((current) => !current)}
       >
         <span className="relative block h-3.5 w-4" aria-hidden="true">
@@ -145,7 +148,7 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
             inert={!open ? true : undefined}
           >
             <p id={titleId} className="sr-only">
-              {t(labels, 'nav.main')}
+              {t(liveLabels, 'nav.main')}
             </p>
             {logoMark && (
               <img
@@ -157,10 +160,10 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
             )}
             <nav
               className="container-page relative z-10 flex h-full min-h-0 flex-col"
-              aria-label={t(labels, 'nav.main')}
+              aria-label={t(liveLabels, 'nav.main')}
             >
               <div className="menu-links flex min-h-0 flex-1 flex-col font-display uppercase">
-                {navLinks.map((link) => (
+                {liveLinks.map((link) => (
                   <a
                     key={link.id}
                     href={link.href}
@@ -178,7 +181,7 @@ export default function SiteMenu({ labels, navLinks, currentPath, instagramUrl, 
                   className="menu-social inline-flex w-fit shrink-0 text-ink hover:text-brand"
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={t(labels, 'cta.instagram')}
+                  aria-label={t(liveLabels, 'cta.instagram')}
                 >
                   <InstagramIcon className="h-9 w-9" />
                 </a>

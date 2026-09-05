@@ -39,15 +39,19 @@ const videoType = video?.includes('.webm') ? 'video/webm' : 'video/mp4';
   ) : null}
   {hasMedia && <div class="overlay-scrim absolute inset-0"></div>}
   <div class="container-page relative z-10 pt-36 pb-[calc(var(--space-section)+var(--band-cut))]">
-    {kicker && <p class:list={['eyebrow reveal', hasMedia && 'on-media']}>{kicker}</p>}
-    {title && <h1 class:list={['display-title max-w-5xl reveal', kicker && 'mt-5', hasMedia && 'on-media']} style="animation-delay: 120ms">{title}</h1>}
-    {(primaryCta && primaryUrl) || (secondaryCta && secondaryUrl) ? (
-      <div class="mt-10 flex flex-wrap gap-3 reveal" style="animation-delay: 220ms">
-        {primaryCta && primaryUrl && <Button href={primaryUrl}>{primaryCta}</Button>}
-        {secondaryCta && secondaryUrl && (
-          <Button href={secondaryUrl} variant="secondary" class="bg-paper">{secondaryCta}</Button>
+    <div class="flex flex-col gap-5">
+      <p class:list={['eyebrow reveal', hasMedia && 'on-media']} data-i18n="home.hero.eyebrow" data-i18n-empty="hide" hidden={!kicker}>{kicker}</p>
+      <h1 class:list={['display-title max-w-5xl reveal', hasMedia && 'on-media']} style="animation-delay: 120ms" data-i18n="home.hero.title">{title}</h1>
+    </div>
+    <div class="mt-10 flex flex-wrap gap-3 reveal" style="animation-delay: 220ms" data-i18n-show="home.hero.cta,home.hero.ctaSecondary" hidden={!((primaryCta && primaryUrl) || (secondaryCta && secondaryUrl))}>
+      <span data-i18n-show="home.hero.cta" hidden={!(primaryCta && primaryUrl)}>
+        {primaryUrl && <Button href={primaryUrl} i18n="home.hero.cta">{primaryCta}</Button>}
+      </span>
+      <span data-i18n-show="home.hero.ctaSecondary" hidden={!(secondaryCta && secondaryUrl)}>
+        {secondaryUrl && (
+          <Button href={secondaryUrl} variant="secondary" class="bg-paper" i18n="home.hero.ctaSecondary">{secondaryCta}</Button>
         )}
-      </div>
-    ) : null}
+      </span>
+    </div>
   </div>
 </section>

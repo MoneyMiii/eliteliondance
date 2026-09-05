@@ -5,15 +5,16 @@ interface Props {
   kicker?: string;
   title: string;
   lede?: string;
+  i18nPrefix?: string;
 }
 
-const { kicker, title, lede } = Astro.props;
+const { kicker, title, lede, i18nPrefix = 'page' } = Astro.props;
 const shownKicker = distinctText(kicker, title);
 const shownLede = distinctText(lede, title, shownKicker);
 ---
 
-<header>
-  {shownKicker && <p class="eyebrow">{shownKicker}</p>}
-  <h1 class:list={['display-title max-w-5xl', shownKicker && 'mt-4']}>{title}</h1>
-  {shownLede && <p class="mt-6 max-w-2xl text-lg text-mist">{shownLede}</p>}
+<header class="flex flex-col gap-4">
+  <p class="eyebrow" data-i18n={`${i18nPrefix}.kicker`} data-i18n-empty="hide" hidden={!shownKicker}>{shownKicker}</p>
+  <h1 class="display-title max-w-5xl" data-i18n={`${i18nPrefix}.title`}>{title}</h1>
+  <p class="max-w-2xl text-lg text-mist" data-i18n={`${i18nPrefix}.lede`} data-i18n-empty="hide" hidden={!shownLede}>{shownLede}</p>
 </header>

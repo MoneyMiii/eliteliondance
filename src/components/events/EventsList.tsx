@@ -3,6 +3,7 @@ import { sortAgendaEvents, sortPastEvents, sortUpcomingEvents, type EventFilter 
 import type { Locale } from '../../lib/locale';
 import type { EventItem } from '../../lib/types';
 import { t, type Labels } from '../../lib/i18n';
+import { useLiveLabels, useLiveLocale, useLiveSlice } from '../../lib/use-live-i18n';
 import EmptyState from '../common/EmptyState';
 import EventsGrid from './EventsGrid';
 
@@ -15,13 +16,16 @@ interface Props {
 }
 
 export default function EventsList({ locale, labels, events, initialFilter = 'all', logoMark }: Props) {
+  const liveLocale = useLiveLocale(locale);
+  const liveLabels = useLiveLabels(labels);
+  const liveEvents = useLiveSlice('events', events);
   const [filter, setFilter] = useState<EventFilter>(initialFilter);
 
   const visible = useMemo(() => {
-    if (filter === 'upcoming') return sortUpcomingEvents(events.filter((event) => event.isUpcoming));
-    if (filter === 'past') return sortPastEvents(events.filter((event) => !event.isUpcoming));
-    return sortAgendaEvents(events);
-  }, [events, filter]);
+    if (filter === 'upcoming') return sortUpcomingEvents(liveEvents.filter((event) => event.isUpcoming));
+    if (filter === 'past') return sortPastEvents(liveEvents.filter((event) => !event.isUpcoming));
+    return sortAgendaEvents(liveEvents);
+  }, [liveEvents, filter]);
 
   const filters: { id: EventFilter; key: 'events.filterAll' | 'events.filterUpcoming' | 'events.filterPast' }[] = [
     { id: 'all', key: 'events.filterAll' },
@@ -31,7 +35,7 @@ export default function EventsList({ locale, labels, events, initialFilter = 'al
 
   return (
     <div>
-      <div className="block-gap flex flex-wrap gap-2" role="tablist" aria-label={t(labels, 'events.allTitle')}>
+      <div className="block-gap flex flex-wrap gap-2" role="tablist" aria-label={t(liveLabels, 'events.allTitle')}>
         {filters.map((item) => (
           <button
             key={item.id}
@@ -40,14 +44,14 @@ export default function EventsList({ locale, labels, events, initialFilter = 'al
             onClick={() => setFilter(item.id)}
             aria-pressed={filter === item.id}
           >
-            {t(labels, item.key)}
+            {t(liveLabels, item.key)}
           </button>
         ))}
       </div>
       {visible.length ? (
-        <EventsGrid locale={locale} labels={labels} events={visible} logoMark={logoMark} />
+        <EventsGrid locale={liveLocale} labels={liveLabels} events={visible} logoMark={logoMark} />
       ) : (
-        <EmptyState message={t(labels, 'events.empty')} />
+        <EmptyState message={t(liveLabels, 'events.empty')} />
       )}
     </div>
   );

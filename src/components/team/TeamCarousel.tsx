@@ -1,5 +1,6 @@
 import type { TeamMember } from '../../lib/types';
 import { t, type Labels } from '../../lib/i18n';
+import { useLiveLabels, useLiveSlice } from '../../lib/use-live-i18n';
 import Carousel from '../common/Carousel';
 
 interface Props {
@@ -9,18 +10,20 @@ interface Props {
 }
 
 export default function TeamCarousel({ labels, members, logoMark }: Props) {
-  if (!members.length) return null;
+  const liveLabels = useLiveLabels(labels);
+  const liveMembers = useLiveSlice('team', members);
+  if (!liveMembers.length) return null;
 
   return (
     <Carousel
-      labels={labels}
+      labels={liveLabels}
       visibleCount={5}
       mobileCount={3}
-      ariaLabel={t(labels, 'team.carousel')}
-      prevLabel={t(labels, 'carousel.prev')}
-      nextLabel={t(labels, 'carousel.next')}
+      ariaLabel={t(liveLabels, 'team.carousel')}
+      prevLabel={t(liveLabels, 'carousel.prev')}
+      nextLabel={t(liveLabels, 'carousel.next')}
     >
-      {members.map((member) => (
+      {liveMembers.map((member) => (
         <TeamCard key={member.id} member={member} logoMark={logoMark} />
       ))}
     </Carousel>

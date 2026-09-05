@@ -1,9 +1,10 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CloseIcon from '../common/CloseIcon';
 import { lockPageScroll } from '../../lib/page-scroll-lock';
 import { useWindowKeydown } from '../../lib/use-window-keydown';
 import { closeLabel, type Labels } from '../../lib/i18n';
+import { useLiveLabels, useLiveSlice } from '../../lib/use-live-i18n';
 import type { ServiceItem } from '../../lib/types';
 
 interface Props {
@@ -77,6 +78,8 @@ function ServiceTile({ service }: { service: ServiceItem }) {
 }
 
 export default function ServicesGrid({ labels, services }: Props) {
+  const liveLabels = useLiveLabels(labels);
+  const liveServices = useLiveSlice('services', services);
   const [active, setActive] = useState<ServiceItem | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -129,12 +132,19 @@ export default function ServicesGrid({ labels, services }: Props) {
     if (event.key === 'Escape') close();
   }, Boolean(active));
 
-  if (!services.length) return null;
+  useEffect(() => {
+    setActive((current) => {
+      if (!current) return current;
+      return liveServices.find((item) => item.id === current.id) ?? null;
+    });
+  }, [liveServices]);
+
+  if (!liveServices.length) return null;
 
   return (
     <>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-        {services.map((service) => (
+        {liveServices.map((service) => (
           <button
             key={service.id}
             type="button"
@@ -174,7 +184,7 @@ export default function ServicesGrid({ labels, services }: Props) {
               <button
                 type="button"
                 className="icon-btn absolute right-4 top-4"
-                aria-label={closeLabel(labels)}
+                aria-label={closeLabel(liveLabels)}
                 onClick={close}
               >
                 <CloseIcon />

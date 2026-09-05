@@ -25,6 +25,7 @@ const moreHref = content?.ctaUrl
     title={content?.title}
     ctaLabel={content?.ctaLabel}
     ctaUrl={content?.ctaUrl}
+    i18nPrefix="home.events"
   />
   {events.length ? (
     <EventsGrid
@@ -33,10 +34,10 @@ const moreHref = content?.ctaUrl
       events={events}
       logoMark={logoMark}
       moreHref={hasMoreUpcoming ? moreHref : undefined}
-      moreLabel={t('events.moreUpcoming')}
+      live={true}
       client:load
     />
   ) : (
-    t('events.noneUpcoming') && <EmptyState message={t('events.noneUpcoming')} />
+    t('events.noneUpcoming') && <EmptyState message={t('events.noneUpcoming')} i18n="events.noneUpcoming" />
   )}
 </section>

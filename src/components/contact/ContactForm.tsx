@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { t, type Labels } from '../../lib/i18n';
 import { contactFieldErrors, type ContactField, type ContactFieldIssue } from '../../lib/contact-validation';
+import { useLiveLabels, useLiveSlice } from '../../lib/use-live-i18n';
 
 interface ContactServiceOption {
   id: string;
@@ -69,13 +70,15 @@ function Field({
 }
 
 export default function ContactForm({ labels, services }: Props) {
+  const liveLabels = useLiveLabels(labels);
+  const liveServices = useLiveSlice('contactServices', services);
   const [form, setForm] = useState<FormState>(initial);
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<ContactField, ContactFieldIssue>>>({});
-  const serviceRequired = services.length > 0;
+  const serviceRequired = liveServices.length > 0;
 
   function label(key: string): string {
-    return t(labels, key) || FALLBACK[key] || '';
+    return t(liveLabels, key) || FALLBACK[key] || '';
   }
 
   function fieldMessage(field: ContactField): string | undefined {
@@ -166,7 +169,7 @@ export default function ContactForm({ labels, services }: Props) {
             aria-invalid={Boolean(fieldErrors.service)}
           >
             <option value="">{label('form.servicePlaceholder')}</option>
-            {services.map((service) => (
+            {liveServices.map((service) => (
               <option key={service.id} value={service.id}>
                 {service.title}
               </option>

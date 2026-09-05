@@ -47,7 +47,7 @@ const jsonLd = organizationJsonLd({
 ---
 
 <!doctype html>
-<html lang={htmlLang(locale)}>
+<html lang={htmlLang(locale)} data-i18n-path={path}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -118,7 +118,7 @@ const jsonLd = organizationJsonLd({
   <body>
     {cmsAvailable ? (
       <>
-        <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[120] focus:rounded-full focus:bg-brand focus:px-4 focus:py-2 focus:text-paper">
+        <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[120] focus:rounded-full focus:bg-brand focus:px-4 focus:py-2 focus:text-paper" data-i18n="nav.skip">
           {t('nav.skip')}
         </a>
         <Header currentPath={path} />

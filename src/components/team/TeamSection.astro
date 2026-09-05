@@ -25,6 +25,7 @@ const heading = Boolean(content?.title || content?.subtitle);
       <SectionTitle
         eyebrow={content?.subtitle}
         title={content?.title || ''}
+        i18nPrefix="home.team"
       />
     </div>
   )}
@@ -35,9 +36,9 @@ const heading = Boolean(content?.title || content?.subtitle);
   ) : (
     t('empty.team') && (
       <div class="container-page">
-        <EmptyState message={t('empty.team')} />
+        <EmptyState message={t('empty.team')} i18n="empty.team" />
       </div>
     )
   )}
-  <SectionCta href={content?.ctaUrl} label={content?.ctaLabel} class="container-page mt-10 flex justify-center" />
+  <SectionCta href={content?.ctaUrl} label={content?.ctaLabel} class="container-page mt-10 flex justify-center" i18n="home.team.cta" />
 </section>

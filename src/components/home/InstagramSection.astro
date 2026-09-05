@@ -17,8 +17,10 @@ const lede = distinctText(content?.subtitle, title);
 
 <section class="container-page section-y">
   <div class="overflow-hidden rounded-[2rem] border border-brand/15 bg-forest px-8 py-(--space-section) text-center">
-    {title && <h2 class="section-title">{title}</h2>}
-    {lede && <p class="mx-auto mt-5 max-w-xl text-mist">{lede}</p>}
+    <div class="flex flex-col gap-5">
+      <h2 class="section-title" data-i18n="home.instagram.title" data-i18n-empty="hide" hidden={!title}>{title}</h2>
+      <p class="mx-auto max-w-xl text-mist" data-i18n="home.instagram.lede" data-i18n-empty="hide" hidden={!lede}>{lede}</p>
+    </div>
     {instagramUrl && (
       <div class="mt-8 flex justify-center">
         <InstagramButton href={instagramUrl} label={t('cta.instagram')} class="h-8 w-8" />

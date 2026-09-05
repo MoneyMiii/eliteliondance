@@ -4,13 +4,14 @@ import { distinctText } from '../../lib/format';
 interface Props {
   eyebrow?: string;
   title: string;
+  i18nPrefix?: string;
 }
 
-const { eyebrow, title } = Astro.props;
+const { eyebrow, title, i18nPrefix } = Astro.props;
 const shownEyebrow = distinctText(eyebrow, title);
 ---
 
-<header class="max-w-4xl">
-  {shownEyebrow && <p class="eyebrow mb-4">{shownEyebrow}</p>}
-  {title && <h2 class="section-title">{title}</h2>}
+<header class="flex max-w-4xl flex-col gap-4">
+  <p class="eyebrow" data-i18n={i18nPrefix ? `${i18nPrefix}.eyebrow` : undefined} data-i18n-empty={i18nPrefix ? 'hide' : undefined} hidden={!shownEyebrow}>{shownEyebrow}</p>
+  <h2 class="section-title" data-i18n={i18nPrefix ? `${i18nPrefix}.title` : undefined} data-i18n-empty={i18nPrefix ? 'hide' : undefined} hidden={!title}>{title}</h2>
 </header>

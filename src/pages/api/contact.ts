@@ -96,14 +96,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const from = firstValue(readEnv('CONTACT_FROM_EMAIL')) ?? DEFAULT_FROM;
   const resendKey = readEnv('RESEND_API_KEY');
 
-  const empty = t(labels, 'form.emptyValue') || '-';
-  const subject = t(labels, 'form.emailSubject', { name: lastName }) || `Contact : ${lastName}`;
+  const empty = t(labels, 'form.emptyValue');
+  const subject = t(labels, 'form.emailSubject', { name: lastName });
   const body = [
-    `${t(labels, 'form.lastName') || 'Nom'}: ${lastName}`,
-    `${t(labels, 'form.firstName') || 'Prénom'}: ${firstName || empty}`,
-    `${t(labels, 'form.email') || 'E-mail'}: ${email}`,
-    `${t(labels, 'form.phone') || 'Téléphone'}: ${phone}`,
-    `${t(labels, 'form.service') || 'Prestation'}: ${selectedService?.title || empty}`,
+    `${t(labels, 'form.lastName')}: ${lastName}`,
+    `${t(labels, 'form.firstName')}: ${firstName || empty}`,
+    `${t(labels, 'form.email')}: ${email}`,
+    `${t(labels, 'form.phone')}: ${phone}`,
+    `${t(labels, 'form.service')}: ${selectedService?.title || empty}`,
     '',
     message,
   ].join('\n');

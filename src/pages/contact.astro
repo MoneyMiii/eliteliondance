@@ -26,6 +26,6 @@ const services = servicesResult?.ok ? servicesResult.data : [];
       title={hero?.title || t('contact.title')}
       lede={hero?.subtitle || t('contact.intro')}
     />
-    <ContactForm labels={Astro.locals.labels ?? {}} services={services} client:load />
+    <ContactForm locale={locale} labels={Astro.locals.labels ?? {}} services={services} client:load />
   </section>
 </BaseLayout>

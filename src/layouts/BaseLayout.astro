@@ -24,7 +24,7 @@ const settings = Astro.locals.settings;
 const instagramUrl = settings?.instagramUrl ?? '';
 const t = createT(labels);
 const errorCopy = cmsErrorCopy(locale);
-const brandName = t('brand.name') || settings?.brandName || '';
+const brandName = t('brand.name');
 const seo = buildSeo({
   locale,
   title: cmsAvailable ? title : errorCopy.title,

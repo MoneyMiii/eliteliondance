@@ -14,7 +14,7 @@ import type { LiveI18n } from './live-i18n';
 import { htmlLang, type Locale } from './locale';
 import { sanitizeHtml, stripHtml } from './localize';
 import { buildSeo } from './seo';
-import type { EditorialBlock, SiteSettings } from './types';
+import type { EditorialBlock } from './types';
 
 function pagePath(path: string): string {
   const clean = path.split('?')[0]?.replace(/\/+$/, '') || '/';
@@ -53,12 +53,12 @@ function putEditorial(
   setHtml(htmls, `${prefix}.content`, block.content);
 }
 
-function chromeTexts(labels: Labels, settings: SiteSettings | undefined, navLinks: LiveI18n['navLinks']) {
+function chromeTexts(labels: Labels, navLinks: LiveI18n['navLinks']) {
   const texts: Record<string, string> = {};
   const year = new Date().getFullYear();
-  const brandName = t(labels, 'brand.name') || settings?.brandName || '';
+  const brandName = t(labels, 'brand.name');
   setText(texts, 'brand.name', brandName);
-  setText(texts, 'brand.logoAlt', t(labels, 'brand.logoAlt') || brandName);
+  setText(texts, 'brand.logoAlt', t(labels, 'brand.logoAlt'));
   setText(texts, 'footer.copyright', t(labels, 'footer.copyright', { year, name: brandName, rights: t(labels, 'footer.rights') }));
   for (const link of navLinks) {
     setText(texts, `navLink.${link.id}`, link.label);
@@ -78,7 +78,7 @@ export async function buildI18nPayload(rawPath: string, locale: Locale): Promise
   const labels = labelsResult.data;
   const navLinks = navResult.data;
   const settings = settingsResult.data;
-  const { texts, brandName } = chromeTexts(labels, settings, navLinks);
+  const { texts, brandName } = chromeTexts(labels, navLinks);
   const htmls: Record<string, string> = {};
 
   let pageTitle: string | undefined;

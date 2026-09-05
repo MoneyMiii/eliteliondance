@@ -11,7 +11,7 @@ export function t(labels: Labels | undefined, key: string, vars?: TVars): string
 }
 
 export function closeLabel(labels?: Labels): string {
-  return t(labels, 'common.close') || t(labels, 'gallery.close');
+  return t(labels, 'common.close');
 }
 
 export function createT(labels?: Labels) {

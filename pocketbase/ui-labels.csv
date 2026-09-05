@@ -116,3 +116,4 @@ notFound.back,Retour à l’accueil,回到首页,true
 seo.defaultTitle,"Elite Lion Dance, danse du lion en Île-de-France",Elite Lion Dance，法兰西岛舞狮,true
 seo.defaultDescription,"Elite Lion Dance, équipe de danse traditionnelle chinoise du lion en Île-de-France. Spectacles pour mariages, inaugurations et événements.",Elite Lion Dance，法兰西岛传统中国舞狮团。婚礼、开业、节日与企业活动演出。,true
 seo.titlePattern,{title} | {brand},{title} | {brand},true
+

@@ -1,7 +1,8 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { t, type Labels } from '../../lib/i18n';
 import { contactFieldErrors, type ContactField, type ContactFieldIssue } from '../../lib/contact-validation';
-import { useLiveLabels, useLiveSlice } from '../../lib/use-live-i18n';
+import { useLiveLabels, useLiveLocale, useLiveSlice } from '../../lib/use-live-i18n';
+import type { Locale } from '../../lib/locale';
 
 interface ContactServiceOption {
   id: string;
@@ -9,6 +10,7 @@ interface ContactServiceOption {
 }
 
 interface Props {
+  locale: Locale;
   labels: Labels;
   services: ContactServiceOption[];
 }
@@ -31,15 +33,6 @@ const initial: FormState = {
   service: '',
   message: '',
   companyUrl: '',
-};
-
-const FALLBACK: Labels = {
-  'form.required': 'Ce champ est obligatoire.',
-  'form.invalidEmail': 'Adresse e-mail invalide.',
-  'form.invalidPhone': 'Numéro de téléphone invalide.',
-  'form.invalidService': 'Merci de choisir une prestation.',
-  'form.service': 'Prestation',
-  'form.servicePlaceholder': 'Choisir une prestation',
 };
 
 function inputClass(invalid?: boolean) {
@@ -69,7 +62,8 @@ function Field({
   );
 }
 
-export default function ContactForm({ labels, services }: Props) {
+export default function ContactForm({ locale, labels, services }: Props) {
+  const liveLocale = useLiveLocale(locale);
   const liveLabels = useLiveLabels(labels);
   const liveServices = useLiveSlice('contactServices', services);
   const [form, setForm] = useState<FormState>(initial);
@@ -78,7 +72,7 @@ export default function ContactForm({ labels, services }: Props) {
   const serviceRequired = liveServices.length > 0;
 
   function label(key: string): string {
-    return t(liveLabels, key) || FALLBACK[key] || '';
+    return t(liveLabels, key);
   }
 
   function fieldMessage(field: ContactField): string | undefined {
@@ -161,6 +155,7 @@ export default function ContactForm({ labels, services }: Props) {
       {serviceRequired && (
         <Field label={`${label('form.service')} *`} error={fieldMessage('service')} className="md:col-span-2">
           <select
+            key={liveLocale}
             className={`${inputClass(Boolean(fieldErrors.service))} cursor-pointer`}
             name="service"
             required={serviceRequired}
@@ -170,7 +165,7 @@ export default function ContactForm({ labels, services }: Props) {
           >
             <option value="">{label('form.servicePlaceholder')}</option>
             {liveServices.map((service) => (
-              <option key={service.id} value={service.id}>
+              <option key={`${liveLocale}-${service.id}`} value={service.id}>
                 {service.title}
               </option>
             ))}

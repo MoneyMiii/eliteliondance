@@ -14,7 +14,7 @@ const navLinks = Astro.locals.navLinks ?? [];
 const settings = Astro.locals.settings;
 const instagramUrl = settings?.instagramUrl ?? '';
 const t = createT(labels);
-const brandName = t('brand.name') || settings?.brandName || '';
+const brandName = t('brand.name');
 const logo = settings?.logo;
 const logoMark = settings?.logoMark;
 const homeHref = navLinks.find((link) => link.href === '/')?.href || navLinks[0]?.href || '/';
@@ -44,7 +44,7 @@ const isHome = currentPath === '/' || currentPath === homeHref;
         {logo ? (
           <img
             src={logo}
-            alt={t('brand.logoAlt') || brandName}
+            alt={t('brand.logoAlt')}
             data-i18n-attr="alt:brand.logoAlt"
             class="h-12 w-auto sm:h-14"
             width="240"

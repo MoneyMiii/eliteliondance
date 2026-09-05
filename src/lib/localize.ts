@@ -7,10 +7,7 @@ export function getLocalizedValue(
 ): string {
   const data = record as Record<string, unknown>;
   const localized = data[`${field}_${locale}`];
-  if (typeof localized === 'string' && localized.trim()) return localized;
-
-  const fallback = data[`${field}_fr`];
-  return typeof fallback === 'string' ? fallback : '';
+  return typeof localized === 'string' ? localized : '';
 }
 
 export function stripHtml(value: string): string {

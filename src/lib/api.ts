@@ -121,7 +121,7 @@ function toTeamMember(record: TeamMemberRecord, locale: Locale): TeamMember {
     id: record.id,
     firstName: record.firstName,
     lastName: record.lastName,
-    roles: roleRecords.map((role) => getLocalizedValue(role, 'title', locale) || role.key),
+    roles: roleRecords.map((role) => getLocalizedValue(role, 'title', locale)),
     isPriority: roleRecords.some((role) => Boolean(role.isPriority)),
     photo: getPocketBaseFileUrl(record, record.photo, '800x1000'),
   };

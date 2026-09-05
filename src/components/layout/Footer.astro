@@ -9,7 +9,7 @@ const logoMark = settings?.logoMark;
 const t = createT(Astro.locals.labels);
 const navLinks = Astro.locals.navLinks ?? [];
 const year = new Date().getFullYear();
-const brandName = t('brand.name') || settings?.brandName || '';
+const brandName = t('brand.name');
 ---
 
 <footer class="site-footer band-dark">
@@ -51,7 +51,7 @@ const brandName = t('brand.name') || settings?.brandName || '';
           {logoMark && (
             <img
               src={logoMark}
-              alt={t('brand.logoAlt') || brandName}
+              alt={t('brand.logoAlt')}
               data-i18n-attr="alt:brand.logoAlt"
               class="mt-auto h-16 w-16 self-end rounded-full object-contain sm:h-20 sm:w-20"
             />

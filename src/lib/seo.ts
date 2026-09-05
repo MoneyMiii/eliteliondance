@@ -45,10 +45,9 @@ export function buildSeo({
 }: SeoInput) {
   const brand = brandName || '';
   const resolvedTitle = defaultTitle || brand;
-  const pattern = titlePattern || '{title} | {brand}';
   const pageTitle = !title || title === brand || title === resolvedTitle
     ? resolvedTitle
-    : t({ pattern }, 'pattern', { title, brand });
+    : t({ pattern: titlePattern || '' }, 'pattern', { title, brand });
   const pageDescription = description || defaultDescription || '';
 
   return {

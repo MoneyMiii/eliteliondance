@@ -5,13 +5,21 @@ import type { Locale } from './locale';
 
 export function useLiveLabels(initial: Labels): Labels {
   const [labels, setLabels] = useState(() => getLiveI18n()?.labels ?? initial);
-  useEffect(() => subscribeLiveI18n((payload) => setLabels(payload.labels)), []);
+  useEffect(() => {
+    const current = getLiveI18n()?.labels;
+    if (current) setLabels(current);
+    return subscribeLiveI18n((payload) => setLabels(payload.labels));
+  }, []);
   return labels;
 }
 
 export function useLiveLocale(initial: Locale): Locale {
   const [locale, setLocale] = useState(() => getLiveI18n()?.locale ?? initial);
-  useEffect(() => subscribeLiveI18n((payload) => setLocale(payload.locale)), []);
+  useEffect(() => {
+    const current = getLiveI18n()?.locale;
+    if (current) setLocale(current);
+    return subscribeLiveI18n((payload) => setLocale(payload.locale));
+  }, []);
   return locale;
 }
 
@@ -23,14 +31,14 @@ export function useLiveSlice<K extends 'navLinks' | 'events' | 'team' | 'service
     () => (getLiveI18n()?.[key] as NonNullable<LiveI18n[K]> | undefined) ?? initial,
   );
 
-  useEffect(
-    () =>
-      subscribeLiveI18n((payload) => {
-        const next = payload[key];
-        if (next !== undefined) setValue(next as NonNullable<LiveI18n[K]>);
-      }),
-    [key],
-  );
+  useEffect(() => {
+    const current = getLiveI18n()?.[key];
+    if (current !== undefined) setValue(current as NonNullable<LiveI18n[K]>);
+    return subscribeLiveI18n((payload) => {
+      const next = payload[key];
+      if (next !== undefined) setValue(next as NonNullable<LiveI18n[K]>);
+    });
+  }, [key]);
 
   return value;
 }

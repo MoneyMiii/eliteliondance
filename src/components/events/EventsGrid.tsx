@@ -10,16 +10,15 @@ interface Props {
   events: EventItem[];
   logoMark?: string;
   moreHref?: string;
-  moreLabel?: string;
   live?: boolean;
 }
 
-export default function EventsGrid({ locale, labels, events, logoMark, moreHref, moreLabel, live = false }: Props) {
+export default function EventsGrid({ locale, labels, events, logoMark, moreHref, live = false }: Props) {
   const liveLocale = useLiveLocale(locale);
   const liveLabels = useLiveLabels(labels);
   const syncedEvents = useLiveSlice('events', events);
   const items = live ? syncedEvents : events;
-  const label = moreLabel || t(liveLabels, 'events.moreUpcoming');
+  const label = t(liveLabels, 'events.moreUpcoming');
 
   return (
     <div className="grid items-start gap-4 pt-1 md:grid-cols-2">
